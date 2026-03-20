@@ -25,6 +25,7 @@ from loom.config.schema import AgentConfig, ExposedTool, HttpEndpoint
 from loom.security.audit import get_audit_logger
 from loom.security.trust import TrustEnforcer, TrustViolation
 from loom.security.credentials import get_credential_broker
+from loom.security.validation import InputValidator, RateLimiter
 
 logger = logging.getLogger(__name__)
 
@@ -46,6 +47,8 @@ def build_mcp_server(config: AgentConfig) -> FastMCP:
     trust = TrustEnforcer(spec.name, spec.runtime.trust_tier)
     audit = get_audit_logger()
     broker = get_credential_broker()
+    validator = InputValidator(spec.name)
+    rate_limiter = RateLimiter(default_rpm=120)
 
     audit.log_agent_lifecycle(spec.name, "build", f"Building MCP server with {len(spec.exposes)} tools")
 
@@ -56,7 +59,7 @@ def build_mcp_server(config: AgentConfig) -> FastMCP:
     for tool in spec.exposes:
         endpoint = bridge_map.get(tool.name)
         if endpoint:
-            _register_http_tool(mcp, tool, endpoint, spec.name, trust, audit, broker)
+            _register_http_tool(mcp, tool, endpoint, spec.name, trust, audit, broker, validator, rate_limiter)
         else:
             _register_passthrough_tool(mcp, tool, spec.name, audit)
 
@@ -183,6 +186,7 @@ async def _execute_http_bridge(
 def _build_typed_handler(
     tool: ExposedTool, endpoint: HttpEndpoint | None, agent_name: str,
     trust: TrustEnforcer | None = None, audit=None, broker=None,
+    validator: InputValidator | None = None, rate_limiter: RateLimiter | None = None,
 ) -> Any:
     """Dynamically create an async function with a typed signature."""
     sig_parts: list[str] = []
@@ -214,10 +218,17 @@ async def {fn_name}({sig}) -> str:
     if endpoint:
         _ep, _an, _tn = endpoint, agent_name, tool.name
         _trust, _audit, _broker = trust, audit, broker
+        _validator, _rate_limiter = validator, rate_limiter
+        _tool_schema = {pn: {"type": pd.type, "required": pd.required, "default": pd.default}
+                        for pn, pd in tool.parameters.items()}
 
         async def _dispatch(params: dict[str, Any]) -> str:
             start = time.monotonic()
             try:
+                if _rate_limiter:
+                    _rate_limiter.check(_an, _tn)
+                if _validator and _tool_schema:
+                    params = _validator.validate_params(_tn, params, _tool_schema)
                 result = await _execute_http_bridge(_ep, _an, _tn, params, _trust, _audit, _broker)
                 duration = (time.monotonic() - start) * 1000
                 if _audit:
@@ -248,6 +259,7 @@ async def {fn_name}({sig}) -> str:
 def _build_no_params_handler(
     tool: ExposedTool, endpoint: HttpEndpoint | None, agent_name: str,
     trust: TrustEnforcer | None = None, audit=None, broker=None,
+    validator: InputValidator | None = None, rate_limiter: RateLimiter | None = None,
 ) -> Any:
     """Build a handler for tools with zero parameters."""
     if endpoint:
@@ -283,11 +295,11 @@ def _build_no_params_handler(
 
 # ── Registration ─────────────────────────────────────────────────────
 
-def _register_http_tool(mcp, tool, endpoint, agent_name, trust, audit, broker):
+def _register_http_tool(mcp, tool, endpoint, agent_name, trust, audit, broker, validator=None, rate_limiter=None):
     if tool.parameters:
-        handler = _build_typed_handler(tool, endpoint, agent_name, trust, audit, broker)
+        handler = _build_typed_handler(tool, endpoint, agent_name, trust, audit, broker, validator, rate_limiter)
     else:
-        handler = _build_no_params_handler(tool, endpoint, agent_name, trust, audit, broker)
+        handler = _build_no_params_handler(tool, endpoint, agent_name, trust, audit, broker, validator, rate_limiter)
     mcp.add_tool(handler)
     logger.info(f"Registered HTTP-bridged tool: {tool.name} -> {endpoint.method} {endpoint.url}")
 
