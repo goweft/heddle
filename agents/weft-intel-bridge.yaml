@@ -1,10 +1,11 @@
-# LOOM Agent: weft-intel-bridge v1.2.0
+# LOOM Agent: weft-intel-bridge v1.3.0
 # Wraps the live WEFT Intelligence platform API (port 9090).
-# All endpoints get the Bearer token; unprotected ones just ignore it.
+# Credentials resolved at runtime via the LOOM credential broker.
+# Token stored in ~/.loom/secrets.json, access granted in credential_policy.json.
 
 agent:
   name: weft-intel-bridge
-  version: "1.2.0"
+  version: "1.3.0"
   description: >
     Bridge to the WEFT Intelligence platform. Provides RAG-powered
     question answering over news articles, entity dossiers, trending
@@ -100,13 +101,13 @@ agent:
         question: "{{question}}"
       headers:
         Content-Type: "application/json"
-        Authorization: "Bearer a6e60bd2239766494d2141a6efcdca972bf2ce1d8d34609c"
+        Authorization: "Bearer {{secret:weft-intel-token}}"
 
     - tool_name: get_dossier
       method: GET
       url: "http://localhost:9090/api/dossier/{{entity_name}}"
       headers:
-        Authorization: "Bearer a6e60bd2239766494d2141a6efcdca972bf2ce1d8d34609c"
+        Authorization: "Bearer {{secret:weft-intel-token}}"
 
     - tool_name: get_trending
       method: GET
@@ -115,19 +116,19 @@ agent:
         hours: hours
         limit: limit
       headers:
-        Authorization: "Bearer a6e60bd2239766494d2141a6efcdca972bf2ce1d8d34609c"
+        Authorization: "Bearer {{secret:weft-intel-token}}"
 
     - tool_name: get_patterns
       method: GET
       url: "http://localhost:9090/api/patterns"
       headers:
-        Authorization: "Bearer a6e60bd2239766494d2141a6efcdca972bf2ce1d8d34609c"
+        Authorization: "Bearer {{secret:weft-intel-token}}"
 
     - tool_name: get_daily_brief
       method: GET
       url: "http://localhost:9090/api/brief"
       headers:
-        Authorization: "Bearer a6e60bd2239766494d2141a6efcdca972bf2ce1d8d34609c"
+        Authorization: "Bearer {{secret:weft-intel-token}}"
 
     - tool_name: get_communities
       method: GET
@@ -135,19 +136,19 @@ agent:
       query_params:
         min_size: min_size
       headers:
-        Authorization: "Bearer a6e60bd2239766494d2141a6efcdca972bf2ce1d8d34609c"
+        Authorization: "Bearer {{secret:weft-intel-token}}"
 
     - tool_name: get_stats
       method: GET
       url: "http://localhost:9090/api/stats/v2"
       headers:
-        Authorization: "Bearer a6e60bd2239766494d2141a6efcdca972bf2ce1d8d34609c"
+        Authorization: "Bearer {{secret:weft-intel-token}}"
 
     - tool_name: get_emerging_relationships
       method: GET
       url: "http://localhost:9090/api/emerging-relationships"
       headers:
-        Authorization: "Bearer a6e60bd2239766494d2141a6efcdca972bf2ce1d8d34609c"
+        Authorization: "Bearer {{secret:weft-intel-token}}"
 
   runtime:
     sandbox: none
