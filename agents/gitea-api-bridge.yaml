@@ -1,0 +1,67 @@
+agent:
+  name: gitea-api-bridge
+  version: "1.0.0"
+  description: "Bridge to Gitea API for repository and issue management operations"
+
+  model:
+    provider: none
+
+  consumes: []
+
+  exposes:
+    - name: list_user_repos
+      description: "List repositories for a specific user"
+      parameters:
+        owner:
+          type: string
+          description: "Username of the repository owner"
+          required: true
+        limit:
+          type: integer
+          description: "Maximum number of repositories to return"
+          required: false
+          default: 100
+      returns:
+        type: string
+        description: "JSON array of repository objects"
+
+    - name: list_repo_issues
+      description: "List issues for a specific repository"
+      parameters:
+        owner:
+          type: string
+          description: "Username of the repository owner"
+          required: true
+        repo:
+          type: string
+          description: "Repository name"
+          required: true
+        state:
+          type: string
+          description: "Filter issues by state (open/closed/all)"
+          required: false
+          default: "open"
+      returns:
+        type: string
+        description: "JSON array of issue objects"
+
+  http_bridge:
+    - tool_name: list_user_repos
+      method: GET
+      url: "http://localhost:3080/api/v1/users/{{owner}}/repos"
+      query_params:
+        limit: limit
+
+    - tool_name: list_repo_issues
+      method: GET
+      url: "http://localhost:3080/api/v1/repos/{{owner}}/{{repo}}/issues"
+      query_params:
+        state: state
+
+  runtime:
+    sandbox: none
+    trust_tier: 1
+    max_execution_time: 60s
+
+  triggers:
+    - type: on_demand
