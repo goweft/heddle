@@ -1,0 +1,158 @@
+# LOOM Agent: weft-intel-bridge v1.2.0
+# Wraps the live WEFT Intelligence platform API (port 9090).
+# All endpoints get the Bearer token; unprotected ones just ignore it.
+
+agent:
+  name: weft-intel-bridge
+  version: "1.2.0"
+  description: >
+    Bridge to the WEFT Intelligence platform. Provides RAG-powered
+    question answering over news articles, entity dossiers, trending
+    entity tracking, pattern detection, daily intelligence briefs,
+    and community/network analysis.
+
+  model:
+    provider: none
+
+  consumes: []
+
+  exposes:
+    - name: ask_intel
+      description: "Ask a natural-language question about news intelligence using RAG."
+      parameters:
+        question:
+          type: string
+          description: "The question to ask"
+          required: true
+      returns:
+        type: string
+        description: "AI-generated answer with source citations"
+
+    - name: get_dossier
+      description: "Get a comprehensive intelligence dossier on a named entity."
+      parameters:
+        entity_name:
+          type: string
+          description: "Name of the entity to profile"
+          required: true
+      returns:
+        type: string
+        description: "JSON dossier with summary, connections, and timeline"
+
+    - name: get_trending
+      description: "Get currently trending entities based on mention velocity."
+      parameters:
+        hours:
+          type: integer
+          description: "Lookback window in hours"
+          required: false
+          default: 24
+        limit:
+          type: integer
+          description: "Max entities to return"
+          required: false
+          default: 20
+      returns:
+        type: string
+        description: "JSON array of trending entities with scores"
+
+    - name: get_patterns
+      description: "Retrieve detected patterns and predictions from cross-entity analysis."
+      returns:
+        type: string
+        description: "JSON array of detected patterns with confidence scores"
+
+    - name: get_daily_brief
+      description: "Get the latest daily intelligence briefing."
+      returns:
+        type: string
+        description: "Markdown-formatted daily intelligence brief"
+
+    - name: get_communities
+      description: "Get entity communities detected through co-occurrence analysis."
+      parameters:
+        min_size:
+          type: integer
+          description: "Minimum community size"
+          required: false
+          default: 3
+      returns:
+        type: string
+        description: "JSON array of entity communities"
+
+    - name: get_stats
+      description: "Get system statistics for the intelligence platform."
+      returns:
+        type: string
+        description: "JSON object with system statistics"
+
+    - name: get_emerging_relationships
+      description: "Detect newly emerging relationships between entities."
+      returns:
+        type: string
+        description: "JSON array of emerging entity relationships"
+
+  http_bridge:
+    - tool_name: ask_intel
+      method: POST
+      url: "http://localhost:9090/api/query"
+      body_template:
+        question: "{{question}}"
+      headers:
+        Content-Type: "application/json"
+        Authorization: "Bearer a6e60bd2239766494d2141a6efcdca972bf2ce1d8d34609c"
+
+    - tool_name: get_dossier
+      method: GET
+      url: "http://localhost:9090/api/dossier/{{entity_name}}"
+      headers:
+        Authorization: "Bearer a6e60bd2239766494d2141a6efcdca972bf2ce1d8d34609c"
+
+    - tool_name: get_trending
+      method: GET
+      url: "http://localhost:9090/api/trending"
+      query_params:
+        hours: hours
+        limit: limit
+      headers:
+        Authorization: "Bearer a6e60bd2239766494d2141a6efcdca972bf2ce1d8d34609c"
+
+    - tool_name: get_patterns
+      method: GET
+      url: "http://localhost:9090/api/patterns"
+      headers:
+        Authorization: "Bearer a6e60bd2239766494d2141a6efcdca972bf2ce1d8d34609c"
+
+    - tool_name: get_daily_brief
+      method: GET
+      url: "http://localhost:9090/api/brief"
+      headers:
+        Authorization: "Bearer a6e60bd2239766494d2141a6efcdca972bf2ce1d8d34609c"
+
+    - tool_name: get_communities
+      method: GET
+      url: "http://localhost:9090/api/communities"
+      query_params:
+        min_size: min_size
+      headers:
+        Authorization: "Bearer a6e60bd2239766494d2141a6efcdca972bf2ce1d8d34609c"
+
+    - tool_name: get_stats
+      method: GET
+      url: "http://localhost:9090/api/stats/v2"
+      headers:
+        Authorization: "Bearer a6e60bd2239766494d2141a6efcdca972bf2ce1d8d34609c"
+
+    - tool_name: get_emerging_relationships
+      method: GET
+      url: "http://localhost:9090/api/emerging-relationships"
+      headers:
+        Authorization: "Bearer a6e60bd2239766494d2141a6efcdca972bf2ce1d8d34609c"
+
+  runtime:
+    sandbox: none
+    trust_tier: 1
+    max_execution_time: 60s
+
+  triggers:
+    - type: on_demand

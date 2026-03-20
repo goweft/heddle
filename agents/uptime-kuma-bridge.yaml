@@ -1,0 +1,62 @@
+agent:
+  name: uptime-kuma-bridge
+  version: "1.0.0"
+  description: "Bridge to Uptime Kuma monitoring API for monitor status, heartbeat data, and uptime statistics."
+
+  model:
+    provider: none
+
+  consumes: []
+
+  exposes:
+    - name: list_monitors
+      description: "List all configured monitors with their current status (up/down)."
+      parameters: {}
+      returns:
+        type: string
+        description: "JSON array of monitor objects with status, name, and ID"
+
+    - name: get_monitor_heartbeat
+      description: "Get detailed heartbeat data for a specific monitor."
+      parameters:
+        monitor_id:
+          type: string
+          description: "Unique monitor ID from Uptime Kuma"
+          required: true
+      returns:
+        type: string
+        description: "JSON object containing heartbeat statistics for the monitor"
+
+    - name: get_uptime_summary
+      description: "Get overall system uptime and performance summary."
+      parameters: {}
+      returns:
+        type: string
+        description: "JSON object with total uptime, average response time, and error rate"
+
+  http_bridge:
+    - tool_name: list_monitors
+      method: GET
+      url: "http://localhost:3004/api/monitors"
+      headers:
+        Accept: "application/json"
+
+    - tool_name: get_monitor_heartbeat
+      method: GET
+      url: "http://localhost:3004/api/monitors/{{monitor_id}}/heartbeat"
+      headers:
+        Accept: "application/json"
+
+    - tool_name: get_uptime_summary
+      method: GET
+      url: "http://localhost:3004/api/uptime"
+      headers:
+        Accept: "application/json"
+
+  runtime:
+    sandbox: none
+    trust_tier: 1
+    max_execution_time: 60s
+
+  triggers:
+    - type: on_demand
