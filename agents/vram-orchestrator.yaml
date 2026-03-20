@@ -1,0 +1,118 @@
+# LOOM Agent: vram-orchestrator v1.0.0
+# Advanced agent that manages GPU VRAM across Ollama and llama.cpp.
+# Knows what's loaded, what's available, VRAM capacity, and can
+# intelligently load/unload models to optimize GPU utilization.
+#
+# This agent has BOTH http_bridge tools (for data gathering) and
+# custom Python handlers (for intelligent orchestration).
+
+agent:
+  name: vram-orchestrator
+  version: "1.0.0"
+  description: >
+    GPU VRAM orchestrator for weftbox. Manages model loading across
+    Ollama and llama.cpp, tracks VRAM usage, provides intelligent
+    model selection, and optimizes GPU memory allocation.
+    24GB RX 7900 XTX with 30 GGUFs + 7 Ollama models available.
+
+  model:
+    provider: ollama
+    model: qwen3:14b
+    temperature: 0.2
+
+  consumes:
+    - uri: mcp://localhost:8202/mcp
+      tools: [list_models, list_running, generate, show_model]
+
+  exposes:
+    - name: vram_status
+      description: >
+        Get comprehensive VRAM status: GPU utilization, temperature,
+        power draw, loaded models with VRAM usage, and available capacity.
+      returns:
+        type: string
+        description: "JSON VRAM status report"
+
+    - name: list_all_models
+      description: >
+        List ALL available models across Ollama (7) and GGUF library (30).
+        Shows which are currently loaded and their VRAM requirements.
+      returns:
+        type: string
+        description: "JSON array of all models with status"
+
+    - name: smart_load
+      description: >
+        Intelligently load a model by name. Checks VRAM availability,
+        unloads least-recently-used models if needed, and loads the
+        requested model. Returns the model state after loading.
+      parameters:
+        model_name:
+          type: string
+          description: "Model name (e.g. 'qwen3:14b', 'deepseek-r1:14b')"
+          required: true
+      returns:
+        type: string
+        description: "JSON load result with VRAM state"
+
+    - name: smart_generate
+      description: >
+        Generate text with automatic model management. Ensures the
+        requested model is loaded (loading it if needed, evicting
+        others if VRAM is full), then runs generation.
+      parameters:
+        model_name:
+          type: string
+          description: "Model to use for generation"
+          required: true
+        prompt:
+          type: string
+          description: "Text prompt"
+          required: true
+        system:
+          type: string
+          description: "Optional system prompt"
+          required: false
+          default: ""
+      returns:
+        type: string
+        description: "JSON with response and VRAM state"
+
+    - name: optimize_vram
+      description: >
+        Analyze current VRAM usage and suggest optimizations.
+        Uses the local LLM to reason about which models should
+        be loaded based on recent usage patterns from the audit log.
+      returns:
+        type: string
+        description: "Markdown optimization report"
+
+    - name: unload_model
+      description: >
+        Unload a specific model from Ollama to free VRAM.
+      parameters:
+        model_name:
+          type: string
+          description: "Model name to unload"
+          required: true
+      returns:
+        type: string
+        description: "JSON result with freed VRAM"
+
+    - name: model_library
+      description: >
+        Browse the full GGUF model library on the NVMe tier.
+        30 models, 124GB total. Shows sizes and availability.
+      returns:
+        type: string
+        description: "JSON model library with storage stats"
+
+  http_bridge: []
+
+  runtime:
+    sandbox: none
+    trust_tier: 3
+    max_execution_time: 120s
+
+  triggers:
+    - type: on_demand
