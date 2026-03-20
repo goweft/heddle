@@ -1,0 +1,106 @@
+# LOOM Agent: prometheus-bridge
+# Bridges the Prometheus API on weftbox (port 9092).
+# 4 scrape targets: node-exporter, prometheus, weft-intel, weft-llm
+
+agent:
+  name: prometheus-bridge
+  version: "1.0.0"
+  description: >
+    Bridge to the Prometheus monitoring API. Query metrics, check
+    target health, list alerts, and run PromQL queries across
+    weftbox infrastructure (node-exporter, weft-intel, weft-llm).
+
+  model:
+    provider: none
+
+  consumes: []
+
+  exposes:
+    - name: query_prometheus
+      description: "Run a PromQL instant query and return current metric values."
+      parameters:
+        query:
+          type: string
+          description: "PromQL expression, e.g. 'up', 'node_memory_MemAvailable_bytes', 'rate(http_requests_total[5m])'"
+          required: true
+      returns:
+        type: string
+        description: "JSON query result with metric values"
+
+    - name: query_range
+      description: "Run a PromQL range query over a time window."
+      parameters:
+        query:
+          type: string
+          description: "PromQL expression"
+          required: true
+        start:
+          type: string
+          description: "Start time (RFC3339 or unix timestamp), e.g. '2026-03-19T00:00:00Z'"
+          required: true
+        end:
+          type: string
+          description: "End time"
+          required: true
+        step:
+          type: string
+          description: "Query resolution step, e.g. '15s', '1m', '5m'"
+          required: false
+          default: "1m"
+      returns:
+        type: string
+        description: "JSON time-series data"
+
+    - name: get_targets
+      description: "List all Prometheus scrape targets with their health status."
+      returns:
+        type: string
+        description: "JSON array of active scrape targets with job, URL, health"
+
+    - name: get_alerts
+      description: "List all currently firing Prometheus alerts."
+      returns:
+        type: string
+        description: "JSON array of active alerts"
+
+    - name: get_metric_names
+      description: "List all available metric names in Prometheus."
+      returns:
+        type: string
+        description: "JSON array of metric name strings"
+
+  http_bridge:
+    - tool_name: query_prometheus
+      method: GET
+      url: "http://localhost:9092/api/v1/query"
+      query_params:
+        query: query
+
+    - tool_name: query_range
+      method: GET
+      url: "http://localhost:9092/api/v1/query_range"
+      query_params:
+        query: query
+        start: start
+        end: end
+        step: step
+
+    - tool_name: get_targets
+      method: GET
+      url: "http://localhost:9092/api/v1/targets"
+
+    - tool_name: get_alerts
+      method: GET
+      url: "http://localhost:9092/api/v1/alerts"
+
+    - tool_name: get_metric_names
+      method: GET
+      url: "http://localhost:9092/api/v1/label/__name__/values"
+
+  runtime:
+    sandbox: none
+    trust_tier: 1
+    max_execution_time: 30s
+
+  triggers:
+    - type: on_demand
