@@ -403,5 +403,139 @@ async def _probe_async(uri: str):
     console.print()
 
 
+
+# ── Phase 3f: Signing & Quarantine ───────────────────────────────────
+
+@cli.group()
+def sign():
+    """Config signing and verification."""
+
+
+@sign.command("all")
+@click.argument("agents_dir", type=click.Path(exists=True), default="agents")
+def sign_all(agents_dir: str):
+    """Sign all agent configs in a directory."""
+    from loom.security.signing import ConfigSigner
+    signer = ConfigSigner()
+    count = signer.sign_all(agents_dir)
+    console.print(f"[green]OK[/] Signed {count} configs")
+    for name, sig in signer.list_signatures().items():
+        console.print(f"  {name}: {sig[:16]}...")
+
+
+@sign.command("verify")
+@click.argument("agents_dir", type=click.Path(exists=True), default="agents")
+def sign_verify(agents_dir: str):
+    """Verify all agent config signatures."""
+    from loom.security.signing import ConfigSigner, SignatureError
+    signer = ConfigSigner()
+    results = signer.verify_all(agents_dir)
+    all_valid = True
+    for r in results:
+        if r["status"] == "valid":
+            console.print(f"  [green]OK[/] {r['file']}")
+        else:
+            console.print(f"  [red]FAIL[/] {r['file']}: {r.get('error','')}")
+            all_valid = False
+    if all_valid:
+        console.print(f"\n[green]All {len(results)} configs verified[/]")
+    else:
+        sys.exit(1)
+
+
+@sign.command("config")
+@click.argument("config_path", type=click.Path(exists=True))
+def sign_config(config_path: str):
+    """Sign a single agent config."""
+    from loom.security.signing import ConfigSigner
+    signer = ConfigSigner()
+    sig = signer.sign(config_path)
+    console.print(f"[green]OK[/] {config_path}: {sig[:16]}...")
+
+
+@cli.group()
+def quarantine():
+    """AI-generated agent quarantine management."""
+
+
+@quarantine.command("list")
+def quarantine_list():
+    """List quarantined agent configs."""
+    from loom.security.signing import AgentQuarantine
+    q = AgentQuarantine()
+    entries = q.list_all()
+    if not entries:
+        console.print("[dim]No quarantined configs.[/]")
+        return
+    table = Table(title="Quarantine")
+    table.add_column("File", style="cyan")
+    table.add_column("Source")
+    table.add_column("Status", style="bold")
+    table.add_column("Date")
+    status_colors = {"pending": "yellow", "promoted": "green", "rejected": "red"}
+    for e in entries:
+        color = status_colors.get(e["status"], "white")
+        table.add_row(e["file"], e["source"], f"[{color}]{e['status']}[/]",
+                      e.get("quarantined_at", "")[:10])
+    console.print(table)
+
+
+@quarantine.command("promote")
+@click.argument("filename")
+@click.option("--agents-dir", default="agents", type=click.Path(exists=True))
+def quarantine_promote(filename: str, agents_dir: str):
+    """Promote a quarantined config to the live agents directory."""
+    from loom.security.signing import AgentQuarantine
+    q = AgentQuarantine()
+    try:
+        dest = q.promote(filename, agents_dir)
+        console.print(f"[green]OK[/] Promoted {filename} -> {dest}")
+    except FileNotFoundError:
+        console.print(f"[red]Not found[/] in quarantine: {filename}")
+        sys.exit(1)
+
+
+@quarantine.command("reject")
+@click.argument("filename")
+@click.option("--reason", default="", help="Rejection reason")
+def quarantine_reject(filename: str, reason: str):
+    """Reject a quarantined config."""
+    from loom.security.signing import AgentQuarantine
+    q = AgentQuarantine()
+    q.reject(filename, reason=reason)
+    console.print(f"[yellow]Rejected[/] {filename}" + (f": {reason}" if reason else ""))
+
+
+# ── Phase 3a: Sandbox ────────────────────────────────────────────────
+
+@cli.command()
+@click.argument("config_path", type=click.Path(exists=True))
+def sandbox(config_path: str):
+    """Show sandbox configuration for an agent."""
+    from loom.config.loader import load_agent_config
+    from loom.security.sandbox import SandboxManager
+    config = load_agent_config(config_path)
+    mgr = SandboxManager()
+    report = mgr.validate_sandbox(config)
+    sb = report["sandbox"]
+    console.print(f"\n[bold cyan]Sandbox: {report['agent']}[/]")
+    console.print(f"  Image: {sb['image']}")
+    console.print(f"  Memory: {sb['memory']}  |  CPU: {sb['cpu']}")
+    console.print(f"  Network: {sb['network']}  |  Read-only: {sb['readonly']}")
+    console.print(f"  Timeout: {sb['timeout']}s")
+    console.print(f"  Docker: {'available' if report['docker_available'] else 'not available'}")
+    if sb["hosts"]:
+        console.print(f"  Allowed hosts: {', '.join(sb['hosts'])}")
+    if report["warnings"]:
+        for w in report["warnings"]:
+            console.print(f"  [yellow]Warning:[/] {w}")
+    if report["issues"]:
+        for i in report["issues"]:
+            console.print(f"  [red]Issue:[/] {i}")
+    console.print(f"\n  Docker run args:")
+    for arg in report["docker_run_args"]:
+        console.print(f"    {arg}")
+
+
 if __name__ == "__main__":
     cli()
