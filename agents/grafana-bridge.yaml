@@ -1,0 +1,89 @@
+# LOOM Agent: grafana-bridge
+# Bridges the Grafana API on weftbox (port 3005).
+# Auth via credential broker (grafana-basic-auth).
+# 1 dashboard (WEFT LLM & GPU Metrics), 1 datasource (Prometheus), 4 alert rules.
+
+agent:
+  name: grafana-bridge
+  version: "1.0.0"
+  description: >
+    Bridge to the Grafana monitoring dashboard API. List dashboards,
+    retrieve dashboard JSON, list datasources, and check alert rules.
+
+  model:
+    provider: none
+
+  consumes: []
+
+  exposes:
+    - name: list_dashboards
+      description: "List all Grafana dashboards with their UIDs and titles."
+      returns:
+        type: string
+        description: "JSON array of dashboard objects"
+
+    - name: get_dashboard
+      description: "Get the full JSON model of a specific dashboard by UID."
+      parameters:
+        uid:
+          type: string
+          description: "Dashboard UID, e.g. 'weft-llm-gpu'"
+          required: true
+      returns:
+        type: string
+        description: "JSON dashboard model with panels and queries"
+
+    - name: list_datasources
+      description: "List all configured Grafana datasources."
+      returns:
+        type: string
+        description: "JSON array of datasource objects"
+
+    - name: get_alert_rules
+      description: "List all Grafana alert rules across all folders."
+      returns:
+        type: string
+        description: "JSON object of alert rule groups"
+
+    - name: grafana_health
+      description: "Check Grafana health status and version."
+      returns:
+        type: string
+        description: "JSON health status with database and version info"
+
+  http_bridge:
+    - tool_name: list_dashboards
+      method: GET
+      url: "http://localhost:3005/api/search?type=dash-db"
+      headers:
+        Authorization: "{{secret:grafana-basic-auth}}"
+
+    - tool_name: get_dashboard
+      method: GET
+      url: "http://localhost:3005/api/dashboards/uid/{{uid}}"
+      headers:
+        Authorization: "{{secret:grafana-basic-auth}}"
+
+    - tool_name: list_datasources
+      method: GET
+      url: "http://localhost:3005/api/datasources"
+      headers:
+        Authorization: "{{secret:grafana-basic-auth}}"
+
+    - tool_name: get_alert_rules
+      method: GET
+      url: "http://localhost:3005/api/ruler/grafana/api/v1/rules"
+      headers:
+        Authorization: "{{secret:grafana-basic-auth}}"
+
+    - tool_name: grafana_health
+      method: GET
+      url: "http://localhost:3005/api/health"
+
+  runtime:
+    sandbox: none
+    trust_tier: 1
+    max_execution_time: 30s
+
+  triggers:
+    - type: on_demand
