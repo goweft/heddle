@@ -1,0 +1,96 @@
+# LOOM Agent: ollama-bridge
+# Bridges the Ollama API on weftbox (port 11434).
+# 7 models installed, GPU-accelerated inference.
+
+agent:
+  name: ollama-bridge
+  version: "1.0.0"
+  description: >
+    Bridge to the Ollama local LLM inference API. List installed
+    models, check running models and VRAM usage, generate text
+    completions, and manage the model library.
+
+  model:
+    provider: none
+
+  consumes: []
+
+  exposes:
+    - name: list_models
+      description: "List all installed Ollama models with name, size, and modification date."
+      returns:
+        type: string
+        description: "JSON array of installed models"
+
+    - name: list_running
+      description: "Show currently loaded models with VRAM usage and context size."
+      returns:
+        type: string
+        description: "JSON array of running models with memory stats"
+
+    - name: generate
+      description: "Generate a text completion using a specific model. Streams are disabled, returns full response."
+      parameters:
+        model:
+          type: string
+          description: "Model name, e.g. 'qwen3:14b', 'deepseek-r1:14b'"
+          required: true
+        prompt:
+          type: string
+          description: "The text prompt to complete"
+          required: true
+        system:
+          type: string
+          description: "Optional system prompt"
+          required: false
+          default: ""
+      returns:
+        type: string
+        description: "JSON with response text and generation stats"
+
+    - name: show_model
+      description: "Get detailed info about a specific model (parameters, template, license)."
+      parameters:
+        name:
+          type: string
+          description: "Model name"
+          required: true
+      returns:
+        type: string
+        description: "JSON with model details"
+
+  http_bridge:
+    - tool_name: list_models
+      method: GET
+      url: "http://localhost:11434/api/tags"
+
+    - tool_name: list_running
+      method: GET
+      url: "http://localhost:11434/api/ps"
+
+    - tool_name: generate
+      method: POST
+      url: "http://localhost:11434/api/generate"
+      body_template:
+        model: "{{model}}"
+        prompt: "{{prompt}}"
+        system: "{{system}}"
+        stream: false
+      headers:
+        Content-Type: "application/json"
+
+    - tool_name: show_model
+      method: POST
+      url: "http://localhost:11434/api/show"
+      body_template:
+        name: "{{name}}"
+      headers:
+        Content-Type: "application/json"
+
+  runtime:
+    sandbox: none
+    trust_tier: 2
+    max_execution_time: 120s
+
+  triggers:
+    - type: on_demand
