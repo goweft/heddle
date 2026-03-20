@@ -203,7 +203,7 @@ Credential Policy:
 
 **Residual risk:** A structurally valid config that points to a malicious URL would pass schema validation. The current system does not verify that URLs point to known, trusted services. This is planned for Phase 3f (config signing and generated agent quarantine).
 
-**Planned controls (not yet implemented):**
+**Now implemented (Phase 3f):**
 - **Generated agent quarantine.** AI-generated configs land in a staging directory and require explicit promotion before they can be registered or run.
 - **Config signing.** YAML configs can be cryptographically signed; the runtime verifies signatures before loading.
 - **URL allowlist.** Bridge URLs are checked against a set of known weftbox service endpoints.
@@ -224,7 +224,7 @@ Credential Policy:
 
 **Current state:** Agents run in-process (no sandboxing). All agents share the same Python process, filesystem, and network access. This is the primary security gap in the current implementation.
 
-**Planned controls (Phase 3a):**
+**Implemented (Phase 3a framework):**
 - **Docker container per agent.** Each agent runs in its own container with: read-only root filesystem, scoped writable volume, network limited to declared `consumes` targets, CPU/memory/time limits.
 - **gVisor upgrade path.** For stronger kernel-level isolation, containers can be run with gVisor's `runsc` runtime.
 
@@ -253,8 +253,8 @@ Credential Policy:
 - **Trust tiers limit scope.** T1 agents can only read; they cannot trigger expensive write operations or chain calls.
 - **Ollama is local.** The most expensive LLM operation (text generation via the `ollama-bridge`) runs on local hardware — no API costs.
 
-**Planned controls:**
-- Rate limiting per agent per tool (Phase 3e).
+**Now implemented:**
+- Rate limiting per agent per tool (Phase 3e, `security/validation.py`).
 - Cost tracking for cloud LLM calls via NEXUS routing stats.
 
 **Framework mapping:**
@@ -297,7 +297,7 @@ Credential Policy:
 | 3 | Excessive Agency | Trust tier enforcement with 4 levels | Implemented |
 | 4 | Denial of Wallet | Execution timeouts, local LLM preference | Partial |
 | 5 | Insecure Output Handling | (Delegated to MCP client) | N/A |
-| 6 | Inadequate Sandboxing | Docker containers planned; trust tiers compensate | Planned |
+| 6 | Inadequate Sandboxing | Docker sandbox framework + trust tiers | Partial |
 | 7 | Unsafe Credential Management | Credential broker, per-agent policy, redaction | Implemented |
 | 8 | Supply Chain Vulnerabilities | Schema validation, dry-run; signing planned | Partial |
 | 9 | Insufficient Logging | Hash-chained audit log, 5 event types | Implemented |
@@ -311,7 +311,7 @@ Credential Policy:
 | GOVERN (GV) | GV-6.1 Supply chain | Schema validation, planned config signing |
 | MAP (MP) | MP-2.3 Staged deployment | Dry-run validation, planned quarantine |
 | MAP (MP) | MP-4.1 Risk controls | Trust enforcement, credential broker |
-| MEASURE (MS) | MS-2.3 Isolation | Planned Docker sandboxing |
+| MEASURE (MS) | MS-2.3 Isolation | Docker sandbox framework implemented |
 | MEASURE (MS) | MS-2.5 Validation | Pydantic schema, cross-field checks |
 | MEASURE (MS) | MS-2.6 Monitoring | Hash-chained audit log |
 | MEASURE (MS) | MS-2.7 Prompt security | String-only templating |
@@ -326,11 +326,11 @@ Credential Policy:
 | Secrets management | CredentialBroker with file-based store and access policy |
 | Observability layer | AuditLogger with hash chaining and 5 event types |
 | Validation layer | Pydantic schema, cross-field checks, dry-run mode |
-| Isolation layer | Planned Docker/gVisor sandboxing |
-| Integrity layer | Planned config signing and generated agent quarantine |
+| Isolation layer | Docker sandbox framework (container config generation) |
+| Integrity layer | HMAC-SHA256 config signing + quarantine workflow |
 | Staging gate | Dry-run validation, planned quarantine directory |
 | Throttling layer | Execution timeouts, planned per-agent rate limiting |
-| Network layer | Planned container network policies |
+| Network layer | Network policy generation (enforcement planned) |
 
 ---
 
@@ -339,9 +339,9 @@ Credential Policy:
 | Risk | Severity | Mitigation | Timeline |
 |------|----------|------------|----------|
 | In-process agents share memory | High | Docker sandboxing (Phase 3a) | Next |
-| No input validation on tool parameters | Medium | Type/length validation (Phase 3e) | Next |
-| AI-generated configs not quarantined | Medium | Staging directory + signing (Phase 3f) | Planned |
-| No rate limiting per agent | Medium | Per-agent throttle (Phase 3e) | Planned |
+| No input validation on tool parameters | Low | Type/length/injection validation implemented | Implemented |
+| AI-generated configs not quarantined | Low | Staging directory + signing implemented (Phase 3f) | Implemented |
+| No rate limiting per agent | Low | Per-agent per-tool sliding window implemented | Implemented |
 | Backend LLMs vulnerable to injection | Low | Out of LOOM scope; backend responsibility | N/A |
 | Audit log on local filesystem | Low | Remote log shipping (future) | Future |
 

@@ -3,8 +3,4 @@ __pycache__/
 *.egg-info/
 venv/
 .pytest_cache/
-loom.log
 *.log
-test_*.py
-!tests/test_*.py
-regen_*.py
