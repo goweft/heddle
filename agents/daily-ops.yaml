@@ -1,0 +1,70 @@
+# LOOM Agent: daily-ops v1.0.0
+# Advanced orchestrating agent — uses Ollama to reason across
+# multiple LOOM tools and produce a synthesized daily briefing.
+#
+# This is NOT a simple API bridge. It:
+# 1. Queries Prometheus for system health
+# 2. Queries weft-intel for trending entities and patterns  
+# 3. Checks Ollama model status
+# 4. Feeds all data to a local LLM for synthesis
+# 5. Produces a formatted daily operations report
+
+agent:
+  name: daily-ops
+  version: "1.0.0"
+  description: >
+    Advanced orchestrating agent that synthesizes a daily operations
+    report by querying Prometheus (system health), weft-intel
+    (intelligence trends), and Ollama (model status), then using
+    a local LLM to produce a coherent briefing.
+
+  model:
+    provider: ollama
+    model: qwen3:14b
+    temperature: 0.3
+
+  consumes:
+    - uri: mcp://localhost:8203/mcp
+      tools: [query_prometheus, get_targets, get_alerts]
+    - uri: mcp://localhost:8206/mcp
+      tools: [get_trending, get_stats, get_daily_brief]
+    - uri: mcp://localhost:8202/mcp
+      tools: [list_models, list_running]
+
+  exposes:
+    - name: daily_briefing
+      description: >
+        Generate a comprehensive daily operations briefing covering
+        system health, intelligence trends, and model status.
+        Uses a local LLM to synthesize data from multiple sources.
+      returns:
+        type: string
+        description: "Markdown-formatted daily operations briefing"
+
+    - name: system_health_check
+      description: >
+        Quick system health check — queries Prometheus for key
+        metrics and returns a status summary.
+      returns:
+        type: string
+        description: "JSON system health summary"
+
+    - name: threat_landscape
+      description: >
+        Get a synthesized view of the current threat landscape
+        from weft-intel, summarized by the local LLM.
+      returns:
+        type: string
+        description: "Markdown threat landscape summary"
+
+  http_bridge: []
+
+  runtime:
+    sandbox: none
+    trust_tier: 3
+    max_execution_time: 120s
+
+  triggers:
+    - type: on_demand
+    - type: cron
+      schedule: "0 9 * * 1-5"
