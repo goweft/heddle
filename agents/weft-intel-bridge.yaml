@@ -151,7 +151,7 @@ agent:
 
   runtime:
     sandbox: none
-    trust_tier: 1
+    trust_tier: 2
     max_execution_time: 60s
 
   triggers:
