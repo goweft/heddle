@@ -1,0 +1,107 @@
+# LOOM Agent: nexus-bridge
+# Bridges the NEXUS AI Platform API on weftbox (port 8080).
+# 45 endpoints available, exposing the most useful ones for Claude.
+# NEXUS provides multi-LLM routing, RAG, code analysis, and app management.
+
+agent:
+  name: nexus-bridge
+  version: "1.0.0"
+  description: >
+    Bridge to the NEXUS AI Platform. Provides health checks,
+    AI routing stats and costs, app management, codebase Q&A,
+    and drift detection across the WEFT ecosystem.
+
+  model:
+    provider: none
+
+  consumes: []
+
+  exposes:
+    - name: nexus_health
+      description: "Get NEXUS platform health including providers, RAG status, and version."
+      returns:
+        type: string
+        description: "JSON health object with status, providers, and capabilities"
+
+    - name: ai_status
+      description: "Get the current AI system status including active models and load."
+      returns:
+        type: string
+        description: "JSON AI status summary"
+
+    - name: routing_stats
+      description: "Get LLM routing statistics — which models are being used and how often."
+      returns:
+        type: string
+        description: "JSON routing stats with model usage breakdown"
+
+    - name: routing_costs
+      description: "Get LLM routing cost data — spend per model and per provider."
+      returns:
+        type: string
+        description: "JSON cost breakdown"
+
+    - name: routing_costs_recent
+      description: "Get recent LLM routing cost history."
+      returns:
+        type: string
+        description: "JSON array of recent cost entries"
+
+    - name: list_apps
+      description: "List all NEXUS-managed applications and services."
+      returns:
+        type: string
+        description: "JSON array of app objects with name, status, and config"
+
+    - name: detect_drift
+      description: "Detect configuration or behavior drift across WEFT services."
+      returns:
+        type: string
+        description: "JSON drift detection results"
+
+    - name: evolution_stats
+      description: "Get prompt evolution statistics from the NEXUS evolve system."
+      returns:
+        type: string
+        description: "JSON evolution stats"
+
+  http_bridge:
+    - tool_name: nexus_health
+      method: GET
+      url: "http://localhost:8080/health"
+
+    - tool_name: ai_status
+      method: GET
+      url: "http://localhost:8080/ai-status"
+
+    - tool_name: routing_stats
+      method: GET
+      url: "http://localhost:8080/routing/stats"
+
+    - tool_name: routing_costs
+      method: GET
+      url: "http://localhost:8080/routing/costs"
+
+    - tool_name: routing_costs_recent
+      method: GET
+      url: "http://localhost:8080/routing/costs/recent"
+
+    - tool_name: list_apps
+      method: GET
+      url: "http://localhost:8080/apps"
+
+    - tool_name: detect_drift
+      method: GET
+      url: "http://localhost:8080/drift"
+
+    - tool_name: evolution_stats
+      method: GET
+      url: "http://localhost:8080/evolve/stats"
+
+  runtime:
+    sandbox: none
+    trust_tier: 1
+    max_execution_time: 30s
+
+  triggers:
+    - type: on_demand
