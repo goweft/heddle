@@ -2,7 +2,10 @@
 """LOOM unified stdio launcher for Claude Desktop.
 
 Loads ALL agent configs from agents/ and merges their tools into a
-single MCP server. Claude Desktop gets every tool through one connection.
+single MCP server. Also registers custom handler agents (daily-ops)
+that have Python implementations instead of HTTP bridges.
+
+Claude Desktop gets every tool through one connection.
 """
 import logging
 import sys
@@ -26,7 +29,7 @@ AGENTS_DIR = Path("/mnt/workspace/projects/loom/agents")
 EXCLUDE = {
     "uptime-kuma-bridge",  # WebSocket API, not REST
     "gitea-bridge",        # Wrong URLs, superseded by gitea-api-bridge
-    "daily-ops",           # Orchestrator, needs custom handlers (not HTTP bridge)
+    "daily-ops",           # Custom handlers — registered separately below
 }
 
 unified = FastMCP(name="loom-mesh")
@@ -36,6 +39,8 @@ broker = get_credential_broker()
 configs = discover_configs(AGENTS_DIR)
 total_tools = 0
 loaded_agents = 0
+
+# ── Register HTTP bridge agents ─────────────────────────────────────
 
 for config_path in sorted(configs):
     try:
@@ -62,6 +67,33 @@ for config_path in sorted(configs):
 
     except Exception as exc:
         logging.error(f"Failed to load {config_path.name}: {exc}")
+
+# ── Register custom handler agents (daily-ops) ──────────────────────
+
+try:
+    from loom.agents.daily_ops import daily_briefing, system_health_check, threat_landscape
+
+    @unified.tool()
+    async def daily_briefing_tool() -> str:
+        """Generate a comprehensive daily operations briefing covering system health, intelligence trends, and model status. Uses a local LLM to synthesize data from Prometheus, weft-intel, and Ollama."""
+        return await daily_briefing()
+
+    @unified.tool()
+    async def system_health_check_tool() -> str:
+        """Quick system health check — queries Prometheus for memory, CPU, disk, load, and scrape target status."""
+        return await system_health_check()
+
+    @unified.tool()
+    async def threat_landscape_tool() -> str:
+        """Get a synthesized view of the current threat landscape from weft-intel, summarized by the local LLM."""
+        return await threat_landscape()
+
+    total_tools += 3
+    loaded_agents += 1
+    logging.info("Loaded daily-ops: 3 tools (custom handlers)")
+
+except Exception as exc:
+    logging.error(f"Failed to load daily-ops: {exc}")
 
 logging.info(f"Unified MCP server: {total_tools} tools from {loaded_agents} agents")
 unified.run(transport="stdio")

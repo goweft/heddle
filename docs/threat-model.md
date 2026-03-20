@@ -277,11 +277,11 @@ Credential Policy:
 | 6 | Dry-run validation | **Implemented** | `cli.py`, `generator/agent_gen.py` | `loom validate`, `loom generate --dry-run` |
 | 7 | Self-correcting generation | **Implemented** | `generator/agent_gen.py` | Retry with error feedback |
 | 8 | Execution timeout | **Implemented** | Agent YAML `max_execution_time` | Per-agent, enforced by HTTP client |
-| 9 | Docker sandboxing | **Planned** | Phase 3a | — |
-| 10 | Input validation | **Planned** | Phase 3e | — |
-| 11 | Config signing | **Planned** | Phase 3f | — |
-| 12 | Generated agent quarantine | **Planned** | Phase 3f | — |
-| 13 | Rate limiting | **Planned** | Phase 3e | — |
+| 9 | Docker sandboxing framework | **Implemented** |  | Container config generation, network policies |
+| 10 | Input validation | **Implemented** |  | Type checking, injection detection, length limits |
+| 11 | Config signing | **Implemented** |  | HMAC-SHA256, tamper detection |
+| 12 | Generated agent quarantine | **Implemented** |  | Staging directory, promote/reject workflow |
+| 13 | Rate limiting | **Implemented** |  | Per-agent per-tool sliding window |
 | 14 | Network isolation | **Planned** | Phase 3a | — |
 
 ---
