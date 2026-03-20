@@ -1,8 +1,8 @@
 # LOOM Security Controls Reference
 
-Quick reference for all implemented and planned security controls. For full threat analysis, see [threat-model.md](threat-model.md).
+Quick reference for all security controls. For full threat analysis, see [threat-model.md](threat-model.md).
 
-## Implemented Controls
+## Implemented Controls (13 of 14)
 
 ### Trust Tier Enforcement (`security/trust.py`)
 
@@ -21,7 +21,7 @@ Violations are **blocked** (not warned) and logged to the audit trail.
 - Per-agent access policy in `~/.loom/credential_policy.json`
 - Agent configs use `{{secret:key}}` — resolved at runtime, never stored in YAML
 - Unauthorized access: denied, logged, returns `***CREDENTIAL_DENIED***`
-- CLI: `loom secrets list`, `loom secrets set`, `loom secrets grant`, `loom secrets revoke`, `loom secrets policy`
+- CLI: `loom secrets list`, `set`, `grant`, `revoke`, `policy`
 
 ### Audit Logging (`security/audit.py`)
 
@@ -31,6 +31,43 @@ Violations are **blocked** (not warned) and logged to the audit trail.
 - Secret values redacted automatically
 - CLI: `loom audit show [-n N] [--event TYPE]`, `loom audit verify`
 
+### Input Validation (`security/validation.py`)
+
+- Type checking and coercion (string, integer, number, boolean, array, object)
+- Length limits per type (string max 10,000 chars)
+- Injection pattern detection: shell, SQL, path traversal, LLM prompt injection
+- Strict mode blocks, non-strict mode passes through with logging
+- Wired into MCP server HTTP bridge dispatch pipeline
+
+### Rate Limiting (`security/validation.py`)
+
+- Sliding window counter per agent per tool
+- Default: 120 requests per minute
+- Configurable per-tool RPM
+- Exceeding limit: blocked, logged as trust violation
+
+### Config Signing (`security/signing.py`)
+
+- HMAC-SHA256 signing of YAML configs
+- Auto-generated signing key at `~/.loom/signing.key` (chmod 600)
+- Tamper detection: modified configs fail verification
+- CLI: `loom sign all`, `loom sign verify`, `loom sign config`
+
+### Agent Quarantine (`security/signing.py`)
+
+- Staging directory at `~/.loom/quarantine/`
+- AI-generated configs quarantined before going live
+- Promote/reject workflow with manifest tracking
+- CLI: `loom quarantine list`, `promote`, `reject`
+
+### Sandbox Framework (`security/sandbox.py`)
+
+- Docker container config generation from agent YAML
+- Resource limits scaled by trust tier (T1=256MB, T3=1GB)
+- Network policy: agents can only reach declared http_bridge hosts
+- Read-only root filesystem, scoped writable volumes
+- CLI: `loom sandbox <config>`
+
 ### Schema Validation (`config/schema.py`, `config/loader.py`)
 
 - Pydantic v2 models with strict typing
@@ -38,24 +75,18 @@ Violations are **blocked** (not warned) and logged to the audit trail.
 - Agent names: kebab-case. Tool names: snake_case
 - `loom validate <config>` for pre-deployment checks
 
-## Planned Controls
+## Remaining
 
-| Control | Phase | OWASP # | Description |
-|---------|-------|---------|-------------|
-| Docker sandboxing | 3a | #6 | Container per agent, network/filesystem isolation |
-| Input validation | 3e | #1, #2 | Type/length/pattern checks on tool parameters |
-| Config signing | 3f | #8 | Cryptographic signatures on YAML configs |
-| Agent quarantine | 3f | #8 | Staging directory for AI-generated configs |
-| Rate limiting | 3e | #4 | Per-agent, per-tool request throttling |
-| Network isolation | 3a | #6 | Agents can only reach declared services |
+| Control | Status | Description |
+|---------|--------|-------------|
+| Network isolation (iptables) | Planned | Container-level network enforcement |
 
 ## Framework Mapping
 
 Every control maps to at least one industry framework:
 
 - **OWASP Agentic Security Top 10** — agentic-specific threats
-- **OWASP LLM Top 10** — LLM-specific vulnerabilities
 - **NIST AI Risk Management Framework (AI RMF 1.0)** — governance and risk
 - **MAESTRO** — multi-agent security layers
 
-See the [threat model](threat-model.md) Section 4 for the complete cross-reference tables.
+See the [threat model](threat-model.md) Section 4 for complete cross-reference tables.
