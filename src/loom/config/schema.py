@@ -31,6 +31,10 @@ class TrustTier(int, Enum):
     operator = 3
     privileged = 4
 
+class AccessMode(str, Enum):
+    read = "read"
+    write = "write"
+
 class TriggerType(str, Enum):
     cron = "cron"
     on_demand = "on_demand"
@@ -68,8 +72,10 @@ class ConsumedTool(BaseModel):
 class ExposedTool(BaseModel):
     name: str = Field(..., min_length=1, max_length=64)
     description: str = ""
+    access: AccessMode = Field(default=AccessMode.read, description="read = safe to call anytime, write = modifies state")
     parameters: dict[str, ParameterDef] = Field(default_factory=dict)
     returns: ReturnDef = Field(default_factory=ReturnDef)
+    model_config = ConfigDict(use_enum_values=True)
 
     @field_validator("name")
     @classmethod

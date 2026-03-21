@@ -1,0 +1,77 @@
+# LOOM Starter Pack: Grafana
+# Dashboard and alert visibility for any Grafana instance.
+#
+# Usage:
+#   1. Copy to agents/
+#   2. Update base URL and auth header
+#   3. Store credentials: loom secrets set grafana-auth "Bearer <token>"
+#      Then: loom secrets grant grafana grafana-auth
+#   4. loom run agents/grafana.yaml --port 8201
+#
+# All tools are read-only (T1). Requires an API key or basic auth.
+
+agent:
+  name: grafana
+  version: "1.0.0"
+  description: >
+    Read-only Grafana bridge. Lists dashboards, retrieves dashboard JSON,
+    shows datasources, and checks alert rule status.
+
+  exposes:
+    - name: dashboards
+      access: read
+      description: "List all Grafana dashboards with UIDs and titles."
+
+    - name: dashboard
+      access: read
+      description: "Get the full JSON model of a dashboard by UID."
+      parameters:
+        uid: { type: string, required: true, description: "Dashboard UID" }
+
+    - name: datasources
+      access: read
+      description: "List all configured Grafana datasources."
+
+    - name: alert_rules
+      access: read
+      description: "List all Grafana alert rules and their current state."
+
+    - name: health
+      access: read
+      description: "Check Grafana health and version."
+
+  http_bridge:
+    - tool_name: dashboards
+      method: GET
+      url: "http://localhost:3000/api/search?type=dash-db"
+      headers:
+        Authorization: "{{secret:grafana-auth}}"
+
+    - tool_name: dashboard
+      method: GET
+      url: "http://localhost:3000/api/dashboards/uid/{{uid}}"
+      headers:
+        Authorization: "{{secret:grafana-auth}}"
+
+    - tool_name: datasources
+      method: GET
+      url: "http://localhost:3000/api/datasources"
+      headers:
+        Authorization: "{{secret:grafana-auth}}"
+
+    - tool_name: alert_rules
+      method: GET
+      url: "http://localhost:3000/api/ruler/grafana/api/v1/rules"
+      headers:
+        Authorization: "{{secret:grafana-auth}}"
+
+    - tool_name: health
+      method: GET
+      url: "http://localhost:3000/api/health"
+
+  runtime:
+    trust_tier: 1
+    max_execution_time: 30s
+
+  triggers:
+    - type: on_demand

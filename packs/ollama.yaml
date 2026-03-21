@@ -1,0 +1,71 @@
+# LOOM Starter Pack: Ollama
+# Local LLM management and inference for any Ollama instance.
+#
+# Usage:
+#   1. Copy to agents/
+#   2. Update base URL if Ollama isn't on localhost:11434
+#   3. loom run agents/ollama.yaml --port 8203
+#
+# Trust tier 2 (worker) because 'generate' and 'pull' use POST.
+# The 'generate' tool triggers GPU inference; 'pull' downloads models.
+
+agent:
+  name: ollama
+  version: "1.0.0"
+  description: >
+    Ollama bridge for local LLM management. List installed models,
+    check running models and VRAM usage, generate text, and pull new models.
+
+  exposes:
+    - name: models
+      access: read
+      description: "List all installed Ollama models with sizes."
+
+    - name: running
+      access: read
+      description: "Show currently loaded models with VRAM usage and context size."
+
+    - name: generate
+      access: write
+      description: "Generate text using a local model. Loads the model if not already running."
+      parameters:
+        model: { type: string, required: true, description: "Model name (e.g. 'llama3:8b', 'qwen3:14b')" }
+        prompt: { type: string, required: true }
+        system: { type: string, required: false, default: "", description: "Optional system prompt" }
+
+    - name: model_info
+      access: read
+      description: "Get detailed info about a model (parameters, template, license)."
+      parameters:
+        name: { type: string, required: true }
+
+  http_bridge:
+    - tool_name: models
+      method: GET
+      url: "http://localhost:11434/api/tags"
+
+    - tool_name: running
+      method: GET
+      url: "http://localhost:11434/api/ps"
+
+    - tool_name: generate
+      method: POST
+      url: "http://localhost:11434/api/generate"
+      body_template:
+        model: "{{model}}"
+        prompt: "{{prompt}}"
+        system: "{{system}}"
+        stream: false
+
+    - tool_name: model_info
+      method: POST
+      url: "http://localhost:11434/api/show"
+      body_template:
+        name: "{{name}}"
+
+  runtime:
+    trust_tier: 2
+    max_execution_time: 120s
+
+  triggers:
+    - type: on_demand
