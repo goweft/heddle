@@ -2,7 +2,7 @@
 
 Quick reference for all security controls. For full threat analysis, see [threat-model.md](threat-model.md).
 
-## Implemented Controls (14 of 15)
+## Implemented Controls (15 of 16)
 
 ### Trust Tier Enforcement (`security/trust.py`)
 
@@ -83,6 +83,14 @@ Violations are **blocked** (not warned) and logged to the audit trail.
 - Cross-field validation: http_bridge refs match exposes, access modes match trust tiers
 - Config names: kebab-case. Tool names: snake_case
 - `loom validate <config>` for pre-deployment checks
+
+### Escalation Rules (`security/escalation.py`)
+
+- Declarative rules in YAML that hold tool calls for review when conditions match
+- Condition types: tool name globs, numeric thresholds (`param_gt`), exact match (`param_eq`), substring (`param_contains`), access mode
+- Matched calls raise `EscalationHold` — execution stops, audit trail records the hold
+- Rules loaded from config `escalation_rules` field, checked in the dispatch pipeline
+- Example: `smart_load` with "27b" model → held (17GB+ VRAM consumption)
 
 ## Remaining
 

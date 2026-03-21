@@ -127,6 +127,7 @@ See the full [threat model](docs/threat-model.md) and [security controls referen
 | **Config quarantine** | AI-generated configs staged for review before promotion | OWASP Agentic #8 |
 | **Rate limiting** | Sliding window per-agent per-tool | OWASP Agentic #4 |
 | **Sandbox framework** | Docker container config generation, network policies, resource limits by tier | OWASP Agentic #6 |
+| **Escalation rules** | Conditional hold-for-review when parameters match thresholds or patterns | OWASP Agentic #3 |
 
 ---
 
