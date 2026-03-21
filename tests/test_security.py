@@ -241,3 +241,94 @@ def test_broker_set_remove_secret(broker):
     assert broker.get_credential("intel-bridge", "new-key") == "new-value"
     broker.remove_secret("new-key")
     assert "new-key" not in broker.list_secrets()
+
+
+
+# ── Access Mode Enforcement ──────────────────────────────────────────
+
+def test_trust_t1_blocks_write_tool():
+    trust = TrustEnforcer("t1-agent", 1)
+    with pytest.raises(TrustViolation, match="write"):
+        trust.check_access_mode("dangerous_tool", "write")
+
+
+def test_trust_t1_allows_read_tool():
+    trust = TrustEnforcer("t1-agent", 1)
+    trust.check_access_mode("safe_tool", "read")  # should not raise
+
+
+def test_trust_t2_allows_write_tool():
+    trust = TrustEnforcer("t2-agent", 2)
+    trust.check_access_mode("write_tool", "write")  # should not raise
+
+
+def test_trust_t3_allows_write_tool():
+    trust = TrustEnforcer("t3-agent", 3)
+    trust.check_access_mode("write_tool", "write")  # should not raise
+
+
+
+# ── Access Mode Config Validation ────────────────────────────────────
+
+def test_access_mode_t1_write_rejected():
+    """T1 agent config with a write tool should fail validation."""
+    import yaml
+    from loom.config.loader import validate_config
+    raw = yaml.safe_load("""
+agent:
+  name: bad-agent
+  version: "1.0.0"
+  description: "T1 with write tool"
+  exposes:
+    - name: delete_stuff
+      access: write
+      description: "Deletes things"
+  runtime:
+    trust_tier: 1
+  triggers:
+    - type: on_demand
+""")
+    with pytest.raises(ValueError, match="write.*T1"):
+        validate_config(raw, source="<test>")
+
+
+def test_access_mode_t2_write_accepted():
+    """T2 agent config with a write tool should validate fine."""
+    import yaml
+    from loom.config.loader import validate_config
+    raw = yaml.safe_load("""
+agent:
+  name: ok-agent
+  version: "1.0.0"
+  description: "T2 with write tool"
+  exposes:
+    - name: create_stuff
+      access: write
+      description: "Creates things"
+  runtime:
+    trust_tier: 2
+  triggers:
+    - type: on_demand
+""")
+    config = validate_config(raw, source="<test>")
+    assert config.agent.exposes[0].access == "write"
+
+
+def test_access_mode_defaults_to_read():
+    """Tools without explicit access should default to read."""
+    import yaml
+    from loom.config.loader import validate_config
+    raw = yaml.safe_load("""
+agent:
+  name: default-agent
+  version: "1.0.0"
+  exposes:
+    - name: get_stuff
+      description: "Gets things"
+  runtime:
+    trust_tier: 1
+  triggers:
+    - type: on_demand
+""")
+    config = validate_config(raw, source="<test>")
+    assert config.agent.exposes[0].access == "read"

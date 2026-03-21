@@ -17,6 +17,7 @@ agent:
 
   exposes:
     - name: query_prometheus
+      access: read
       description: "Run a PromQL instant query and return current metric values."
       parameters:
         query:
@@ -28,6 +29,7 @@ agent:
         description: "JSON query result with metric values"
 
     - name: query_range
+      access: read
       description: "Run a PromQL range query over a time window."
       parameters:
         query:
@@ -52,18 +54,21 @@ agent:
         description: "JSON time-series data"
 
     - name: get_targets
+      access: read
       description: "List all Prometheus scrape targets with their health status."
       returns:
         type: string
         description: "JSON array of active scrape targets with job, URL, health"
 
     - name: get_alerts
+      access: read
       description: "List all currently firing Prometheus alerts."
       returns:
         type: string
         description: "JSON array of active alerts"
 
     - name: get_metric_names
+      access: read
       description: "List all available metric names in Prometheus."
       returns:
         type: string

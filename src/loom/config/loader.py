@@ -53,6 +53,15 @@ def validate_config(data: dict, source: str = "<unknown>") -> AgentConfig:
                 f"which is not in exposes. Available: {exposed_names}"
             )
 
+    # Access mode vs trust tier validation
+    for tool in config.agent.exposes:
+        if tool.access == "write" and config.agent.runtime.trust_tier == 1:
+            raise ValueError(
+                f"Tool '{tool.name}' is declared as 'write' but agent "
+                f"'{config.agent.name}' is T1 (observer/read-only). "
+                f"Either change the tool to access: read or upgrade the trust tier."
+            )
+
     return config
 
 

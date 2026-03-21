@@ -219,6 +219,7 @@ async def {fn_name}({sig}) -> str:
         _ep, _an, _tn = endpoint, agent_name, tool.name
         _trust, _audit, _broker = trust, audit, broker
         _validator, _rate_limiter = validator, rate_limiter
+        _access = getattr(tool, 'access', 'read')
         _tool_schema = {pn: {"type": pd.type, "required": pd.required, "default": pd.default}
                         for pn, pd in tool.parameters.items()}
 
@@ -227,6 +228,8 @@ async def {fn_name}({sig}) -> str:
             try:
                 if _rate_limiter:
                     _rate_limiter.check(_an, _tn)
+                if _trust and _access:
+                    _trust.check_access_mode(_tn, _access)
                 if _validator and _tool_schema:
                     params = _validator.validate_params(_tn, params, _tool_schema)
                 result = await _execute_http_bridge(_ep, _an, _tn, params, _trust, _audit, _broker)

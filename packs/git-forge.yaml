@@ -1,0 +1,70 @@
+# LOOM Starter Pack: Gitea / GitHub
+# Repository and issue visibility for Gitea or GitHub API-compatible forges.
+#
+# Usage:
+#   1. Copy to agents/
+#   2. Update base URL:
+#      - Gitea: http://localhost:3000/api/v1
+#      - GitHub: https://api.github.com
+#   3. For private repos, store a token:
+#      loom secrets set git-token "token <your-token>"
+#      loom secrets grant git-forge git-token
+#   4. loom run agents/git-forge.yaml --port 8202
+#
+# Read-only (T1). Works with Gitea, Forgejo, GitHub, and Gitea-compatible APIs.
+
+agent:
+  name: git-forge
+  version: "1.0.0"
+  description: >
+    Read-only Git forge bridge. Lists repositories and issues.
+    Compatible with Gitea, Forgejo, and GitHub APIs.
+
+  exposes:
+    - name: repos
+      access: read
+      description: "List repositories for a user or organization."
+      parameters:
+        owner: { type: string, required: true, description: "Username or org name" }
+        limit: { type: integer, required: false, default: 20 }
+
+    - name: issues
+      access: read
+      description: "List issues for a repository."
+      parameters:
+        owner: { type: string, required: true }
+        repo: { type: string, required: true }
+        state: { type: string, required: false, default: "open", description: "open, closed, or all" }
+
+    - name: repo_detail
+      access: read
+      description: "Get details for a specific repository."
+      parameters:
+        owner: { type: string, required: true }
+        repo: { type: string, required: true }
+
+  http_bridge:
+    - tool_name: repos
+      method: GET
+      url: "http://localhost:3000/api/v1/users/{{owner}}/repos?limit={{limit}}"
+      headers:
+        Authorization: "{{secret:git-token}}"
+
+    - tool_name: issues
+      method: GET
+      url: "http://localhost:3000/api/v1/repos/{{owner}}/{{repo}}/issues?state={{state}}"
+      headers:
+        Authorization: "{{secret:git-token}}"
+
+    - tool_name: repo_detail
+      method: GET
+      url: "http://localhost:3000/api/v1/repos/{{owner}}/{{repo}}"
+      headers:
+        Authorization: "{{secret:git-token}}"
+
+  runtime:
+    trust_tier: 1
+    max_execution_time: 30s
+
+  triggers:
+    - type: on_demand

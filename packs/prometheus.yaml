@@ -1,0 +1,75 @@
+# LOOM Starter Pack: Prometheus
+# Drop-in monitoring tools for any Prometheus instance.
+#
+# Usage:
+#   1. Copy this file to agents/
+#   2. Update the base URL if Prometheus isn't on localhost:9090
+#   3. loom validate agents/prometheus.yaml
+#   4. loom run agents/prometheus.yaml --port 8200
+#
+# All tools are read-only (T1). Safe to deploy without review.
+
+agent:
+  name: prometheus
+  version: "1.0.0"
+  description: >
+    Read-only Prometheus bridge. Exposes PromQL queries, target health,
+    active alerts, and metric discovery as MCP tools.
+
+  exposes:
+    - name: query
+      access: read
+      description: "Run a PromQL instant query. Returns current metric values."
+      parameters:
+        query: { type: string, required: true, description: "PromQL expression (e.g. 'up', 'node_cpu_seconds_total')" }
+
+    - name: query_range
+      access: read
+      description: "Run a PromQL range query over a time window."
+      parameters:
+        query: { type: string, required: true }
+        start: { type: string, required: false, default: "1h", description: "Start time (e.g. '2024-01-01T00:00:00Z' or relative like '1h')" }
+        end: { type: string, required: false, default: "now", description: "End time" }
+        step: { type: string, required: false, default: "60s", description: "Query resolution step" }
+
+    - name: targets
+      access: read
+      description: "List all Prometheus scrape targets with their health status."
+
+    - name: alerts
+      access: read
+      description: "List currently firing Prometheus alerts."
+
+    - name: metrics
+      access: read
+      description: "List all available metric names. Useful for discovery."
+
+  http_bridge:
+    - tool_name: query
+      method: GET
+      url: "http://localhost:9090/api/v1/query"
+      query_params: { query: query }
+
+    - tool_name: query_range
+      method: GET
+      url: "http://localhost:9090/api/v1/query_range"
+      query_params: { query: query, start: start, end: end, step: step }
+
+    - tool_name: targets
+      method: GET
+      url: "http://localhost:9090/api/v1/targets"
+
+    - tool_name: alerts
+      method: GET
+      url: "http://localhost:9090/api/v1/alerts"
+
+    - tool_name: metrics
+      method: GET
+      url: "http://localhost:9090/api/v1/label/__name__/values"
+
+  runtime:
+    trust_tier: 1
+    max_execution_time: 30s
+
+  triggers:
+    - type: on_demand

@@ -116,6 +116,27 @@ class TrustEnforcer:
             )
             raise TrustViolation(self.agent_name, self.trust_tier, "delete", detail)
 
+    def check_access_mode(self, tool_name: str, access: str) -> None:
+        """Check if the agent's tier allows this access mode.
+
+        T1 agents can only use 'read' tools.
+        T2+ agents can use both 'read' and 'write' tools.
+        """
+        if access == "write" and self.trust_tier < 2:
+            detail = (
+                f"T{self.trust_tier} agents cannot call write tools. "
+                f"Tool '{tool_name}' requires write access."
+            )
+            self._audit.log_trust_violation(
+                self.agent_name, self.trust_tier,
+                action="write_tool",
+                detail=detail,
+            )
+            raise TrustViolation(
+                self.agent_name, self.trust_tier,
+                f"write_tool:{tool_name}", detail,
+            )
+
     def requires_human_approval(self) -> bool:
         """Whether this agent requires human-in-the-loop approval."""
         return self.trust_tier >= 4

@@ -158,6 +158,25 @@ See the full [threat model](docs/threat-model.md) and [security controls referen
 
 ---
 
+---
+
+## Starter Packs
+
+Ready-made configs for common services. Copy to `agents/`, update the URL, run. See [packs/](packs/) for full docs.
+
+| Pack | Tools | Trust | Description |
+|------|-------|-------|-------------|
+| [prometheus](packs/prometheus.yaml) | 5 | T1 read-only | PromQL queries, targets, alerts, metric discovery |
+| [grafana](packs/grafana.yaml) | 5 | T1 read-only | Dashboards, datasources, alert rules |
+| [git-forge](packs/git-forge.yaml) | 3 | T1 read-only | Repos, issues (Gitea/GitHub/Forgejo) |
+| [ollama](packs/ollama.yaml) | 4 | T2 worker | Model listing, text generation, VRAM status |
+
+```bash
+cp packs/prometheus.yaml agents/
+loom validate agents/prometheus.yaml
+loom run agents/prometheus.yaml --port 8200
+```
+
 ## Built on LOOM
 
 These capabilities are built on top of the core runtime.
