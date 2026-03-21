@@ -54,12 +54,12 @@ agent:
   daily-ops        (T3): daily_briefing, system_health_check, threat_landscape
   gitea-api-bridge (T1): list_user_repos, list_repo_issues
   grafana-bridge   (T1): list_dashboards, get_dashboard, list_datasources, get_alert_rules, grafana_health
-  nexus-bridge     (T1): nexus_health, ai_status, routing_stats, routing_costs, list_apps, detect_drift, ...
+  ai-platform      (T1): health, ai_status, routing_stats, routing_costs, list_apps, detect_drift, ...
   ollama-bridge    (T2): list_models, list_running, generate, show_model
   prometheus-bridge(T1): query_prometheus, query_range, get_targets, get_alerts, get_metric_names
   rsshub-bridge    (T1): get_hacker_news, get_github_trending, search_arxiv, get_reuters_news
   vram-orchestrator(T3): vram_status, smart_load, smart_generate, optimize_vram, unload_model, model_library
-  weft-intel-bridge(T2): ask_intel, get_dossier, get_trending, get_patterns, get_communities, get_stats, ...
+  intel-rag-bridge  (T2): ask_intel, get_dossier, get_trending, get_patterns, get_communities, get_stats, ...
 ```
 
 **Security is always on.** Every tool call passes through trust enforcement, credential brokering, and audit logging. Here's a real event from the audit trail — a T1 (read-only) agent attempted a POST and was blocked:

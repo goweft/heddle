@@ -43,8 +43,8 @@ Claude Desktop / MCP Client
     ┌─────────▼──────────┐
     │ Backend Services   │
     │ Prometheus, Ollama  │
-    │ Grafana, weft-intel │
-    │ Gitea, NEXUS, etc.  │
+    │ Grafana, intel-rag │
+    │ Gitea, APIs, etc.  │
     └────────────────────┘
 ```
 
@@ -64,14 +64,14 @@ Claude Desktop / MCP Client
 
 **Risk:** An attacker crafts a tool parameter (e.g., a search query or entity name) that, when forwarded to a backend LLM, causes it to ignore its system prompt and execute arbitrary instructions.
 
-**Attack vector:** The `ask_intel` tool accepts a free-text `question` parameter and forwards it to weft-intel's RAG pipeline, which uses an LLM. A malicious question could inject instructions into that LLM's context.
+**Attack vector:** The `ask_intel` tool accepts a free-text `question` parameter and forwards it to the backend RAG pipeline, which uses an LLM. A malicious question could inject instructions into that LLM's context.
 
 **LOOM controls:**
 - **Template rendering is string-only.** The HTTP bridge uses `{{param}}` substitution, not code execution. Parameters are interpolated as literal strings into URLs, headers, and JSON bodies.
 - **No prompt construction in bridge agents.** Bridge agents don't build prompts — they forward parameters to backend APIs. The prompt security boundary is at the backend, not LOOM.
 - **Orchestrating agents separate system/user context.** The `daily-ops` agent constructs LLM prompts with data in a structured format, not by concatenating user input into the system prompt.
 
-**Residual risk:** Backend services (weft-intel) that use LLMs are responsible for their own prompt injection defenses. LOOM cannot sanitize what it doesn't interpret.
+**Residual risk:** Backend services that use LLMs are responsible for their own prompt injection defenses. LOOM cannot sanitize what it doesn't interpret.
 
 **Framework mapping:**
 | Control | OWASP Agentic | OWASP LLM | NIST AI RMF | MAESTRO |
@@ -94,11 +94,11 @@ Claude Desktop / MCP Client
   - **T3 (Operator):** Adds DELETE and cross-agent invocation.
   - **T4 (Privileged):** Same as T3, but `requires_human_approval()` returns True (enforcement is a flag for future HITL gating).
 - **Violations are blocked and logged.** Trust violations are never warnings — the operation fails, and the violation is recorded in the audit log with agent name, tier, action, and target URL.
-- **Real-world validation.** During development, the trust enforcer caught that `weft-intel-bridge` was declared T1 but used POST for `ask_intel`. The system correctly blocked the call, forcing a config fix (upgrade to T2).
+- **Real-world validation.** During development, the trust enforcer caught that an agent was declared T1 but used POST for `ask_intel`. The system correctly blocked the call, forcing a config fix (upgrade to T2).
 
 **Evidence from production:**
 ```
-[trust_violation] weft-intel-bridge T1: http_POST — T1 agent cannot use POST.
+[trust_violation] agent T1: http_POST — T1 agent cannot use POST.
     Allowed: ['GET', 'HEAD', 'OPTIONS'] target=http://localhost:9090/api/query
 ```
 
@@ -127,7 +127,7 @@ Claude Desktop / MCP Client
 ```
 Credential Policy:
   grafana-bridge     → grafana-basic-auth
-  weft-intel-bridge  → weft-intel-token
+  intel-rag-bridge   → api-token
   gitea-api-bridge   → (none)
   ollama-bridge      → (none)
   prometheus-bridge   → (none)
@@ -181,7 +181,7 @@ Credential Policy:
 - **All cross-agent calls are audited.** The MCP client logs every remote tool call with the calling agent's name, the target tool, parameters, and timing.
 - **Declared consumption in config.** The `consumes` field in agent YAML explicitly lists which remote tools an agent intends to use. This is currently informational (not enforced), but provides a manifest for audit and review.
 
-**Residual risk:** A T3 agent has broad access by design. The `daily-ops` agent can read from Prometheus, weft-intel, and Ollama. If the daily-ops agent were compromised, it could access all three. Mitigation: the daily-ops orchestrator code is hand-written (not AI-generated) and reviewed.
+**Residual risk:** A T3 agent has broad access by design. The `daily-ops` agent can read from Prometheus, an intelligence API, and Ollama. If the daily-ops agent were compromised, it could access all three. Mitigation: the daily-ops orchestrator code is hand-written (not AI-generated) and reviewed.
 
 **Framework mapping:**
 | Control | OWASP Agentic | NIST AI RMF | MAESTRO |
@@ -255,7 +255,7 @@ Credential Policy:
 
 **Now implemented:**
 - Rate limiting per agent per tool (Phase 3e, `security/validation.py`).
-- Cost tracking for cloud LLM calls via NEXUS routing stats.
+- Cost tracking for cloud LLM calls via LLM routing stats.
 
 **Framework mapping:**
 | Control | OWASP Agentic | NIST AI RMF | MAESTRO |
