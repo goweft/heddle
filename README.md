@@ -1,9 +1,27 @@
-# LOOM — The WEFT Agent & MCP Mesh Runtime
+<p align="center">
+  <h1 align="center">LOOM</h1>
+  <p align="center"><strong>Config-driven AI agents that become MCP servers automatically.</strong></p>
+  <p align="center">
+    <a href="#quick-start">Quick Start</a> ·
+    <a href="#how-it-works">How It Works</a> ·
+    <a href="#security">Security</a> ·
+    <a href="docs/threat-model.md">Threat Model</a>
+  </p>
+</p>
 
-LOOM turns YAML config files into MCP servers. Define an agent in YAML, point it at a REST API, and LOOM auto-generates a Model Context Protocol server that Claude Desktop (or any MCP client) can use. No Python handlers, no boilerplate — just config.
+---
+
+LOOM is a runtime that turns YAML into MCP servers. Define an agent config, point it at a REST API, and LOOM generates a [Model Context Protocol](https://modelcontextprotocol.io/) server that Claude Desktop or any MCP client can use. No code required.
+
+<p align="center">
+  <img src="docs/assets/demo.svg" alt="LOOM CLI demo" width="750">
+</p>
+
+## Why LOOM?
+
+Every API you want to expose to an LLM requires custom integration code. LOOM eliminates that. Write a YAML config with the endpoint URL and parameter schema, and LOOM handles MCP server generation, HTTP bridging, credential management, and security enforcement.
 
 ```yaml
-# agents/prometheus-bridge.yaml
 agent:
   name: prometheus-bridge
   exposes:
@@ -17,154 +35,182 @@ agent:
       url: "http://localhost:9092/api/v1/query"
       query_params: { query: query }
   runtime:
-    trust_tier: 1
+    trust_tier: 1   # read-only, enforced at runtime
 ```
 
-That's a working MCP server. `loom run agents/prometheus-bridge.yaml` and Claude can query your Prometheus metrics in natural language.
+```bash
+$ loom run agents/prometheus-bridge.yaml --port 8200
+▶ MCP server loom-prometheus-bridge on http://0.0.0.0:8200/mcp
+```
 
-## What LOOM Does
+Claude can now query Prometheus in natural language.
 
-**Config-driven agents.** Agents are YAML, not code. The runtime interprets the config, generates typed MCP tools, and handles HTTP bridging with template rendering (`{{param}}`).
+## How It Works
 
-**AI agent generator.** Describe an agent in English → local LLM (Ollama) generates valid YAML → schema validation → save. `loom generate "agent that wraps the Gitea API"` produces a working config in 20 seconds.
+```
+Claude Desktop / MCP Client
+    │ stdio or streamable-http
+    ▼
+┌────────────────────────────────────┐
+│          LOOM Runtime              │
+│                                    │
+│  YAML Config                       │
+│    → Pydantic validation           │
+│    → FastMCP server generation     │
+│    → Typed tool registration       │
+│                                    │
+│  Security Layer                    │
+│    → Trust enforcement (T1–T4)     │
+│    → Credential broker             │
+│    → Input validation              │
+│    → Hash-chained audit log        │
+│    → Config signing                │
+│                                    │
+│  HTTP Bridge                       │
+│    → Template rendering {{param}}  │
+│    → Response parsing              │
+│    → Error handling                │
+└──────────────┬─────────────────────┘
+               │ HTTP
+    ┌──────────▼──────────────┐
+    │    Backend Services     │
+    │  Prometheus · Grafana   │
+    │  Ollama · Gitea · APIs  │
+    └─────────────────────────┘
+```
 
-**Security architecture.** Trust tiers (T1–T4) enforce what each agent can do. Credential broker keeps secrets out of YAML. Hash-chained audit log records every tool call. Input validation catches injection attempts. Config signing detects tampering. All mapped to OWASP Agentic Top 10, NIST AI RMF, and MAESTRO.
+## Features
 
-**Agent mesh.** Multiple agents share a single MCP connection to Claude Desktop. Cross-agent tool calls. Multi-agent runner with auto-port assignment.
+### Config-Driven Agents
+Agents are YAML, not code. The runtime interprets the config, generates typed MCP tools with proper parameter schemas, and handles HTTP bridging with `{{param}}` template rendering. Cross-field validation catches bad configs before they run.
 
-**Advanced orchestration.** Agents can have their own LLM brain. The `daily-ops` agent queries Prometheus, weft-intel, and Ollama in parallel, then uses a local model to synthesize a daily briefing.
+### AI Agent Generator
+Describe an agent in English → a local LLM (Ollama) generates valid YAML → schema validation with self-correcting retry → save. Produces working configs in ~20 seconds.
 
-## Current Deployment
+```bash
+$ loom generate "agent that wraps the Gitea API" --model qwen3:14b
+✓ Generated gitea-api-bridge.yaml (2 tools) in 20.3s
+```
 
-Running on a self-hosted Linux server (93GB RAM, AMD RX 7900 XTX GPU):
+### Agent Mesh
+Multiple agents share a single MCP connection. The unified mesh launcher loads all configs, merges tools, and serves them through one stdio connection to Claude Desktop. Currently serving **46 tools from 9 agents**.
 
-| Agent | Tools | What It Does |
-|-------|-------|-------------|
-| weft-intel-bridge | 8 | RAG queries, trending entities, patterns, daily briefs |
-| prometheus-bridge | 5 | PromQL queries, target health, alerts, 638 metrics |
-| nexus-bridge | 8 | AI platform health, routing stats/costs, app management |
-| grafana-bridge | 5 | Dashboards, datasources, alert rules |
-| ollama-bridge | 4 | List/run models, generate text, VRAM monitoring |
-| gitea-api-bridge | 2 | List repos, list issues |
-| rsshub-bridge | 4 | HN, GitHub trending, arXiv, Reuters |
-| daily-ops | 3 | LLM-synthesized briefing, health check, threat landscape |
+### Advanced Orchestration
+Agents can have their own LLM brain. The `daily-ops` agent queries Prometheus, an intelligence API, and Ollama in parallel, feeds all data to a local model, and synthesizes a daily operations briefing. The `vram-orchestrator` manages GPU memory across 37 models with intelligent eviction.
 
-**39 tools** served through a single Claude Desktop MCP connection.
+### Web Dashboard
+FastAPI backend with a React frontend showing mesh topology, agent status, live audit stream, and security overview.
 
-## Security Model
+## Security
 
-See [docs/threat-model.md](docs/threat-model.md) for the full analysis.
+LOOM's security architecture maps to three industry frameworks. See the full [threat model](docs/threat-model.md) and [security controls reference](docs/security-controls.md).
 
-| Control | Status | Framework |
-|---------|--------|-----------|
-| Trust tier enforcement (T1–T4) | Implemented | OWASP Agentic #3 |
-| Credential broker + per-agent policy | Implemented | OWASP Agentic #7 |
-| Hash-chained audit log | Implemented | OWASP Agentic #9 |
-| Input validation + injection detection | Implemented | OWASP Agentic #1 |
-| Config signing (HMAC-SHA256) | Implemented | OWASP Agentic #8 |
-| AI-generated agent quarantine | Implemented | OWASP Agentic #8 |
-| Rate limiting (per-agent, per-tool) | Implemented | OWASP Agentic #4 |
-| Docker sandbox framework | Implemented | OWASP Agentic #6 |
+| Control | Description | Framework |
+|---------|-------------|-----------|
+| **Trust tiers** | 4 levels (observer → privileged), runtime-enforced | OWASP Agentic #3 |
+| **Credential broker** | Per-agent secret access policy, `{{secret:key}}` templates | OWASP Agentic #7 |
+| **Audit log** | Hash-chained JSON Lines, tamper-evident, 5 event types | OWASP Agentic #9 |
+| **Input validation** | Type checking, length limits, injection detection | OWASP Agentic #1 |
+| **Config signing** | HMAC-SHA256, tamper detection on all agent configs | OWASP Agentic #8 |
+| **Agent quarantine** | AI-generated configs staged for review before promotion | OWASP Agentic #8 |
+| **Rate limiting** | Sliding window per-agent per-tool | OWASP Agentic #4 |
+| **Sandbox framework** | Docker container config generation, network policies | OWASP Agentic #6 |
+
+The trust enforcer caught a real bug during development: an agent declared as T1 (read-only) attempted a POST request and was blocked. The violation was logged to the audit trail, forcing a config correction.
 
 ## Quick Start
 
 ```bash
 # Clone and install
-git clone <repo-url> && cd loom
+git clone https://github.com/goweft/loom.git && cd loom
 python -m venv venv && source venv/bin/activate
-pip install -e .
+pip install -e ".[dev]"
 
 # Validate an agent config
 loom validate agents/prometheus-bridge.yaml
 
-# Run a single agent
+# Run a single agent (serves MCP over streamable-http)
 loom run agents/prometheus-bridge.yaml --port 8200
 
-# Generate a new agent from natural language
+# Generate a new agent from natural language (requires Ollama)
 loom generate "agent that wraps the weather API at localhost:5000"
 
-# Start all agents as a mesh
+# Start all agents as a unified mesh
 loom mesh agents/
 
 # Security operations
-loom audit show -n 20
-loom audit verify
-loom sign all agents/
-loom sign verify agents/
-loom secrets list
-loom secrets policy
-loom sandbox agents/weft-intel-bridge.yaml
-loom quarantine list
+loom audit show -n 20          # view recent audit entries
+loom audit verify               # verify hash chain integrity
+loom sign all agents/           # sign all configs
+loom sign verify agents/        # verify all signatures
+loom secrets policy             # show credential access policy
+loom sandbox agents/my-agent.yaml  # show sandbox config
 ```
 
-## CLI Commands
+### Claude Desktop Integration
+
+Add LOOM as an MCP server in your Claude Desktop config:
+
+```json
+{
+  "mcpServers": {
+    "loom-mesh": {
+      "command": "/path/to/loom/venv/bin/python",
+      "args": ["/path/to/loom/loom_stdio_mesh.py"]
+    }
+  }
+}
+```
+
+Restart Claude Desktop. All LOOM tools are now available.
+
+## CLI Reference
 
 | Command | Description |
 |---------|-------------|
-| `loom run` | Run a single agent from YAML config |
-| `loom validate` | Validate an agent config without running |
-| `loom generate` | Generate agent config from natural language |
-| `loom mesh` | Start all agents from a directory |
+| `loom run <config>` | Run a single agent from YAML config |
+| `loom validate <config>` | Validate config without running |
+| `loom generate <description>` | Generate config from natural language |
+| `loom mesh <dir>` | Start all agents as a unified mesh |
 | `loom list` | List registered agents |
 | `loom registry` | Show all registered tools |
-| `loom info` | Detailed agent info |
-| `loom probe` | Discover tools on a running MCP server |
-| `loom discovery` | Dump discovery manifest as JSON |
+| `loom info <agent>` | Detailed agent info |
+| `loom probe <uri>` | Discover tools on a running MCP server |
 | `loom audit show` | View audit log entries |
 | `loom audit verify` | Verify audit chain integrity |
-| `loom secrets list/set/grant/revoke/policy` | Credential management |
-| `loom sign all/verify/config` | Config signing operations |
-| `loom quarantine list/promote/reject` | AI-generated agent staging |
-| `loom sandbox` | Show Docker sandbox config for an agent |
-
-## Architecture
-
-```
-Claude Desktop
-    │ MCP (stdio)
-    ▼
-LOOM Runtime
-├── YAML Config → FastMCP Server (auto-generated)
-├── HTTP Bridge ({{template}} rendering)
-├── Security Layer
-│   ├── Trust Enforcer (T1–T4)
-│   ├── Credential Broker ({{secret:key}})
-│   ├── Input Validator (type/injection/rate)
-│   ├── Audit Logger (hash-chained JSON Lines)
-│   └── Config Signer (HMAC-SHA256)
-├── Agent Mesh (cross-agent tool calls)
-└── AI Generator (Ollama → YAML → validate)
-    │ HTTP
-    ▼
-Backend Services (Prometheus, Grafana, Ollama, etc.)
-```
-
-## Tech Stack
-
-- **Python 3.12** — FastAPI, FastMCP 3.x, Pydantic v2, httpx, Click
-- **MCP Protocol** — stdio transport for Claude Desktop
-- **Ollama** — local LLM inference for agent generation and orchestration
-- **SQLite** — agent/tool registry
-- **YAML** — agent configuration with JSON Schema validation
+| `loom secrets` | Credential broker management |
+| `loom sign` | Config signing and verification |
+| `loom quarantine` | AI-generated agent staging |
+| `loom sandbox <config>` | Show Docker sandbox configuration |
 
 ## Project Structure
 
 ```
 loom/
-├── agents/          # YAML agent configs (10 configs, 44 tools)
-├── docs/            # Threat model, security controls reference
+├── agents/              # YAML agent configs (11 configs)
+├── docs/
+│   ├── threat-model.md  # 8 threat categories, framework-mapped
+│   └── security-controls.md
 ├── src/loom/
-│   ├── cli.py       # 14-command Click CLI
-│   ├── config/      # Pydantic schema, YAML loader
-│   ├── mcp/         # MCP server builder, client, registry
-│   ├── runtime/     # Agent runner, multi-agent mesh
-│   ├── generator/   # AI agent generator, API discovery
-│   ├── security/    # Trust, credentials, audit, validation, signing, sandbox
-│   ├── agents/      # Custom handler agents (daily-ops)
-│   └── evolve/      # Passive research, coverage gap analysis
-├── tests/           # 102 tests across 7 test files
-└── loom_stdio_mesh.py  # Unified Claude Desktop launcher (39 tools)
+│   ├── cli.py           # 14-command Click CLI
+│   ├── config/          # Pydantic v2 schema, YAML loader
+│   ├── mcp/             # MCP server builder, client, registry
+│   ├── runtime/         # Agent runner, multi-agent mesh
+│   ├── generator/       # AI agent generator, API discovery
+│   ├── security/        # Trust, credentials, audit, validation,
+│   │                    # signing, sandbox (6 modules)
+│   ├── agents/          # Custom handler agents (daily-ops,
+│   │                    # vram-orchestrator)
+│   ├── evolve/          # Passive research, coverage gaps
+│   └── web/             # FastAPI dashboard + React frontend
+├── tests/               # 102 tests across 7 files
+├── loom_stdio_mesh.py   # Unified Claude Desktop launcher
+└── loom_dashboard.py    # Web dashboard launcher
 ```
+
+## Tech Stack
+
+Python 3.12 · FastMCP 3.x · FastAPI · Pydantic v2 · httpx · Click · SQLite · Ollama
 
 ## License
 
