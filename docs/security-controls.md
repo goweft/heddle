@@ -2,24 +2,33 @@
 
 Quick reference for all security controls. For full threat analysis, see [threat-model.md](threat-model.md).
 
-## Implemented Controls (13 of 14)
+## Implemented Controls (14 of 15)
 
 ### Trust Tier Enforcement (`security/trust.py`)
 
-| Tier | Name | HTTP Methods | Write | Cross-Agent | HITL |
-|------|------|-------------|-------|-------------|------|
-| T1 | Observer | GET, HEAD, OPTIONS | No | No | No |
-| T2 | Worker | + POST, PUT, PATCH | Scoped | No | No |
-| T3 | Operator | + DELETE | Full | Yes | No |
-| T4 | Privileged | + DELETE | Full | Yes | Yes |
+| Tier | Name | HTTP Methods | Write Tools | Cross-Agent | HITL |
+|------|------|-------------|-------------|-------------|------|
+| T1 | Observer | GET, HEAD, OPTIONS | Blocked | No | No |
+| T2 | Worker | + POST, PUT, PATCH | Allowed | No | No |
+| T3 | Operator | + DELETE | Allowed | Yes | No |
+| T4 | Privileged | + DELETE | Allowed | Yes | Yes |
 
 Violations are **blocked** (not warned) and logged to the audit trail.
+
+### Access Mode Annotations (`config/schema.py`, `security/trust.py`)
+
+- Every tool declares `access: read` or `access: write` (default: read)
+- T1 configs with write tools are **rejected at load time** (config validation)
+- T1 agents calling write tools are **blocked at runtime** (trust enforcement)
+- Write tools: state-modifying operations (model loading, data mutation)
+- Read tools: queries, listings, status checks — safe to call anytime
+- CLI: `loom validate` checks access/tier compatibility before deployment
 
 ### Credential Broker (`security/credentials.py`)
 
 - Secrets stored in `~/.loom/secrets.json` (chmod 600)
-- Per-agent access policy in `~/.loom/credential_policy.json`
-- Agent configs use `{{secret:key}}` — resolved at runtime, never stored in YAML
+- Per-config access policy in `~/.loom/credential_policy.json`
+- Configs use `{{secret:key}}` — resolved at runtime, never stored in YAML
 - Unauthorized access: denied, logged, returns `***CREDENTIAL_DENIED***`
 - CLI: `loom secrets list`, `set`, `grant`, `revoke`, `policy`
 
@@ -41,7 +50,7 @@ Violations are **blocked** (not warned) and logged to the audit trail.
 
 ### Rate Limiting (`security/validation.py`)
 
-- Sliding window counter per agent per tool
+- Sliding window counter per config per tool
 - Default: 120 requests per minute
 - Configurable per-tool RPM
 - Exceeding limit: blocked, logged as trust violation
@@ -53,7 +62,7 @@ Violations are **blocked** (not warned) and logged to the audit trail.
 - Tamper detection: modified configs fail verification
 - CLI: `loom sign all`, `loom sign verify`, `loom sign config`
 
-### Agent Quarantine (`security/signing.py`)
+### Config Quarantine (`security/signing.py`)
 
 - Staging directory at `~/.loom/quarantine/`
 - AI-generated configs quarantined before going live
@@ -64,15 +73,15 @@ Violations are **blocked** (not warned) and logged to the audit trail.
 
 - Docker container config generation from agent YAML
 - Resource limits scaled by trust tier (T1=256MB, T3=1GB)
-- Network policy: agents can only reach declared http_bridge hosts
+- Network policy: configs can only reach declared http_bridge hosts
 - Read-only root filesystem, scoped writable volumes
 - CLI: `loom sandbox <config>`
 
 ### Schema Validation (`config/schema.py`, `config/loader.py`)
 
 - Pydantic v2 models with strict typing
-- Cross-field validation (http_bridge references must match exposes)
-- Agent names: kebab-case. Tool names: snake_case
+- Cross-field validation: http_bridge refs match exposes, access modes match trust tiers
+- Config names: kebab-case. Tool names: snake_case
 - `loom validate <config>` for pre-deployment checks
 
 ## Remaining
