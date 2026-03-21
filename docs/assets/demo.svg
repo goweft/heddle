@@ -114,7 +114,7 @@
   <g class="l12">
     <text x="20" y="340" class="prompt">❯</text>
     <text x="40" y="340" class="grn">loom sandbox</text>
-    <text x="152" y="340" class="cmd"> agents/weft-intel-bridge.yaml</text>
+    <text x="152" y="340" class="cmd"> agents/intel-rag-bridge.yaml</text>
   </g>
   <g class="l13">
     <text x="20" y="360" class="wht">  Memory:</text>
@@ -141,10 +141,10 @@
     <text x="346" y="412" class="bld">9 agents</text>
   </g>
   <g class="l15">
-    <text x="40" y="432" class="dim">  weft-intel-bridge: 8 tools  prometheus-bridge: 5 tools</text>
+    <text x="40" y="432" class="dim">  intel-rag-bridge: 8 tools  prometheus-bridge: 5 tools</text>
   </g>
   <g class="l15">
-    <text x="40" y="452" class="dim">  nexus-bridge: 8 tools  grafana-bridge: 5 tools</text>
+    <text x="40" y="452" class="dim">  ai-platform: 8 tools  grafana-bridge: 5 tools</text>
   </g>
   <g class="l15">
     <text x="40" y="472" class="dim">  ollama-bridge: 4 tools  vram-orchestrator: 7 tools</text>
