@@ -5,7 +5,7 @@ Wants=weft-intel.service
 
 [Service]
 Type=simple
-User=gostev
+User=loom
 WorkingDirectory=/mnt/workspace/projects/loom
 ExecStart=/mnt/workspace/projects/loom/venv/bin/loom run agents/weft-intel-bridge.yaml --port 8200
 Restart=on-failure

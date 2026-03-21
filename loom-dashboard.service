@@ -5,7 +5,7 @@ Wants=loom-intel-bridge.service
 
 [Service]
 Type=simple
-User=gostev
+User=loom
 WorkingDirectory=/mnt/workspace/projects/loom
 ExecStart=/mnt/workspace/projects/loom/venv/bin/python loom_dashboard.py 8300
 Restart=on-failure
