@@ -283,7 +283,8 @@ Credential Policy:
 | 12 | Config quarantine | **Implemented** | `security/signing.py` | Staging directory, promote/reject workflow |
 | 13 | Rate limiting | **Implemented** | `security/validation.py` | Per-config per-tool sliding window |
 | 14 | Access mode annotations | **Implemented** | `config/schema.py`, `security/trust.py` | read/write on tools, T1 write blocked at load + runtime |
-| 15 | Network isolation | **Planned** | Phase 3a | — |
+| 15 | Escalation rules | **Implemented** | `security/escalation.py` | Conditional hold-for-review on tool calls |
+| 16 | Network isolation | **Planned** | Phase 3a | — |
 
 ---
 
