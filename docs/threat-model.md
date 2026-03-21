@@ -3,7 +3,7 @@
 > **Purpose:** This document identifies threats specific to agentic AI systems and maps LOOM's security controls to industry frameworks. It serves as both an operational security reference and a portfolio demonstration of applied AI security architecture.
 >
 > **Last updated:** March 2026  
-> **Author:** Steve Gostev  
+
 > **System:** LOOM v0.1.0 — 10 agents, 44 tools, 292+ audit entries
 
 ---
