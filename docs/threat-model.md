@@ -277,12 +277,13 @@ Credential Policy:
 | 6 | Dry-run validation | **Implemented** | `cli.py`, `generator/agent_gen.py` | `loom validate`, `loom generate --dry-run` |
 | 7 | Self-correcting generation | **Implemented** | `generator/agent_gen.py` | Retry with error feedback |
 | 8 | Execution timeout | **Implemented** | Agent YAML `max_execution_time` | Per-agent, enforced by HTTP client |
-| 9 | Docker sandboxing framework | **Implemented** |  | Container config generation, network policies |
-| 10 | Input validation | **Implemented** |  | Type checking, injection detection, length limits |
-| 11 | Config signing | **Implemented** |  | HMAC-SHA256, tamper detection |
-| 12 | Generated agent quarantine | **Implemented** |  | Staging directory, promote/reject workflow |
-| 13 | Rate limiting | **Implemented** |  | Per-agent per-tool sliding window |
-| 14 | Network isolation | **Planned** | Phase 3a | — |
+| 9 | Docker sandboxing framework | **Implemented** | `security/sandbox.py` | Container config generation, network policies |
+| 10 | Input validation | **Implemented** | `security/validation.py` | Type checking, injection detection, length limits |
+| 11 | Config signing | **Implemented** | `security/signing.py` | HMAC-SHA256, tamper detection |
+| 12 | Config quarantine | **Implemented** | `security/signing.py` | Staging directory, promote/reject workflow |
+| 13 | Rate limiting | **Implemented** | `security/validation.py` | Per-config per-tool sliding window |
+| 14 | Access mode annotations | **Implemented** | `config/schema.py`, `security/trust.py` | read/write on tools, T1 write blocked at load + runtime |
+| 15 | Network isolation | **Planned** | Phase 3a | — |
 
 ---
 
