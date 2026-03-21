@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="200" viewBox="0 0 720 200">
+  <style>
+    text { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+    .label { font-size: 13px; fill: #c0c0c0; font-weight: 500; }
+    .sub { font-size: 10px; fill: #6c7086; }
+    .arrow { stroke: #45475a; stroke-width: 1.5; fill: none; marker-end: url(#ah); }
+  </style>
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M1 1L9 5L1 9" fill="none" stroke="#45475a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+
+  <!-- YAML Config -->
+  <rect x="16" y="50" width="110" height="68" rx="8" fill="#1e1e2e" stroke="#6c5ce7" stroke-width="1.2"/>
+  <text x="71" y="78" text-anchor="middle" class="label" fill="#cba6f7">YAML config</text>
+  <text x="71" y="96" text-anchor="middle" class="sub">tools, trust tier,</text>
+  <text x="71" y="108" text-anchor="middle" class="sub">credentials, access</text>
+
+  <!-- Arrow 1 -->
+  <line x1="130" y1="84" x2="168" y2="84" class="arrow"/>
+
+  <!-- Validation -->
+  <rect x="172" y="50" width="110" height="68" rx="8" fill="#1e1e2e" stroke="#f9e2af" stroke-width="1.2"/>
+  <text x="227" y="78" text-anchor="middle" class="label" fill="#f9e2af">Validation</text>
+  <text x="227" y="96" text-anchor="middle" class="sub">Pydantic schema,</text>
+  <text x="227" y="108" text-anchor="middle" class="sub">cross-field checks</text>
+
+  <!-- Arrow 2 -->
+  <line x1="286" y1="84" x2="324" y2="84" class="arrow"/>
+
+  <!-- Security -->
+  <rect x="328" y="30" width="110" height="108" rx="8" fill="#1e1e2e" stroke="#a6e3a1" stroke-width="1.2"/>
+  <text x="383" y="54" text-anchor="middle" class="label" fill="#a6e3a1">Security</text>
+  <text x="383" y="72" text-anchor="middle" class="sub">trust tiers</text>
+  <text x="383" y="84" text-anchor="middle" class="sub">credential broker</text>
+  <text x="383" y="96" text-anchor="middle" class="sub">input validation</text>
+  <text x="383" y="108" text-anchor="middle" class="sub">audit logging</text>
+  <text x="383" y="120" text-anchor="middle" class="sub">access modes</text>
+  <text x="383" y="132" text-anchor="middle" class="sub">config signing</text>
+
+  <!-- Arrow 3 -->
+  <line x1="442" y1="84" x2="480" y2="84" class="arrow"/>
+
+  <!-- MCP Server -->
+  <rect x="484" y="50" width="110" height="68" rx="8" fill="#1e1e2e" stroke="#89b4fa" stroke-width="1.2"/>
+  <text x="539" y="78" text-anchor="middle" class="label" fill="#89b4fa">MCP server</text>
+  <text x="539" y="96" text-anchor="middle" class="sub">typed tools,</text>
+  <text x="539" y="108" text-anchor="middle" class="sub">stdio / HTTP</text>
+
+  <!-- Arrow 4 -->
+  <line x1="598" y1="84" x2="636" y2="84" class="arrow"/>
+
+  <!-- Backend -->
+  <rect x="640" y="50" width="66" height="68" rx="8" fill="#1e1e2e" stroke="#45475a" stroke-width="1.2"/>
+  <text x="673" y="78" text-anchor="middle" class="label">APIs</text>
+  <text x="673" y="96" text-anchor="middle" class="sub">REST,</text>
+  <text x="673" y="108" text-anchor="middle" class="sub">services</text>
+
+  <!-- Top label -->
+  <text x="360" y="18" text-anchor="middle" font-size="11" fill="#585b70" font-family="'Segoe UI', system-ui, sans-serif">config in → validated → secured → MCP tool out</text>
+
+  <!-- Bottom: Claude Desktop -->
+  <text x="539" y="155" text-anchor="middle" class="sub">Claude Desktop / any MCP client</text>
+  <line x1="539" y1="142" x2="539" y2="122" stroke="#45475a" stroke-width="1" stroke-dasharray="4 3"/>
+</svg>

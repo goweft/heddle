@@ -97,37 +97,9 @@ LOOM is for the case where you have REST APIs that you want to expose as MCP too
 
 ## How It Works
 
-```
-Claude Desktop / MCP Client
-    │ stdio or streamable-http
-    ▼
-┌─────────────────────────────────────┐
-│           LOOM Runtime              │
-│                                     │
-│  YAML Config                        │
-│    → Pydantic validation            │
-│    → FastMCP server generation      │
-│    → Typed tool registration        │
-│                                     │
-│  Security Layer (always on)         │
-│    → Trust enforcement (T1–T4)      │
-│    → Credential broker              │
-│    → Input validation               │
-│    → Hash-chained audit log         │
-│    → Config signing                 │
-│                                     │
-│  HTTP Bridge                        │
-│    → Template rendering {{param}}   │
-│    → {{secret:key}} resolution      │
-│    → Response parsing               │
-└──────────────┬──────────────────────┘
-               │ HTTP
-    ┌──────────▼──────────────┐
-    │    Backend Services     │
-    │  Prometheus · Grafana   │
-    │  Ollama · Gitea · APIs  │
-    └─────────────────────────┘
-```
+<p align="center">
+  <img src="docs/assets/architecture.svg" alt="LOOM runtime pipeline" width="720">
+</p>
 
 ## Core Features
 
@@ -177,9 +149,9 @@ loom validate agents/prometheus.yaml
 loom run agents/prometheus.yaml --port 8200
 ```
 
-## Built on LOOM
+## Advanced Examples
 
-These capabilities are built on top of the core runtime.
+These are built on top of the core runtime and demonstrate what LOOM can do beyond simple API bridging.
 
 ### Tool Mesh
 Multiple configs share a single MCP connection to Claude Desktop. The unified mesh launcher loads all configs, merges tools, and serves them through one stdio transport. Currently serving 46 tools from 9 configs.
