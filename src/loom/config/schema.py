@@ -102,6 +102,18 @@ class TriggerConfig(BaseModel):
     model_config = ConfigDict(use_enum_values=True)
 
 
+
+class EscalationRuleConfig(BaseModel):
+    """Declarative escalation rule — holds tool calls for review when conditions match."""
+    name: str = Field(..., description="Rule identifier")
+    reason: str = Field(default="", description="Why this rule exists")
+    tool: str | None = Field(default=None, description="Glob pattern for tool names (e.g. 'delete_*')")
+    param_gt: dict[str, float] = Field(default_factory=dict, description="Parameter > threshold triggers hold")
+    param_eq: dict[str, str] = Field(default_factory=dict, description="Parameter == value triggers hold")
+    param_contains: dict[str, str] = Field(default_factory=dict, description="Parameter contains substring triggers hold")
+    access: str | None = Field(default=None, description="Match tools with this access mode ('write')")
+
+
 class RuntimeConfig(BaseModel):
     sandbox: SandboxType = SandboxType.none
     trust_tier: TrustTier = TrustTier.worker
@@ -120,6 +132,7 @@ class AgentSpec(BaseModel):
     http_bridge: list[HttpEndpoint] = Field(default_factory=list)
     runtime: RuntimeConfig = Field(default_factory=RuntimeConfig)
     triggers: list[TriggerConfig] = Field(default_factory=list)
+    escalation_rules: list[EscalationRuleConfig] = Field(default_factory=list)
 
     @field_validator("name")
     @classmethod

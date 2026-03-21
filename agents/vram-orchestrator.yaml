@@ -123,3 +123,19 @@ agent:
 
   triggers:
     - type: on_demand
+
+  escalation_rules:
+    - name: large-model-load
+      reason: "Loading a model that will consume most of the 24GB VRAM"
+      tool: "smart_load"
+      param_contains:
+        model_name: "27b"
+    - name: bulk-unload-protection
+      reason: "Unloading models affects all running inference"
+      access: "write"
+      tool: "unload_model"
+    - name: generate-with-large-model
+      reason: "Generation with 27b model requires 17GB+ VRAM"
+      tool: "smart_generate"
+      param_contains:
+        model_name: "27b"

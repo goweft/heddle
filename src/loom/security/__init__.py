@@ -15,6 +15,7 @@ from loom.security.credentials import CredentialBroker, CredentialDenied, get_cr
 from loom.security.validation import InputValidator, RateLimiter, ValidationError
 from loom.security.signing import ConfigSigner, AgentQuarantine, SignatureError
 from loom.security.sandbox import SandboxManager, SandboxConfig
+from loom.security.escalation import EscalationEngine, EscalationRule, EscalationHold
 
 __all__ = [
     "AuditLogger", "get_audit_logger",
@@ -23,4 +24,5 @@ __all__ = [
     "InputValidator", "RateLimiter", "ValidationError",
     "ConfigSigner", "AgentQuarantine", "SignatureError",
     "SandboxManager", "SandboxConfig",
+    "EscalationEngine", "EscalationRule", "EscalationHold",
 ]
