@@ -1,7 +1,7 @@
 <h1 align="center">LOOM</h1>
 <p align="center"><strong>A secure, declarative MCP runtime.</strong></p>
 <p align="center">
-  LOOM turns YAML agent configs into <a href="https://modelcontextprotocol.io/">Model Context Protocol</a> servers<br>
+  LOOM turns declarative configs into <a href="https://modelcontextprotocol.io/">Model Context Protocol</a> servers<br>
   with trust enforcement, credential brokering, and tamper-evident audit logging built in.
 </p>
 <p align="center">
@@ -20,7 +20,7 @@
   <img src="docs/assets/demo.svg" alt="LOOM CLI demo" width="750">
 </p>
 
-**One config, one MCP server.** This YAML is a working agent — no Python, no boilerplate:
+**One config, one MCP server.** This YAML is a complete tool server — no Python, no boilerplate:
 
 ```yaml
 agent:
@@ -84,12 +84,12 @@ The violation was logged, the request was rejected, and the hash chain links thi
 
 | | **LOOM** | Hand-written FastMCP | OpenAPI wrapper gen | n8n / workflow tools |
 |---|---|---|---|---|
-| **New agent** | Write YAML, done | Write Python handler per tool | Generate stubs, then customize | Drag nodes, wire connections |
+| **New tool** | Write YAML, done | Write Python handler per tool | Generate stubs, then customize | Drag nodes, wire connections |
 | **Security** | Trust tiers, credential broker, audit log, input validation, config signing — all built in | You build it yourself | None | Platform-level auth only |
 | **AI-generatable** | `loom generate "wrap the Gitea API"` → valid config in 20s | LLM can write code but can't validate it | Not designed for LLM generation | Visual-only, not scriptable |
 | **Credential handling** | `{{secret:key}}` — resolved at runtime, never in config | Hardcoded or env vars | Hardcoded or env vars | Platform credential store |
 | **Audit trail** | Hash-chained, tamper-evident, every call logged | You build it yourself | None | Platform logs only |
-| **Composability** | Agents become MCP tools, mesh them together | Manual wiring | Separate services | Workflow-scoped |
+| **Composability** | Configs become MCP tools, mesh them together | Manual wiring | Separate services | Workflow-scoped |
 
 LOOM is for the case where you have REST APIs that you want to expose as MCP tools with real security controls, not just connectivity. If you only need one tool with no security requirements, hand-written FastMCP is simpler. If you need a visual workflow builder, use n8n. LOOM sits in between: declarative like a workflow tool, programmable like a framework, secure by default.
 
@@ -131,11 +131,11 @@ Claude Desktop / MCP Client
 
 ## Core Features
 
-### Config-Driven Agents
-Agents are YAML. The runtime validates the config with Pydantic, generates typed MCP tools, and bridges HTTP with `{{param}}` template rendering. Cross-field validation catches bad configs before they run.
+### Declarative Tool Configs
+Tools are defined in YAML. The runtime validates the config with Pydantic, generates typed MCP tools, and bridges HTTP with `{{param}}` template rendering. Cross-field validation catches bad configs before they run.
 
-### AI Agent Generator
-Describe an agent in English → a local LLM (Ollama) generates valid YAML → schema validation with self-correcting retry → save.
+### AI Config Generator
+Describe what you need in English → a local LLM (Ollama) generates valid YAML → schema validation with self-correcting retry → save.
 
 ```bash
 $ loom generate "agent that wraps the Gitea API" --model qwen3:14b
@@ -148,11 +148,11 @@ See the full [threat model](docs/threat-model.md) and [security controls referen
 | Control | What It Does | Framework |
 |---------|-------------|-----------|
 | **Trust tiers** | 4 levels (observer → privileged), runtime-enforced, violations blocked and logged | OWASP Agentic #3 |
-| **Credential broker** | Per-agent secret policy, `{{secret:key}}` resolved at runtime, never stored in YAML | OWASP Agentic #7 |
+| **Credential broker** | Per-config secret access policy, `{{secret:key}}` resolved at runtime, never stored in YAML | OWASP Agentic #7 |
 | **Audit log** | Hash-chained JSON Lines, tamper-evident, 5 event types, secret redaction | OWASP Agentic #9 |
 | **Input validation** | Type checking, length limits, injection pattern detection (shell, SQL, LLM prompt) | OWASP Agentic #1 |
 | **Config signing** | HMAC-SHA256 on all agent configs, tamper detection | OWASP Agentic #8 |
-| **Agent quarantine** | AI-generated configs staged for review before promotion | OWASP Agentic #8 |
+| **Config quarantine** | AI-generated configs staged for review before promotion | OWASP Agentic #8 |
 | **Rate limiting** | Sliding window per-agent per-tool | OWASP Agentic #4 |
 | **Sandbox framework** | Docker container config generation, network policies, resource limits by tier | OWASP Agentic #6 |
 
@@ -162,8 +162,8 @@ See the full [threat model](docs/threat-model.md) and [security controls referen
 
 These capabilities are built on top of the core runtime.
 
-### Agent Mesh
-Multiple agents share a single MCP connection to Claude Desktop. The unified mesh launcher loads all configs, merges tools, and serves them through one stdio transport. Currently serving 46 tools from 9 agents.
+### Tool Mesh
+Multiple configs share a single MCP connection to Claude Desktop. The unified mesh launcher loads all configs, merges tools, and serves them through one stdio transport. Currently serving 46 tools from 9 configs.
 
 ### VRAM Orchestrator
 An advanced agent that manages GPU memory across Ollama and a 30-model GGUF library. Smart model loading with automatic eviction — when VRAM is full, it unloads the least-needed model to make room.
