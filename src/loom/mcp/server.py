@@ -26,6 +26,7 @@ from loom.security.audit import get_audit_logger
 from loom.security.trust import TrustEnforcer, TrustViolation
 from loom.security.credentials import get_credential_broker
 from loom.security.validation import InputValidator, RateLimiter
+from loom.security.escalation import EscalationEngine, EscalationHold
 
 logger = logging.getLogger(__name__)
 
@@ -49,6 +50,10 @@ def build_mcp_server(config: AgentConfig) -> FastMCP:
     broker = get_credential_broker()
     validator = InputValidator(spec.name)
     rate_limiter = RateLimiter(default_rpm=120)
+    escalation = EscalationEngine.from_config(
+        spec.name,
+        [r.model_dump() for r in spec.escalation_rules],
+    ) if spec.escalation_rules else None
 
     audit.log_agent_lifecycle(spec.name, "build", f"Building MCP server with {len(spec.exposes)} tools")
 
@@ -59,7 +64,7 @@ def build_mcp_server(config: AgentConfig) -> FastMCP:
     for tool in spec.exposes:
         endpoint = bridge_map.get(tool.name)
         if endpoint:
-            _register_http_tool(mcp, tool, endpoint, spec.name, trust, audit, broker, validator, rate_limiter)
+            _register_http_tool(mcp, tool, endpoint, spec.name, trust, audit, broker, validator, rate_limiter, escalation)
         else:
             _register_passthrough_tool(mcp, tool, spec.name, audit)
 
@@ -187,6 +192,7 @@ def _build_typed_handler(
     tool: ExposedTool, endpoint: HttpEndpoint | None, agent_name: str,
     trust: TrustEnforcer | None = None, audit=None, broker=None,
     validator: InputValidator | None = None, rate_limiter: RateLimiter | None = None,
+    escalation: EscalationEngine | None = None,
 ) -> Any:
     """Dynamically create an async function with a typed signature."""
     sig_parts: list[str] = []
@@ -298,7 +304,7 @@ def _build_no_params_handler(
 
 # ── Registration ─────────────────────────────────────────────────────
 
-def _register_http_tool(mcp, tool, endpoint, agent_name, trust, audit, broker, validator=None, rate_limiter=None):
+def _register_http_tool(mcp, tool, endpoint, agent_name, trust, audit, broker, validator=None, rate_limiter=None, escalation=None):
     if tool.parameters:
         handler = _build_typed_handler(tool, endpoint, agent_name, trust, audit, broker, validator, rate_limiter)
     else:
