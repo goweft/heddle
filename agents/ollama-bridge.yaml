@@ -1,4 +1,4 @@
-# LOOM Agent: ollama-bridge
+# Heddle Agent: ollama-bridge
 # Bridges the Ollama API on weftbox (port 11434).
 # 7 models installed, GPU-accelerated inference.
 

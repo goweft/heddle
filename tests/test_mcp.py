@@ -1,7 +1,7 @@
-"""Tests for LOOM MCP server generation."""
+"""Tests for Heddle MCP server generation."""
 import pytest
-from loom.config.schema import AgentConfig
-from loom.mcp.server import build_mcp_server, _render_template, _render_body
+from heddle.config.schema import AgentConfig
+from heddle.mcp.server import build_mcp_server, _render_template, _render_body
 
 def test_render_simple_template():
     assert _render_template("http://localhost/api/{{name}}", {"name": "test"}) == "http://localhost/api/test"
@@ -36,9 +36,9 @@ BRIDGE_CONFIG = {
 def test_build_mcp_server():
     config = AgentConfig.model_validate(BRIDGE_CONFIG)
     mcp = build_mcp_server(config)
-    assert mcp.name == "loom-test-bridge"
+    assert mcp.name == "heddle-test-bridge"
 
 def test_build_mcp_server_minimal():
     config = AgentConfig.model_validate({"agent": {"name": "empty", "version": "1.0.0"}})
     mcp = build_mcp_server(config)
-    assert mcp.name == "loom-empty"
+    assert mcp.name == "heddle-empty"

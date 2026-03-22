@@ -1,7 +1,7 @@
-# LOOM Agent: weft-intel-bridge v1.3.0
+# Heddle Agent: weft-intel-bridge v1.3.0
 # Wraps the live WEFT Intelligence platform API (port 9090).
-# Credentials resolved at runtime via the LOOM credential broker.
-# Token stored in ~/.loom/secrets.json, access granted in credential_policy.json.
+# Credentials resolved at runtime via the Heddle credential broker.
+# Token stored in ~/.heddle/secrets.json, access granted in credential_policy.json.
 
 agent:
   name: weft-intel-bridge

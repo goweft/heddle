@@ -1,12 +1,12 @@
-# LOOM Starter Pack: Grafana
+# Heddle Starter Pack: Grafana
 # Dashboard and alert visibility for any Grafana instance.
 #
 # Usage:
 #   1. Copy to agents/
 #   2. Update base URL and auth header
-#   3. Store credentials: loom secrets set grafana-auth "Bearer <token>"
-#      Then: loom secrets grant grafana grafana-auth
-#   4. loom run agents/grafana.yaml --port 8201
+#   3. Store credentials: heddle secrets set grafana-auth "Bearer <token>"
+#      Then: heddle secrets grant grafana grafana-auth
+#   4. heddle run agents/grafana.yaml --port 8201
 #
 # All tools are read-only (T1). Requires an API key or basic auth.
 

@@ -1,4 +1,4 @@
-# LOOM Security Controls Reference
+# Heddle Security Controls Reference
 
 Quick reference for all security controls. For full threat analysis, see [threat-model.md](threat-model.md).
 
@@ -22,23 +22,23 @@ Violations are **blocked** (not warned) and logged to the audit trail.
 - T1 agents calling write tools are **blocked at runtime** (trust enforcement)
 - Write tools: state-modifying operations (model loading, data mutation)
 - Read tools: queries, listings, status checks — safe to call anytime
-- CLI: `loom validate` checks access/tier compatibility before deployment
+- CLI: `heddle validate` checks access/tier compatibility before deployment
 
 ### Credential Broker (`security/credentials.py`)
 
-- Secrets stored in `~/.loom/secrets.json` (chmod 600)
-- Per-config access policy in `~/.loom/credential_policy.json`
+- Secrets stored in `~/.heddle/secrets.json` (chmod 600)
+- Per-config access policy in `~/.heddle/credential_policy.json`
 - Configs use `{{secret:key}}` — resolved at runtime, never stored in YAML
 - Unauthorized access: denied, logged, returns `***CREDENTIAL_DENIED***`
-- CLI: `loom secrets list`, `set`, `grant`, `revoke`, `policy`
+- CLI: `heddle secrets list`, `set`, `grant`, `revoke`, `policy`
 
 ### Audit Logging (`security/audit.py`)
 
-- Structured JSON Lines at `~/.loom/audit/audit.jsonl`
+- Structured JSON Lines at `~/.heddle/audit/audit.jsonl`
 - SHA-256 hash-chained entries (tamper-evident)
 - Events: `tool_call`, `http_bridge`, `trust_violation`, `credential_access`, `agent_lifecycle`
 - Secret values redacted automatically
-- CLI: `loom audit show [-n N] [--event TYPE]`, `loom audit verify`
+- CLI: `heddle audit show [-n N] [--event TYPE]`, `heddle audit verify`
 
 ### Input Validation (`security/validation.py`)
 
@@ -58,16 +58,16 @@ Violations are **blocked** (not warned) and logged to the audit trail.
 ### Config Signing (`security/signing.py`)
 
 - HMAC-SHA256 signing of YAML configs
-- Auto-generated signing key at `~/.loom/signing.key` (chmod 600)
+- Auto-generated signing key at `~/.heddle/signing.key` (chmod 600)
 - Tamper detection: modified configs fail verification
-- CLI: `loom sign all`, `loom sign verify`, `loom sign config`
+- CLI: `heddle sign all`, `heddle sign verify`, `heddle sign config`
 
 ### Config Quarantine (`security/signing.py`)
 
-- Staging directory at `~/.loom/quarantine/`
+- Staging directory at `~/.heddle/quarantine/`
 - AI-generated configs quarantined before going live
 - Promote/reject workflow with manifest tracking
-- CLI: `loom quarantine list`, `promote`, `reject`
+- CLI: `heddle quarantine list`, `promote`, `reject`
 
 ### Sandbox Framework (`security/sandbox.py`)
 
@@ -75,14 +75,14 @@ Violations are **blocked** (not warned) and logged to the audit trail.
 - Resource limits scaled by trust tier (T1=256MB, T3=1GB)
 - Network policy: configs can only reach declared http_bridge hosts
 - Read-only root filesystem, scoped writable volumes
-- CLI: `loom sandbox <config>`
+- CLI: `heddle sandbox <config>`
 
 ### Schema Validation (`config/schema.py`, `config/loader.py`)
 
 - Pydantic v2 models with strict typing
 - Cross-field validation: http_bridge refs match exposes, access modes match trust tiers
 - Config names: kebab-case. Tool names: snake_case
-- `loom validate <config>` for pre-deployment checks
+- `heddle validate <config>` for pre-deployment checks
 
 ### Escalation Rules (`security/escalation.py`)
 

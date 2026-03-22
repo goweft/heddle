@@ -1,11 +1,11 @@
-# LOOM Starter Pack: Prometheus
+# Heddle Starter Pack: Prometheus
 # Drop-in monitoring tools for any Prometheus instance.
 #
 # Usage:
 #   1. Copy this file to agents/
 #   2. Update the base URL if Prometheus isn't on localhost:9090
-#   3. loom validate agents/prometheus.yaml
-#   4. loom run agents/prometheus.yaml --port 8200
+#   3. heddle validate agents/prometheus.yaml
+#   4. heddle run agents/prometheus.yaml --port 8200
 #
 # All tools are read-only (T1). Safe to deploy without review.
 

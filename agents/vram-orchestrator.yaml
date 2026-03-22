@@ -1,4 +1,4 @@
-# LOOM Agent: vram-orchestrator v1.0.0
+# Heddle Agent: vram-orchestrator v1.0.0
 # Advanced agent that manages GPU VRAM across Ollama and llama.cpp.
 # Knows what's loaded, what's available, VRAM capacity, and can
 # intelligently load/unload models to optimize GPU utilization.

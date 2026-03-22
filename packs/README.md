@@ -1,6 +1,6 @@
 # Starter Packs
 
-Ready-made LOOM configs for common services. Copy one to `agents/`, update the URL, and run it.
+Ready-made Heddle configs for common services. Copy one to `agents/`, update the URL, and run it.
 
 ## Available Packs
 
@@ -21,44 +21,44 @@ cp packs/prometheus.yaml agents/
 vim agents/prometheus.yaml
 
 # 3. Validate
-loom validate agents/prometheus.yaml
+heddle validate agents/prometheus.yaml
 
 # 4. Run
-loom run agents/prometheus.yaml --port 8200
+heddle run agents/prometheus.yaml --port 8200
 ```
 
 ## Credentials
 
-Some packs require authentication. LOOM keeps secrets out of config files:
+Some packs require authentication. Heddle keeps secrets out of config files:
 
 ```bash
 # Store a secret
-loom secrets set grafana-auth "Bearer glsa_xxxx"
+heddle secrets set grafana-auth "Bearer glsa_xxxx"
 
 # Grant access to a specific config
-loom secrets grant grafana grafana-auth
+heddle secrets grant grafana grafana-auth
 
 # Verify policy
-loom secrets policy
+heddle secrets policy
 ```
 
 Configs reference secrets with `{{secret:key}}` — resolved at runtime, never written to disk.
 
 ## Customizing
 
-Every pack is a standard LOOM YAML config. You can:
+Every pack is a standard Heddle YAML config. You can:
 
 - Add tools by adding entries to `exposes` and `http_bridge`
 - Change the trust tier in `runtime.trust_tier`
 - Add `access: write` to tools that modify state
 - Add credential headers with `{{secret:key}}` templates
-- Combine multiple packs into a single mesh with `loom mesh agents/`
+- Combine multiple packs into a single mesh with `heddle mesh agents/`
 
 ## Creating Your Own
 
 ```bash
 # Generate a config from natural language (requires Ollama)
-loom generate "agent that wraps the PagerDuty API" --model qwen3:14b
+heddle generate "agent that wraps the PagerDuty API" --model qwen3:14b
 
 # Or start from a pack and modify it
 cp packs/prometheus.yaml agents/my-custom-monitor.yaml

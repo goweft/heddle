@@ -1,12 +1,12 @@
-"""Tests for LOOM Phase 4: MCP client, agent mesh, multi-agent runner."""
+"""Tests for Heddle Phase 4: MCP client, agent mesh, multi-agent runner."""
 import pytest
 import json
 from pathlib import Path
 
-from loom.mcp.client import LoomMCPClient, AgentMesh, MCPClientError
-from loom.runtime.multi import MultiAgentRunner
-from loom.mcp.registry import Registry
-from loom.config.loader import load_agent_config
+from heddle.mcp.client import LoomMCPClient, AgentMesh, MCPClientError
+from heddle.runtime.multi import MultiAgentRunner
+from heddle.mcp.registry import Registry
+from heddle.config.loader import load_agent_config
 
 
 # ── MCP Client ───────────────────────────────────────────────────────
@@ -139,10 +139,10 @@ def test_multi_auto_port_assignment(tmp_agents, tmp_path):
 # ── Integration: build MCP servers for mesh agents ───────────────────
 
 def test_build_server_from_temp_config(tmp_agents):
-    from loom.mcp.server import build_mcp_server
+    from heddle.mcp.server import build_mcp_server
     config = load_agent_config(tmp_agents / "agent-a.yaml")
     mcp = build_mcp_server(config)
-    assert mcp.name == "loom-agent-a"
+    assert mcp.name == "heddle-agent-a"
 
 
 # ── Integration: real agent config loads correctly ───────────────────
