@@ -29,6 +29,7 @@ agent:
         description: "JSON array of running models with memory stats"
 
     - name: generate
+      access: write
       description: "Generate a text completion using a specific model. Streams are disabled, returns full response."
       parameters:
         model:
