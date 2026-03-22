@@ -1,6 +1,6 @@
-# LOOM Agent: daily-ops v1.0.0
+# Heddle Agent: daily-ops v1.0.0
 # Advanced orchestrating agent — uses Ollama to reason across
-# multiple LOOM tools and produce a synthesized daily briefing.
+# multiple Heddle tools and produce a synthesized daily briefing.
 #
 # This is NOT a simple API bridge. It:
 # 1. Queries Prometheus for system health

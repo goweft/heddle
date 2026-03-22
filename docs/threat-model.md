@@ -1,16 +1,16 @@
-# LOOM Threat Model
+# Heddle Threat Model
 
-> **Purpose:** This document identifies threats specific to agentic AI systems and maps LOOM's security controls to industry frameworks. It serves as both an operational security reference and a portfolio demonstration of applied AI security architecture.
+> **Purpose:** This document identifies threats specific to agentic AI systems and maps Heddle's security controls to industry frameworks. It serves as both an operational security reference and a portfolio demonstration of applied AI security architecture.
 >
 > **Last updated:** March 2026  
 
-> **System:** LOOM v0.1.0 — 10 agents, 44 tools, 292+ audit entries
+> **System:** Heddle v0.1.0 — 10 agents, 44 tools, 292+ audit entries
 
 ---
 
 ## 1. System Overview
 
-LOOM is a self-hosted runtime that turns declarative YAML configurations into MCP (Model Context Protocol) servers. Each agent wraps existing APIs (Prometheus, Grafana, Ollama, etc.) or orchestrates across multiple data sources using a local LLM. Claude Desktop consumes LOOM agents as MCP tools, enabling natural language access to infrastructure, intelligence feeds, and AI models.
+Heddle is a self-hosted runtime that turns declarative YAML configurations into MCP (Model Context Protocol) servers. Each agent wraps existing APIs (Prometheus, Grafana, Ollama, etc.) or orchestrates across multiple data sources using a local LLM. Claude Desktop consumes Heddle agents as MCP tools, enabling natural language access to infrastructure, intelligence feeds, and AI models.
 
 ### Architecture
 
@@ -19,7 +19,7 @@ Claude Desktop / MCP Client
         │
         ▼ (MCP over stdio)
 ┌─────────────────────────────┐
-│       LOOM RUNTIME          │
+│       Heddle RUNTIME          │
 │                             │
 │  ┌─────┐ ┌─────┐ ┌──────┐  │
 │  │Agent│ │Agent│ │Agent │  │
@@ -50,10 +50,10 @@ Claude Desktop / MCP Client
 
 ### Trust Boundaries
 
-1. **MCP Client → LOOM Runtime** — Claude Desktop sends tool calls via stdio. LOOM trusts that the MCP protocol framing is valid but does not trust the content of parameters.
-2. **LOOM Runtime → Security Layer** — Every tool call passes through trust enforcement, credential resolution, and audit logging before execution.
+1. **MCP Client → Heddle Runtime** — Claude Desktop sends tool calls via stdio. Heddle trusts that the MCP protocol framing is valid but does not trust the content of parameters.
+2. **Heddle Runtime → Security Layer** — Every tool call passes through trust enforcement, credential resolution, and audit logging before execution.
 3. **Security Layer → HTTP Bridge** — The bridge renders templates and makes HTTP calls to backend services. Credentials are injected here, never stored in agent configs.
-4. **HTTP Bridge → Backend Services** — LOOM acts as a proxy. Backend services authenticate LOOM via tokens/credentials, not the end user.
+4. **HTTP Bridge → Backend Services** — Heddle acts as a proxy. Backend services authenticate Heddle via tokens/credentials, not the end user.
 5. **Agent → Agent** (mesh) — Cross-agent invocations require Trust Tier 3+. Lower-tier agents cannot call other agents' tools.
 
 ---
@@ -66,12 +66,12 @@ Claude Desktop / MCP Client
 
 **Attack vector:** The `ask_intel` tool accepts a free-text `question` parameter and forwards it to the backend RAG pipeline, which uses an LLM. A malicious question could inject instructions into that LLM's context.
 
-**LOOM controls:**
+**Heddle controls:**
 - **Template rendering is string-only.** The HTTP bridge uses `{{param}}` substitution, not code execution. Parameters are interpolated as literal strings into URLs, headers, and JSON bodies.
-- **No prompt construction in bridge agents.** Bridge agents don't build prompts — they forward parameters to backend APIs. The prompt security boundary is at the backend, not LOOM.
+- **No prompt construction in bridge agents.** Bridge agents don't build prompts — they forward parameters to backend APIs. The prompt security boundary is at the backend, not Heddle.
 - **Orchestrating agents separate system/user context.** The `daily-ops` agent constructs LLM prompts with data in a structured format, not by concatenating user input into the system prompt.
 
-**Residual risk:** Backend services that use LLMs are responsible for their own prompt injection defenses. LOOM cannot sanitize what it doesn't interpret.
+**Residual risk:** Backend services that use LLMs are responsible for their own prompt injection defenses. Heddle cannot sanitize what it doesn't interpret.
 
 **Framework mapping:**
 | Control | OWASP Agentic | OWASP LLM | NIST AI RMF | MAESTRO |
@@ -87,7 +87,7 @@ Claude Desktop / MCP Client
 
 **Attack vector:** A misconfigured agent YAML declares `trust_tier: 1` (observer) but includes an `http_bridge` entry that uses POST. Or an agent attempts to call another agent's tools without authorization.
 
-**LOOM controls (implemented):**
+**Heddle controls (implemented):**
 - **Trust tier enforcement at runtime.** Every HTTP bridge call passes through `TrustEnforcer.check_http_method()` before the request is sent. A T1 agent attempting POST is blocked with a `TrustViolation` exception.
   - **T1 (Observer):** GET, HEAD, OPTIONS only.
   - **T2 (Worker):** Adds POST, PUT, PATCH.
@@ -117,8 +117,8 @@ Claude Desktop / MCP Client
 
 **Attack vector:** A developer hardcodes a Bearer token in a YAML config and commits it to Git. Or an AI-generated agent config includes a credential in plaintext. Or one agent accesses another agent's API token.
 
-**LOOM controls (implemented):**
-- **Credential broker with per-agent access policy.** Secrets are stored in `~/.loom/secrets.json` (chmod 600, owner-only read). Each agent has an explicit allow-list in `credential_policy.json` defining which secrets it can access.
+**Heddle controls (implemented):**
+- **Credential broker with per-agent access policy.** Secrets are stored in `~/.heddle/secrets.json` (chmod 600, owner-only read). Each agent has an explicit allow-list in `credential_policy.json` defining which secrets it can access.
 - **Runtime-only resolution.** Agent configs use `{{secret:key}}` placeholders. The broker resolves these at HTTP execution time — raw secrets never appear in YAML files, the registry, or MCP tool schemas.
 - **Denied access is logged and blocked.** If an agent requests a secret it's not authorized for, the broker raises `CredentialDenied`, logs the attempt, and returns `***CREDENTIAL_DENIED***` (not the secret).
 - **Secret redaction in audit logs.** The audit logger scans parameters for keys matching patterns like "token", "password", "secret", "authorization" and replaces their values with `***REDACTED***`.
@@ -146,7 +146,7 @@ Credential Policy:
 
 **Risk:** Security-relevant events (tool calls, credential access, trust violations) go unrecorded, making it impossible to detect attacks, debug failures, or audit agent behavior.
 
-**LOOM controls (implemented):**
+**Heddle controls (implemented):**
 - **Structured JSON Lines audit log.** Every event is a JSON object with: `event`, `agent`, `tool`, `parameters` (redacted), `status`, `duration_ms`, `timestamp`, and `chain_hash`.
 - **Hash-chained entries for tamper evidence.** Each entry's `chain_hash` is the SHA-256 of the previous entry's JSON. If any entry is modified, deleted, or reordered, `verify_chain()` detects the break. The chain starts with a `GENESIS` hash.
 - **Five event types logged:**
@@ -155,7 +155,7 @@ Credential Policy:
   - `trust_violation` — every blocked action with severity "high".
   - `credential_access` — every secret request with granted/denied status.
   - `agent_lifecycle` — agent start, stop, build, error events.
-- **CLI for log inspection.** `loom audit show` displays recent entries with rich formatting. `loom audit verify` checks chain integrity. Both support event-type filtering.
+- **CLI for log inspection.** `heddle audit show` displays recent entries with rich formatting. `heddle audit verify` checks chain integrity. Both support event-type filtering.
 
 **Production metrics (as of this writing):**
 - 292+ audit entries
@@ -176,7 +176,7 @@ Credential Policy:
 
 **Risk:** When agents can call other agents' tools (the "mesh"), a compromised or malfunctioning agent could chain tool calls to achieve effects that no single tool permits — e.g., reading intelligence data and exfiltrating it via an external API call.
 
-**LOOM controls (implemented):**
+**Heddle controls (implemented):**
 - **Cross-agent invocation requires T3+.** The `TrustEnforcer.check_agent_invocation()` method blocks any agent below Tier 3 from calling another agent's tools. Currently only `daily-ops` (T3) has this capability.
 - **All cross-agent calls are audited.** The MCP client logs every remote tool call with the calling agent's name, the target tool, parameters, and timing.
 - **Declared consumption in config.** The `consumes` field in agent YAML explicitly lists which remote tools an agent intends to use. This is currently informational (not enforced), but provides a manifest for audit and review.
@@ -195,11 +195,11 @@ Credential Policy:
 
 **Risk:** The Phase 2 generator uses a local LLM (Ollama) to produce agent YAML from natural language descriptions. A malicious or confused LLM could generate configs that: point to attacker-controlled URLs, request excessive trust tiers, or include hidden parameters.
 
-**LOOM controls (implemented):**
+**Heddle controls (implemented):**
 - **Pydantic schema validation.** Every generated config is validated against the full `AgentConfig` schema. Invalid agent names, unknown fields, missing required parameters, and type mismatches are rejected.
 - **Cross-field validation.** The loader checks that every `http_bridge` entry references a tool that exists in `exposes`, and that URL templates reference parameters that are defined.
 - **Self-correcting retry.** If validation fails, the generator feeds the errors back to the LLM and retries. This catches structural issues but does not catch semantic attacks (e.g., a valid-but-malicious URL).
-- **Dry-run mode.** `loom generate --dry-run` validates without saving, allowing human review before the config is written to disk.
+- **Dry-run mode.** `heddle generate --dry-run` validates without saving, allowing human review before the config is written to disk.
 
 **Residual risk:** A structurally valid config that points to a malicious URL would pass schema validation. The current system does not verify that URLs point to known, trusted services. This is planned for Phase 3f (config signing and generated agent quarantine).
 
@@ -220,7 +220,7 @@ Credential Policy:
 
 ### T7: Inadequate Sandboxing
 
-**Risk:** An agent runs with the same OS-level permissions as the LOOM runtime itself. A compromised agent could access the filesystem, network, or other processes beyond its intended scope.
+**Risk:** An agent runs with the same OS-level permissions as the Heddle runtime itself. A compromised agent could access the filesystem, network, or other processes beyond its intended scope.
 
 **Current state:** Agents run in-process (no sandboxing). All agents share the same Python process, filesystem, and network access. This is the primary security gap in the current implementation.
 
@@ -274,7 +274,7 @@ Credential Policy:
 | 3 | Hash-chained audit log | **Implemented** | `security/audit.py` | 292+ entries, chain verified valid |
 | 4 | Secret redaction | **Implemented** | `security/audit.py` | Tokens replaced with `***REDACTED***` in logs |
 | 5 | Schema validation | **Implemented** | `config/schema.py`, `config/loader.py` | Pydantic v2, cross-field checks |
-| 6 | Dry-run validation | **Implemented** | `cli.py`, `generator/agent_gen.py` | `loom validate`, `loom generate --dry-run` |
+| 6 | Dry-run validation | **Implemented** | `cli.py`, `generator/agent_gen.py` | `heddle validate`, `heddle generate --dry-run` |
 | 7 | Self-correcting generation | **Implemented** | `generator/agent_gen.py` | Retry with error feedback |
 | 8 | Execution timeout | **Implemented** | Agent YAML `max_execution_time` | Per-agent, enforced by HTTP client |
 | 9 | Docker sandboxing framework | **Implemented** | `security/sandbox.py` | Container config generation, network policies |
@@ -292,7 +292,7 @@ Credential Policy:
 
 ### OWASP Agentic Security Top 10 (2025)
 
-| OWASP # | Threat | LOOM Control | Status |
+| OWASP # | Threat | Heddle Control | Status |
 |---------|--------|------|--------|
 | 1 | Prompt Injection | String-only templating, structured orchestrator prompts | Implemented |
 | 2 | Unsafe Tool Orchestration | Tier-gated cross-agent calls, audit trail | Implemented |
@@ -307,7 +307,7 @@ Credential Policy:
 
 ### NIST AI Risk Management Framework (AI RMF 1.0)
 
-| NIST Function | Subcategory | LOOM Control |
+| NIST Function | Subcategory | Heddle Control |
 |---------------|-------------|------|
 | GOVERN (GV) | GV-1.3 Risk tolerance | Trust tiers define acceptable actions per agent |
 | GOVERN (GV) | GV-6.1 Supply chain | Schema validation, planned config signing |
@@ -321,7 +321,7 @@ Credential Policy:
 
 ### MAESTRO (Multi-Agent Security Threat and Risk Operations)
 
-| MAESTRO Layer | LOOM Implementation |
+| MAESTRO Layer | Heddle Implementation |
 |---------------|---------------------|
 | Prompt layer | `{{param}}` string substitution, no code execution |
 | Authorization layer | TrustEnforcer with 4 tiers, per-agent credential policy |
@@ -344,18 +344,18 @@ Credential Policy:
 | No input validation on tool parameters | Low | Type/length/injection validation implemented | Implemented |
 | AI-generated configs not quarantined | Low | Staging directory + signing implemented (Phase 3f) | Implemented |
 | No rate limiting per agent | Low | Per-agent per-tool sliding window implemented | Implemented |
-| Backend LLMs vulnerable to injection | Low | Out of LOOM scope; backend responsibility | N/A |
+| Backend LLMs vulnerable to injection | Low | Out of Heddle scope; backend responsibility | N/A |
 | Audit log on local filesystem | Low | Remote log shipping (future) | Future |
 
 ---
 
 ## 6. Incident Response
 
-**Detection:** The audit log provides real-time visibility into all agent operations. Trust violations are logged with severity "high" and are queryable via `loom audit show --event trust_violation`.
+**Detection:** The audit log provides real-time visibility into all agent operations. Trust violations are logged with severity "high" and are queryable via `heddle audit show --event trust_violation`.
 
-**Investigation:** The hash chain ensures that audit entries cannot be tampered with after the fact. `loom audit verify` confirms chain integrity. Each entry includes agent name, action, target, parameters (redacted), timing, and timestamp.
+**Investigation:** The hash chain ensures that audit entries cannot be tampered with after the fact. `heddle audit verify` confirms chain integrity. Each entry includes agent name, action, target, parameters (redacted), timing, and timestamp.
 
-**Containment:** An agent exhibiting unexpected behavior can be stopped by removing its YAML config from the agents directory and restarting the mesh. The credential broker can have its access revoked immediately via `loom secrets revoke <agent> <key>`.
+**Containment:** An agent exhibiting unexpected behavior can be stopped by removing its YAML config from the agents directory and restarting the mesh. The credential broker can have its access revoked immediately via `heddle secrets revoke <agent> <key>`.
 
 **Recovery:** All agent configs are stored in Git (Gitea). The registry can be rebuilt by re-registering agents. Audit logs are append-only and hash-chained, providing a forensic record.
 
@@ -374,4 +374,4 @@ Credential Policy:
 
 ---
 
-*This threat model is a living document. It will be updated as LOOM progresses through Phase 3 hardening (Docker sandboxing, input validation, config signing) and as new threat patterns emerge in the agentic AI landscape.*
+*This threat model is a living document. It will be updated as Heddle progresses through Phase 3 hardening (Docker sandboxing, input validation, config signing) and as new threat patterns emerge in the agentic AI landscape.*

@@ -1,4 +1,4 @@
-# LOOM Agent: nexus-bridge
+# Heddle Agent: nexus-bridge
 # Bridges the NEXUS AI Platform API on weftbox (port 8080).
 # 45 endpoints available, exposing the most useful ones for Claude.
 # NEXUS provides multi-LLM routing, RAG, code analysis, and app management.

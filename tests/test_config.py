@@ -1,10 +1,10 @@
-"""Tests for LOOM config schema and loader."""
+"""Tests for Heddle config schema and loader."""
 import tempfile
 from pathlib import Path
 import pytest
 import yaml
-from loom.config.schema import AgentConfig, AgentSpec, ModelProvider, TrustTier
-from loom.config.loader import load_agent_config, validate_config, ConfigError
+from heddle.config.schema import AgentConfig, AgentSpec, ModelProvider, TrustTier
+from heddle.config.loader import load_agent_config, validate_config, ConfigError
 
 MINIMAL_CONFIG = {"agent": {"name": "test-agent", "version": "1.0.0", "description": "A test agent"}}
 

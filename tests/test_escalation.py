@@ -1,12 +1,12 @@
 """Tests for escalation rules — conditional hold-for-review."""
 import pytest
 
-from loom.security.escalation import EscalationEngine, EscalationRule, EscalationHold
+from heddle.security.escalation import EscalationEngine, EscalationRule, EscalationHold
 
 
 @pytest.fixture(autouse=True)
 def _reset_singletons():
-    import loom.security.audit as mod
+    import heddle.security.audit as mod
     mod._global_audit = None
     yield
     mod._global_audit = None
@@ -120,7 +120,7 @@ def test_engine_list_rules():
 
 def test_config_with_escalation_rules():
     import yaml
-    from loom.config.loader import validate_config
+    from heddle.config.loader import validate_config
     raw = yaml.safe_load("""
 agent:
   name: test-agent
@@ -150,7 +150,7 @@ agent:
 
 def test_config_without_escalation_rules():
     import yaml
-    from loom.config.loader import validate_config
+    from heddle.config.loader import validate_config
     raw = yaml.safe_load("""
 agent:
   name: simple-agent
@@ -169,7 +169,7 @@ agent:
 
 def test_real_vram_orchestrator_config():
     """Validate the actual vram-orchestrator config with escalation rules."""
-    from loom.config.loader import load_agent_config
+    from heddle.config.loader import load_agent_config
     config = load_agent_config("agents/vram-orchestrator.yaml")
     assert len(config.agent.escalation_rules) == 3
     rule_names = [r.name for r in config.agent.escalation_rules]

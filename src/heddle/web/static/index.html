@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Heddle Dashboard</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --bg2: #12121a;
+      --bg3: #1a1a26;
+      --border: #2a2a3a;
+      --text: #e0e0e8;
+      --muted: #888898;
+      --accent: #6c5ce7;
+      --accent2: #00cec9;
+      --green: #00b894;
+      --amber: #fdcb6e;
+      --red: #e17055;
+      --blue: #74b9ff;
+      --purple: #a29bfe;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    .container { max-width: 1400px; margin: 0 auto; padding: 0 24px; }
+
+    /* Header */
+    .header {
+      border-bottom: 1px solid var(--border);
+      padding: 16px 0;
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(10,10,15,0.95);
+      backdrop-filter: blur(12px);
+    }
+    .header-inner { display: flex; align-items: center; justify-content: space-between; }
+    .logo { font-size: 20px; font-weight: 700; letter-spacing: 4px; color: var(--accent); }
+    .logo span { color: var(--accent2); }
+    .status-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500;
+    }
+    .status-pill.ok { background: rgba(0,184,148,0.15); color: var(--green); }
+    .status-pill.warn { background: rgba(253,203,110,0.15); color: var(--amber); }
+    .status-pill.err { background: rgba(225,112,85,0.15); color: var(--red); }
+    .dot { width: 6px; height: 6px; border-radius: 50%; }
+    .dot.green { background: var(--green); box-shadow: 0 0 6px var(--green); }
+    .dot.amber { background: var(--amber); }
+    .dot.red { background: var(--red); }
+
+    /* Grid */
+    .grid { display: grid; gap: 16px; margin-top: 20px; }
+    .grid-2 { grid-template-columns: 1fr 1fr; }
+    .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .grid-4 { grid-template-columns: repeat(4, 1fr); }
+    @media (max-width: 900px) { .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; } }
+
+    /* Cards */
+    .card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border);
+    }
+    .card-title { font-size: 13px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
+
+    /* Stats */
+    .stat { text-align: center; padding: 16px; }
+    .stat-value { font-size: 32px; font-weight: 700; line-height: 1; }
+    .stat-label { font-size: 12px; color: var(--muted); margin-top: 6px; letter-spacing: 0.5px; }
+
+    /* Agent cards */
+    .agent-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      transition: border-color 0.2s;
+    }
+    .agent-card:hover { border-color: var(--accent); }
+    .agent-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+    .agent-desc { font-size: 12px; color: var(--muted); margin-bottom: 10px; line-height: 1.4; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;
+    }
+    .badge.t1 { background: rgba(116,185,255,0.15); color: var(--blue); }
+    .badge.t2 { background: rgba(0,206,201,0.15); color: var(--accent2); }
+    .badge.t3 { background: rgba(253,203,110,0.15); color: var(--amber); }
+    .badge.t4 { background: rgba(225,112,85,0.15); color: var(--red); }
+    .tool-list { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+    .tool-tag {
+      font-size: 11px; padding: 2px 8px; border-radius: 4px;
+      background: var(--bg3); color: var(--text); border: 1px solid var(--border);
+    }
+
+    /* Audit log */
+    .audit-row {
+      display: grid; grid-template-columns: 100px 120px 130px 1fr;
+      gap: 8px; padding: 6px 0; border-bottom: 1px solid rgba(42,42,58,0.5);
+      font-size: 12px; align-items: center;
+    }
+    .audit-row:last-child { border-bottom: none; }
+    .audit-time { color: var(--muted); }
+    .audit-event { font-weight: 500; }
+    .audit-event.tool_call { color: var(--blue); }
+    .audit-event.http_bridge { color: var(--accent2); }
+    .audit-event.trust_violation { color: var(--red); }
+    .audit-event.credential_access { color: var(--amber); }
+    .audit-event.agent_lifecycle { color: var(--purple); }
+
+    /* Mesh SVG */
+    .mesh-container { position: relative; width: 100%; min-height: 300px; }
+    .mesh-node {
+      position: absolute; padding: 8px 14px; border-radius: 8px; font-size: 12px;
+      font-weight: 500; text-align: center; cursor: default; transition: transform 0.2s;
+    }
+    .mesh-node:hover { transform: scale(1.05); }
+    .mesh-node.client { background: var(--accent); color: white; }
+    .mesh-node.runtime { background: var(--accent2); color: var(--bg); font-weight: 700; }
+    .mesh-node.agent { background: var(--bg3); border: 1px solid var(--border); }
+    .mesh-node.service { background: var(--bg2); border: 1px solid var(--border); color: var(--muted); font-size: 11px; }
+
+    /* Tabs */
+    .tabs { display: flex; gap: 0; margin-bottom: 16px; border-bottom: 1px solid var(--border); }
+    .tab {
+      padding: 8px 16px; font-size: 13px; font-weight: 500;
+      color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .tab:hover { color: var(--text); }
+    .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+    /* Security */
+    .sig-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; border-bottom: 1px solid rgba(42,42,58,0.3); }
+    .sig-ok { color: var(--green); }
+    .sig-fail { color: var(--red); }
+
+    /* Loading */
+    .loading { display: flex; align-items: center; justify-content: center; padding: 40px; color: var(--muted); }
+    .spinner { width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin-right: 10px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .fade-in { animation: fadeIn 0.3s ease-out; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect, useCallback } = React;
+    const API = '';
+
+    function useFetch(url, interval = 0) {
+      const [data, setData] = useState(null);
+      const [loading, setLoading] = useState(true);
+      const load = useCallback(() => {
+        fetch(API + url).then(r => r.json()).then(d => { setData(d); setLoading(false); }).catch(() => setLoading(false));
+      }, [url]);
+      useEffect(() => { load(); if (interval > 0) { const i = setInterval(load, interval); return () => clearInterval(i); } }, [load, interval]);
+      return { data, loading, reload: load };
+    }
+
+    function StatusDot({ ok }) {
+      return <span className={`dot ${ok ? 'green' : 'red'}`} />;
+    }
+
+    function Header({ health }) {
+      return (
+        <header className="header">
+          <div className="container header-inner">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              <div className="logo">LOO<span>M</span></div>
+              <span style={{ color: 'var(--muted)', fontSize: 12 }}>The WEFT Agent & MCP Mesh Runtime</span>
+            </div>
+            <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+              {health && (
+                <>
+                  <span className={`status-pill ${health.status === 'healthy' ? 'ok' : 'err'}`}>
+                    <StatusDot ok={health.status === 'healthy'} />
+                    {health.status}
+                  </span>
+                  <span className="status-pill ok">
+                    <StatusDot ok={health.audit_chain_valid} />
+                    {health.audit_entries} audit entries
+                  </span>
+                  <span className="status-pill ok" style={{ color: 'var(--accent2)' }}>
+                    {health.agents} agents
+                  </span>
+                </>
+              )}
+            </div>
+          </div>
+        </header>
+      );
+    }
+
+    function StatsRow({ agents, audit }) {
+      const totalTools = agents ? agents.agents.reduce((s, a) => s + (a.tool_count || 0), 0) : 0;
+      const violations = audit ? (audit.by_event?.trust_violation || 0) : 0;
+      return (
+        <div className="grid grid-4 fade-in">
+          {[
+            { value: agents?.total || 0, label: 'Agents', color: 'var(--accent)' },
+            { value: totalTools, label: 'Tools', color: 'var(--accent2)' },
+            { value: audit?.total || 0, label: 'Audit entries', color: 'var(--blue)' },
+            { value: violations, label: 'Trust violations', color: violations > 0 ? 'var(--amber)' : 'var(--green)' },
+          ].map((s, i) => (
+            <div className="card stat" key={i}>
+              <div className="stat-value" style={{ color: s.color }}>{s.value}</div>
+              <div className="stat-label">{s.label}</div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    function TrustBadge({ tier }) {
+      const labels = { 1: 'T1 Observer', 2: 'T2 Worker', 3: 'T3 Operator', 4: 'T4 Privileged' };
+      return <span className={`badge t${tier}`}>{labels[tier] || `T${tier}`}</span>;
+    }
+
+    function AgentCard({ agent }) {
+      if (agent.error) return (
+        <div className="agent-card" style={{ borderColor: 'var(--red)' }}>
+          <div className="agent-name">{agent.name}</div>
+          <div style={{ color: 'var(--red)', fontSize: 12 }}>Error: {agent.error}</div>
+        </div>
+      );
+      return (
+        <div className="agent-card fade-in">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div className="agent-name">{agent.name}</div>
+            <TrustBadge tier={agent.trust_tier} />
+          </div>
+          <div className="agent-desc">{agent.description?.slice(0, 100)}</div>
+          <div style={{ display: 'flex', gap: 8, fontSize: 11, color: 'var(--muted)', marginBottom: 6 }}>
+            <span>{agent.tool_count} tools</span>
+            <span>·</span>
+            <span>{agent.model_provider || 'none'}</span>
+            <span>·</span>
+            <span className="mono">{agent.max_execution_time}</span>
+          </div>
+          <div className="tool-list">
+            {agent.tools?.map((t, i) => (
+              <span className="tool-tag" key={i} title={t.description}>{t.name}</span>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    function AgentsPanel({ agents }) {
+      if (!agents) return <div className="loading"><span className="spinner" /> Loading agents...</div>;
+      return (
+        <div className="grid grid-2" style={{ marginTop: 0 }}>
+          {agents.agents.map((a, i) => <AgentCard key={i} agent={a} />)}
+        </div>
+      );
+    }
+
+    function AuditPanel({ audit }) {
+      if (!audit) return <div className="loading"><span className="spinner" /> Loading audit...</div>;
+      return (
+        <div>
+          <div style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 10 }}>
+            Chain: {audit.chain_valid ? '✓ Valid' : '✗ BROKEN'} · {audit.total_entries} entries
+          </div>
+          <div style={{ maxHeight: 400, overflow: 'auto' }}>
+            {audit.entries.slice(-30).reverse().map((e, i) => (
+              <div className="audit-row mono" key={i}>
+                <span className="audit-time">{e.timestamp?.slice(11, 19)}</span>
+                <span className={`audit-event ${e.event}`}>{e.event}</span>
+                <span style={{ color: 'var(--accent2)' }}>{e.agent}</span>
+                <span style={{ color: 'var(--muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {e.event === 'tool_call' ? `${e.tool} [${e.status}] ${Math.round(e.duration_ms || 0)}ms` :
+                   e.event === 'http_bridge' ? `${e.method} → ${e.status_code}` :
+                   e.event === 'trust_violation' ? e.detail?.slice(0, 60) :
+                   e.event === 'credential_access' ? `${e.credential_key} ${e.granted ? 'granted' : 'denied'}` :
+                   e.detail?.slice(0, 60) || e.action || ''}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    function SecurityPanel({ policy, signatures }) {
+      return (
+        <div className="grid grid-2" style={{ marginTop: 0 }}>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 10, color: 'var(--muted)', letterSpacing: 0.5 }}>CREDENTIAL POLICY</div>
+            {policy?.policy?.map((p, i) => (
+              <div className="sig-row" key={i}>
+                <span>{p.agent}</span>
+                <span className="mono" style={{ fontSize: 11, color: p.secrets.length ? 'var(--amber)' : 'var(--muted)' }}>
+                  {p.secrets.length ? p.secrets.join(', ') : 'none'}
+                </span>
+              </div>
+            ))}
+            {policy?.secrets && (
+              <div style={{ marginTop: 12, fontSize: 12, color: 'var(--muted)' }}>
+                {policy.secrets.length} secret(s) in broker
+              </div>
+            )}
+          </div>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 10, color: 'var(--muted)', letterSpacing: 0.5 }}>CONFIG SIGNATURES</div>
+            {signatures?.signatures?.map((s, i) => (
+              <div className="sig-row" key={i}>
+                <span>{s.file}</span>
+                <span className={s.status === 'valid' ? 'sig-ok' : 'sig-fail'}>{s.status === 'valid' ? '✓' : '✗'} {s.status}</span>
+              </div>
+            ))}
+            {signatures && (
+              <div style={{ marginTop: 12, fontSize: 12, color: signatures.all_valid ? 'var(--green)' : 'var(--red)' }}>
+                {signatures.all_valid ? '✓ All configs verified' : '✗ Signature issues detected'}
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    function MeshPanel({ mesh }) {
+      if (!mesh) return <div className="loading"><span className="spinner" /> Loading mesh...</div>;
+
+      const agents = mesh.nodes.filter(n => n.type === 'agent');
+      const services = mesh.nodes.filter(n => n.type === 'service');
+      const uniqueServices = [...new Map(services.map(s => [s.id, s])).values()];
+
+      return (
+        <div>
+          <svg viewBox="0 0 800 380" style={{ width: '100%', height: 'auto' }}>
+            <defs>
+              <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                <path d="M0,0 L8,3 L0,6" fill="none" stroke="#6c5ce7" strokeWidth="1"/>
+              </marker>
+              <marker id="arrowhead2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                <path d="M0,0 L8,3 L0,6" fill="none" stroke="#00cec9" strokeWidth="1"/>
+              </marker>
+            </defs>
+            {/* Claude Desktop */}
+            <rect x="310" y="10" width="180" height="36" rx="18" fill="#6c5ce7" />
+            <text x="400" y="33" textAnchor="middle" fill="white" fontSize="13" fontWeight="600" fontFamily="DM Sans">Claude Desktop</text>
+            {/* Arrow to Heddle */}
+            <line x1="400" y1="46" x2="400" y2="72" stroke="#6c5ce7" strokeWidth="1.5" markerEnd="url(#arrowhead)" />
+            {/* Heddle Mesh */}
+            <rect x="260" y="74" width="280" height="36" rx="8" fill="#12121a" stroke="#00cec9" strokeWidth="1.5" />
+            <text x="400" y="97" textAnchor="middle" fill="#00cec9" fontSize="13" fontWeight="700" fontFamily="DM Sans">Heddle Mesh · 39 tools</text>
+            {/* Agents */}
+            {agents.map((a, i) => {
+              const cols = Math.min(agents.length, 5);
+              const rows = Math.ceil(agents.length / cols);
+              const col = i % cols;
+              const row = Math.floor(i / cols);
+              const x = 50 + col * (700 / cols);
+              const y = 150 + row * 70;
+              const w = Math.min(130, 680 / cols - 10);
+              const tierColor = { 1: '#74b9ff', 2: '#00cec9', 3: '#fdcb6e' }[a.trust_tier] || '#888898';
+              return (
+                <g key={a.id}>
+                  <line x1="400" y1="110" x2={x + w/2} y2={y} stroke="#2a2a3a" strokeWidth="1" strokeDasharray="3 3" />
+                  <rect x={x} y={y} width={w} height={50} rx="6" fill="#1a1a26" stroke={tierColor} strokeWidth="0.8" />
+                  <text x={x + w/2} y={y + 20} textAnchor="middle" fill="#e0e0e8" fontSize="11" fontWeight="600" fontFamily="DM Sans">{a.label}</text>
+                  <text x={x + w/2} y={y + 36} textAnchor="middle" fill={tierColor} fontSize="10" fontFamily="JetBrains Mono">T{a.trust_tier} · {a.tools} tools</text>
+                </g>
+              );
+            })}
+            {/* Services */}
+            {uniqueServices.slice(0, 6).map((s, i) => {
+              const x = 60 + i * 120;
+              const y = 340;
+              return (
+                <g key={s.id}>
+                  <line x1={x + 50} y1={y} x2={x + 50} y2={y - 20} stroke="#2a2a3a" strokeWidth="0.8" strokeDasharray="2 2" />
+                  <rect x={x} y={y} width={100} height={28} rx="4" fill="#12121a" stroke="#2a2a3a" strokeWidth="0.5" />
+                  <text x={x + 50} y={y + 18} textAnchor="middle" fill="#888898" fontSize="9" fontFamily="JetBrains Mono">{s.label}</text>
+                </g>
+              );
+            })}
+          </svg>
+        </div>
+      );
+    }
+
+    function App() {
+      const [tab, setTab] = useState('mesh');
+      const { data: health } = useFetch('/api/health', 10000);
+      const { data: agents } = useFetch('/api/agents');
+      const { data: audit } = useFetch('/api/audit?n=50', 5000);
+      const { data: auditStats } = useFetch('/api/audit/stats');
+      const { data: mesh } = useFetch('/api/mesh');
+      const { data: policy } = useFetch('/api/security/policy');
+      const { data: signatures } = useFetch('/api/security/signatures');
+
+      return (
+        <div>
+          <Header health={health} />
+          <div className="container" style={{ paddingBottom: 40 }}>
+            <StatsRow agents={agents} audit={auditStats} />
+            <div className="card" style={{ marginTop: 16 }}>
+              <div className="tabs">
+                {['mesh', 'agents', 'audit', 'security'].map(t => (
+                  <div key={t} className={`tab ${tab === t ? 'active' : ''}`} onClick={() => setTab(t)}>
+                    {t.charAt(0).toUpperCase() + t.slice(1)}
+                  </div>
+                ))}
+              </div>
+              {tab === 'mesh' && <MeshPanel mesh={mesh} />}
+              {tab === 'agents' && <AgentsPanel agents={agents} />}
+              {tab === 'audit' && <AuditPanel audit={audit} />}
+              {tab === 'security' && <SecurityPanel policy={policy} signatures={signatures} />}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

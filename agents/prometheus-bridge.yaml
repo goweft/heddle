@@ -1,4 +1,4 @@
-# LOOM Agent: prometheus-bridge
+# Heddle Agent: prometheus-bridge
 # Bridges the Prometheus API on weftbox (port 9092).
 # 4 scrape targets: node-exporter, prometheus, weft-intel, weft-llm
 

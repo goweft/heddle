@@ -1,9 +1,9 @@
-"""Tests for LOOM agent generator."""
+"""Tests for Heddle agent generator."""
 import pytest
 import yaml
 
-from loom.generator.agent_gen import _extract_yaml, _build_prompt, SYSTEM_PROMPT, SCHEMA_REF
-from loom.config.loader import validate_config
+from heddle.generator.agent_gen import _extract_yaml, _build_prompt, SYSTEM_PROMPT, SCHEMA_REF
+from heddle.config.loader import validate_config
 
 
 # ── YAML extraction tests ────────────────────────────────────────────
@@ -43,7 +43,7 @@ def test_build_prompt_with_context():
     assert "ADDITIONAL CONTEXT" in prompt
 
 def test_system_prompt_exists():
-    assert "LOOM Agent Generator" in SYSTEM_PROMPT
+    assert "Heddle Agent Generator" in SYSTEM_PROMPT
     assert "YAML" in SYSTEM_PROMPT
 
 

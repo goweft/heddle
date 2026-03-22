@@ -33,7 +33,7 @@ jobs:
         run: |
           for config in agents/*.yaml; do
             echo "Validating $config..."
-            loom validate "$config"
+            heddle validate "$config"
           done
 
   lint:
@@ -48,14 +48,14 @@ jobs:
 
       - name: Check syntax
         run: |
-          python -m py_compile src/loom/cli.py
-          python -m py_compile src/loom/config/schema.py
-          python -m py_compile src/loom/config/loader.py
-          python -m py_compile src/loom/mcp/server.py
-          python -m py_compile src/loom/mcp/registry.py
-          python -m py_compile src/loom/security/audit.py
-          python -m py_compile src/loom/security/trust.py
-          python -m py_compile src/loom/security/credentials.py
-          python -m py_compile src/loom/security/validation.py
-          python -m py_compile src/loom/security/signing.py
-          python -m py_compile src/loom/security/sandbox.py
+          python -m py_compile src/heddle/cli.py
+          python -m py_compile src/heddle/config/schema.py
+          python -m py_compile src/heddle/config/loader.py
+          python -m py_compile src/heddle/mcp/server.py
+          python -m py_compile src/heddle/mcp/registry.py
+          python -m py_compile src/heddle/security/audit.py
+          python -m py_compile src/heddle/security/trust.py
+          python -m py_compile src/heddle/security/credentials.py
+          python -m py_compile src/heddle/security/validation.py
+          python -m py_compile src/heddle/security/signing.py
+          python -m py_compile src/heddle/security/sandbox.py

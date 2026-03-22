@@ -1,10 +1,10 @@
-# LOOM Starter Pack: Ollama
+# Heddle Starter Pack: Ollama
 # Local LLM management and inference for any Ollama instance.
 #
 # Usage:
 #   1. Copy to agents/
 #   2. Update base URL if Ollama isn't on localhost:11434
-#   3. loom run agents/ollama.yaml --port 8203
+#   3. heddle run agents/ollama.yaml --port 8203
 #
 # Trust tier 2 (worker) because 'generate' and 'pull' use POST.
 # The 'generate' tool triggers GPU inference; 'pull' downloads models.

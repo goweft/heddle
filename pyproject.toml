@@ -3,9 +3,9 @@ requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "loom"
+name = "heddle"
 version = "0.1.0"
-description = "LOOM — The WEFT Agent & MCP Mesh Runtime"
+description = "Heddle — A secure, declarative MCP runtime"
 requires-python = ">=3.11"
 dependencies = [
     "fastapi>=0.110",
@@ -28,7 +28,7 @@ dev = [
 ]
 
 [project.scripts]
-loom = "loom.cli:cli"
+heddle = "heddle.cli:cli"
 
 [tool.setuptools.packages.find]
 where = ["src"]

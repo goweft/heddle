@@ -1,11 +1,11 @@
-"""Tests for LOOM security: audit, trust, credentials."""
+"""Tests for Heddle security: audit, trust, credentials."""
 import json
 import pytest
 from pathlib import Path
 
-from loom.security.audit import AuditLogger
-from loom.security.trust import TrustEnforcer, TrustViolation
-from loom.security.credentials import CredentialBroker, CredentialDenied
+from heddle.security.audit import AuditLogger
+from heddle.security.trust import TrustEnforcer, TrustViolation
+from heddle.security.credentials import CredentialBroker, CredentialDenied
 
 
 # ── Audit Logger ─────────────────────────────────────────────────────
@@ -99,7 +99,7 @@ def test_audit_filter_by_event(audit):
 @pytest.fixture(autouse=True)
 def _reset_audit_singleton():
     """Reset the global audit logger so tests get isolated instances."""
-    import loom.security.audit as mod
+    import heddle.security.audit as mod
     mod._global_audit = None
     yield
     mod._global_audit = None
@@ -273,7 +273,7 @@ def test_trust_t3_allows_write_tool():
 def test_access_mode_t1_write_rejected():
     """T1 agent config with a write tool should fail validation."""
     import yaml
-    from loom.config.loader import validate_config
+    from heddle.config.loader import validate_config
     raw = yaml.safe_load("""
 agent:
   name: bad-agent
@@ -295,7 +295,7 @@ agent:
 def test_access_mode_t2_write_accepted():
     """T2 agent config with a write tool should validate fine."""
     import yaml
-    from loom.config.loader import validate_config
+    from heddle.config.loader import validate_config
     raw = yaml.safe_load("""
 agent:
   name: ok-agent
@@ -317,7 +317,7 @@ agent:
 def test_access_mode_defaults_to_read():
     """Tools without explicit access should default to read."""
     import yaml
-    from loom.config.loader import validate_config
+    from heddle.config.loader import validate_config
     raw = yaml.safe_load("""
 agent:
   name: default-agent

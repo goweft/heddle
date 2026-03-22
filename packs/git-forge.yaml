@@ -1,4 +1,4 @@
-# LOOM Starter Pack: Gitea / GitHub
+# Heddle Starter Pack: Gitea / GitHub
 # Repository and issue visibility for Gitea or GitHub API-compatible forges.
 #
 # Usage:
@@ -7,9 +7,9 @@
 #      - Gitea: http://localhost:3000/api/v1
 #      - GitHub: https://api.github.com
 #   3. For private repos, store a token:
-#      loom secrets set git-token "token <your-token>"
-#      loom secrets grant git-forge git-token
-#   4. loom run agents/git-forge.yaml --port 8202
+#      heddle secrets set git-token "token <your-token>"
+#      heddle secrets grant git-forge git-token
+#   4. heddle run agents/git-forge.yaml --port 8202
 #
 # Read-only (T1). Works with Gitea, Forgejo, GitHub, and Gitea-compatible APIs.
 

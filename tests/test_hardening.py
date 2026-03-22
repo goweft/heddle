@@ -4,16 +4,16 @@ import time
 import pytest
 from pathlib import Path
 
-from loom.security.validation import InputValidator, RateLimiter, ValidationError
-from loom.security.signing import ConfigSigner, AgentQuarantine, SignatureError
-from loom.security.sandbox import SandboxManager, SandboxConfig
+from heddle.security.validation import InputValidator, RateLimiter, ValidationError
+from heddle.security.signing import ConfigSigner, AgentQuarantine, SignatureError
+from heddle.security.sandbox import SandboxManager, SandboxConfig
 
 
 # ── Fixtures ─────────────────────────────────────────────────────────
 
 @pytest.fixture(autouse=True)
 def _reset_singletons():
-    import loom.security.audit as mod
+    import heddle.security.audit as mod
     mod._global_audit = None
     yield
     mod._global_audit = None
@@ -150,7 +150,7 @@ def test_rate_limiter_per_tool():
 def signer(tmp_path):
     key_file = tmp_path / "test.key"
     # Override the signatures file location
-    import loom.security.signing as mod
+    import heddle.security.signing as mod
     original = mod.SIGNATURES_FILE
     mod.SIGNATURES_FILE = tmp_path / "sigs.json"
     s = ConfigSigner(key_file=key_file)
@@ -259,7 +259,7 @@ def test_promote_nonexistent(quarantine, live_agents_dir):
 
 def test_sandbox_config_from_agent():
     import yaml
-    from loom.config.loader import validate_config
+    from heddle.config.loader import validate_config
 
     raw = yaml.safe_load("""
 agent:
@@ -298,7 +298,7 @@ agent:
 
 def test_sandbox_t3_gets_more_resources():
     import yaml
-    from loom.config.loader import validate_config
+    from heddle.config.loader import validate_config
 
     raw = yaml.safe_load("""
 agent:
@@ -355,7 +355,7 @@ def test_sandbox_network_policy():
 
 def test_sandbox_validate_report():
     import yaml
-    from loom.config.loader import validate_config
+    from heddle.config.loader import validate_config
 
     raw = yaml.safe_load("""
 agent:
