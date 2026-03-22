@@ -161,13 +161,10 @@ Multiple configs share a single MCP connection to Claude Desktop. The unified me
 An advanced agent that manages GPU memory across Ollama and a 30-model GGUF library. Smart model loading with automatic eviction — when VRAM is full, it unloads the least-needed model to make room.
 
 ### Daily Ops Orchestrator
-An agent with its own LLM brain. Queries Prometheus, an intelligence API, and Ollama in parallel, feeds all data to a local model, and synthesizes a daily operations briefing.
+An agent with its own LLM brain. Queries Prometheus, a RAG search API, and Ollama in parallel, feeds all data to a local model, and synthesizes a daily operations briefing.
 
 ### Web Dashboard
 FastAPI backend + React frontend showing mesh topology, agent status, live audit stream, credential policy, and config signatures. Runs at port 8300.
-
-### Evolve System
-Passive research that scans GitHub trending repos and HuggingFace MCP spaces, cross-references with running agents, identifies coverage gaps, and generates agent briefs for `heddle generate`.
 
 ---
 
@@ -248,7 +245,6 @@ heddle/
 │   ├── security/        # 6 modules: trust, credentials, audit,
 │   │                    #   validation, signing, sandbox
 │   ├── agents/          # Custom handlers (daily-ops, vram-orchestrator)
-│   ├── evolve/          # Passive research, coverage gap analysis
 │   └── web/             # Dashboard (FastAPI + React)
 ├── tests/               # 102 tests across 7 files
 ├── heddle_stdio_mesh.py   # Unified Claude Desktop launcher

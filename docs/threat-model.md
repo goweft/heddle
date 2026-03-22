@@ -10,7 +10,7 @@
 
 ## 1. System Overview
 
-Heddle is a self-hosted runtime that turns declarative YAML configurations into MCP (Model Context Protocol) servers. Each agent wraps existing APIs (Prometheus, Grafana, Ollama, etc.) or orchestrates across multiple data sources using a local LLM. Claude Desktop consumes Heddle agents as MCP tools, enabling natural language access to infrastructure, intelligence feeds, and AI models.
+Heddle is a self-hosted runtime that turns declarative YAML configurations into MCP (Model Context Protocol) servers. Each agent wraps existing APIs (Prometheus, Grafana, Ollama, etc.) or orchestrates across multiple data sources using a local LLM. Claude Desktop consumes Heddle agents as MCP tools, enabling natural language access to infrastructure, data APIs, and AI models.
 
 ### Architecture
 
@@ -181,7 +181,7 @@ Credential Policy:
 - **All cross-agent calls are audited.** The MCP client logs every remote tool call with the calling agent's name, the target tool, parameters, and timing.
 - **Declared consumption in config.** The `consumes` field in agent YAML explicitly lists which remote tools an agent intends to use. This is currently informational (not enforced), but provides a manifest for audit and review.
 
-**Residual risk:** A T3 agent has broad access by design. The `daily-ops` agent can read from Prometheus, an intelligence API, and Ollama. If the daily-ops agent were compromised, it could access all three. Mitigation: the daily-ops orchestrator code is hand-written (not AI-generated) and reviewed.
+**Residual risk:** A T3 agent has broad access by design. The `daily-ops` agent can read from Prometheus, a RAG search API, and Ollama. If the daily-ops agent were compromised, it could access all three. Mitigation: the daily-ops orchestrator code is hand-written (not AI-generated) and reviewed.
 
 **Framework mapping:**
 | Control | OWASP Agentic | NIST AI RMF | MAESTRO |

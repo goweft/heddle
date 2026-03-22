@@ -6,3 +6,4 @@ venv/
 *.log
 CLAUDE.md
 *.service
+src/heddle/evolve/
