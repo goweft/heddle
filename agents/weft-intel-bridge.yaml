@@ -19,6 +19,7 @@ agent:
 
   exposes:
     - name: ask_intel
+      access: write
       description: "Ask a natural-language question about news intelligence using RAG."
       parameters:
         question:
