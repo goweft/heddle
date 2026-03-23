@@ -149,7 +149,7 @@ def test_build_server_from_temp_config(tmp_agents):
 
 def test_real_configs_validate():
     """All agent configs in the project should validate."""
-    agents_dir = Path("/mnt/workspace/projects/loom/agents")
+    agents_dir = Path(__file__).resolve().parent.parent / "agents"
     configs = list(agents_dir.glob("*.yaml"))
     assert len(configs) >= 1, "Expected at least 1 agent config"
     for path in configs:
