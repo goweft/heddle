@@ -201,7 +201,7 @@ Credential Policy:
 - **Self-correcting retry.** If validation fails, the generator feeds the errors back to the LLM and retries. This catches structural issues but does not catch semantic attacks (e.g., a valid-but-malicious URL).
 - **Dry-run mode.** `heddle generate --dry-run` validates without saving, allowing human review before the config is written to disk.
 
-**Residual risk:** A structurally valid config that points to a malicious URL would pass schema validation. The current system does not verify that URLs point to known, trusted services. This is planned for Phase 3f (config signing and generated agent quarantine).
+**Residual risk:** A structurally valid config that points to a malicious URL would pass schema validation. The current system does not verify that URLs point to known, trusted services. Config signing and quarantine are now implemented, but URL-level validation (checking that declared endpoints point to known trusted services) is not yet enforced.
 
 **Now implemented (Phase 3f):**
 - **Generated agent quarantine.** AI-generated configs land in a staging directory and require explicit promotion before they can be registered or run.
@@ -213,8 +213,8 @@ Credential Policy:
 |---------|---------------|-------------|---------|
 | Schema validation | #8 Supply Chain | GV-6.1 | Validation layer |
 | Dry-run / human review | #8 Supply Chain | GV-6.1, MP-2.3 | Staging gate |
-| Config signing (planned) | #8 Supply Chain | GV-6.1 | Integrity layer |
-| Quarantine (planned) | #8 Supply Chain | MP-2.3 | Staging gate |
+| Config signing | #8 Supply Chain | GV-6.1 | Integrity layer |
+| Quarantine | #8 Supply Chain | MP-2.3 | Staging gate |
 
 ---
 
@@ -236,7 +236,7 @@ Credential Policy:
 **Framework mapping:**
 | Control | OWASP Agentic | NIST AI RMF | MAESTRO |
 |---------|---------------|-------------|---------|
-| Docker sandboxing (planned) | #6 Inadequate Sandboxing | MS-2.3 | Isolation layer |
+| Sandbox policy generation | #6 Inadequate Sandboxing | MS-2.3 | Isolation layer |
 | Trust tiers (compensating) | #3 Excessive Agency | GV-1.3 | Authorization layer |
 | Audit logging (detection) | #9 Insufficient Logging | MS-2.6 | Observability layer |
 
@@ -261,7 +261,7 @@ Credential Policy:
 | Control | OWASP Agentic | NIST AI RMF | MAESTRO |
 |---------|---------------|-------------|---------|
 | Execution timeout | #4 Denial of Wallet | MS-2.8 | Throttling layer |
-| Rate limiting (planned) | #4 Denial of Wallet | MS-2.8 | Throttling layer |
+| Rate limiting | #4 Denial of Wallet | MS-2.8 | Throttling layer |
 
 ---
 
@@ -301,7 +301,7 @@ Credential Policy:
 | 5 | Insecure Output Handling | (Delegated to MCP client) | N/A |
 | 6 | Inadequate Sandboxing | Docker sandbox framework + trust tiers | Partial |
 | 7 | Unsafe Credential Management | Credential broker, per-agent policy, redaction | Implemented |
-| 8 | Supply Chain Vulnerabilities | Schema validation, dry-run; signing planned | Partial |
+| 8 | Supply Chain Vulnerabilities | Schema validation, config signing, quarantine | Implemented |
 | 9 | Insufficient Logging | Hash-chained audit log, 5 event types | Implemented |
 | 10 | Uncontrolled Autonomy | T4 human-in-the-loop flag | Partial |
 
@@ -310,8 +310,8 @@ Credential Policy:
 | NIST Function | Subcategory | Heddle Control |
 |---------------|-------------|------|
 | GOVERN (GV) | GV-1.3 Risk tolerance | Trust tiers define acceptable actions per agent |
-| GOVERN (GV) | GV-6.1 Supply chain | Schema validation, planned config signing |
-| MAP (MP) | MP-2.3 Staged deployment | Dry-run validation, planned quarantine |
+| GOVERN (GV) | GV-6.1 Supply chain | Schema validation, config signing (HMAC-SHA256) |
+| MAP (MP) | MP-2.3 Staged deployment | Dry-run validation, quarantine directory |
 | MAP (MP) | MP-4.1 Risk controls | Trust enforcement, credential broker |
 | MEASURE (MS) | MS-2.3 Isolation | Docker sandbox framework implemented |
 | MEASURE (MS) | MS-2.5 Validation | Pydantic schema, cross-field checks |
@@ -330,8 +330,8 @@ Credential Policy:
 | Validation layer | Pydantic schema, cross-field checks, dry-run mode |
 | Isolation layer | Docker sandbox framework (container config generation) |
 | Integrity layer | HMAC-SHA256 config signing + quarantine workflow |
-| Staging gate | Dry-run validation, planned quarantine directory |
-| Throttling layer | Execution timeouts, planned per-agent rate limiting |
+| Staging gate | Quarantine directory with promote/reject workflow |
+| Throttling layer | Execution timeouts, per-config per-tool rate limiting |
 | Network layer | Network policy generation (enforcement planned) |
 
 ---
