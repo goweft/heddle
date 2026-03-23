@@ -43,7 +43,7 @@ def run(config_path: str, host: str, port: int, transport: str):
     runner = AgentRunner()
     config = runner.load(config_path)
     spec = config.agent
-    console.print(f"\n[bold cyan]LOOM[/] Starting agent [bold]{spec.name}[/] v{spec.version}")
+    console.print(f"\n[bold cyan]Heddle[/] Starting agent [bold]{spec.name}[/] v{spec.version}")
     console.print(f"  Tools: {len(spec.exposes)} exposed, {len(spec.consumes)} consumed")
     console.print(f"  Trust tier: {spec.runtime.trust_tier}")
     console.print(f"  Endpoint: http://{host}:{port}/mcp\n")
@@ -381,14 +381,14 @@ def probe(uri: str):
 
     \b
     Example:
-      loom probe http://localhost:8200/mcp
+      heddle probe http://localhost:8200/mcp
     """
     asyncio.run(_probe_async(uri))
 
 
 async def _probe_async(uri: str):
-    from heddle.mcp.client import LoomMCPClient, MCPClientError
-    client = LoomMCPClient("cli-probe", uri)
+    from heddle.mcp.client import HeddleMCPClient, MCPClientError
+    client = HeddleMCPClient("cli-probe", uri)
     try:
         tools = await client.list_tools()
     except MCPClientError as exc:

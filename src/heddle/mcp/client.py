@@ -24,7 +24,7 @@ class MCPClientError(Exception):
     """Error communicating with a remote MCP server."""
 
 
-class LoomMCPClient:
+class HeddleMCPClient:
     """Client for calling tools on another Heddle agent or MCP server.
 
     Supports streamable-http transport for remote Heddle agents.
@@ -110,11 +110,11 @@ class AgentMesh:
 
     def __init__(self, agent_name: str):
         self.agent_name = agent_name
-        self._clients: dict[str, LoomMCPClient] = {}
+        self._clients: dict[str, HeddleMCPClient] = {}
 
     def connect(self, uri: str, tool_filter: list[str] | None = None) -> None:
         """Register a connection to a remote MCP server."""
-        self._clients[uri] = LoomMCPClient(self.agent_name, uri)
+        self._clients[uri] = HeddleMCPClient(self.agent_name, uri)
         logger.info("Agent %s connected to %s", self.agent_name, uri)
 
     async def list_all_tools(self) -> dict[str, list[dict]]:

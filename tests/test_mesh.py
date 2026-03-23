@@ -3,7 +3,7 @@ import pytest
 import json
 from pathlib import Path
 
-from heddle.mcp.client import LoomMCPClient, AgentMesh, MCPClientError
+from heddle.mcp.client import HeddleMCPClient, AgentMesh, MCPClientError
 from heddle.runtime.multi import MultiAgentRunner
 from heddle.mcp.registry import Registry
 from heddle.config.loader import load_agent_config
@@ -12,7 +12,7 @@ from heddle.config.loader import load_agent_config
 # ── MCP Client ───────────────────────────────────────────────────────
 
 def test_client_init():
-    client = LoomMCPClient("my-agent", "http://localhost:9999/mcp")
+    client = HeddleMCPClient("my-agent", "http://localhost:9999/mcp")
     assert client.agent_name == "my-agent"
     assert client.target_uri == "http://localhost:9999/mcp"
 
