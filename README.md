@@ -56,7 +56,7 @@ Claude can now query Prometheus in natural language.
 
 **Current demo environment:** 46 tools from 9 active configs through a single MCP connection (11 configs total, 2 excluded for incompatible transports).
 
-```
+```text
 daily-ops        (T3): daily_briefing, system_health_check, threat_landscape
 gitea-api-bridge (T1): list_user_repos, list_repo_issues
 grafana-bridge   (T1): list_dashboards, get_dashboard, list_datasources, get_alert_rules, grafana_health
@@ -90,12 +90,12 @@ The request was rejected, the violation was logged, and the hash chain links thi
 
 <h2 id="why-heddle">Why Heddle Instead Of...</h2>
 
-| | **Heddle** | Hand-written FastMCP | OpenAPI wrapper gen | n8n / workflow tools |
-|---|---|---|---|---|
+| | **Heddle** | **Hand-written FastMCP** | **OpenAPI wrapper gen** | **n8n / workflow tools** |
+|:--|:--|:--|:--|:--|
 | **New tool** | Write YAML, done | Write Python handler per tool | Generate stubs, then customize | Drag nodes, wire connections |
 | **Security** | Trust tiers, credential broker, audit log, input validation, config signing — all built in | You build it yourself | None | Platform-level auth only |
 | **AI-generatable** | `heddle generate "wrap the Gitea API"` → valid config in 20s | LLM can write code but can't validate it | Not designed for LLM generation | Visual-only, not scriptable |
-| **Credential handling** | `{{secret:key}}` — resolved at runtime, never in config | Hardcoded or env vars | Hardcoded or env vars | Platform credential store |
+| **Credentials** | `{{secret:key}}` resolved at runtime, never in config | Hardcoded or env vars | Hardcoded or env vars | Platform credential store |
 | **Audit trail** | Hash-chained, tamper-evident, every call logged | You build it yourself | None | Platform logs only |
 | **Composability** | Configs become MCP tools, mesh them together | Manual wiring | Separate services | Workflow-scoped |
 
@@ -114,7 +114,7 @@ Heddle is for exposing APIs as MCP tools with real runtime controls — not just
 What Heddle can do today, what is partially implemented, and what is still planned:
 
 | Layer | Status | Detail |
-|-------|--------|--------|
+|:------|:-------|:-------|
 | Config → MCP server | **Shipped** | YAML configs become typed MCP tools with HTTP bridging |
 | Trust tiers (T1–T4) | **Shipped** | Runtime-enforced, violations blocked and logged |
 | Credential broker | **Shipped** | Per-config secret policy, `{{secret:key}}` resolution |
@@ -131,9 +131,11 @@ What Heddle can do today, what is partially implemented, and what is still plann
 ## Core Features
 
 ### Declarative Tool Configs
+
 Define tools in YAML. Heddle validates the config with Pydantic, generates typed MCP tools, and bridges HTTP with `{{param}}` template rendering. Cross-field validation catches bad configs before they run.
 
 ### AI Config Generator
+
 Describe what you need in plain English. A local LLM generates valid YAML, Heddle validates it against schema rules, retries on failure, and saves the result.
 
 ```bash
@@ -146,14 +148,14 @@ $ heddle generate "agent that wraps the Gitea API" --model qwen3:14b
 Heddle's security controls map to OWASP Agentic Top 10, NIST AI RMF, and MAESTRO. See the full [threat model](docs/threat-model.md) and [security controls reference](docs/security-controls.md).
 
 | Control | What It Does | Framework |
-|---------|-------------|-----------|
+|:--------|:-------------|:----------|
 | **Trust tiers** | 4 levels (observer → privileged), runtime-enforced, violations blocked and logged | OWASP Agentic #3 |
 | **Credential broker** | Per-config secret access policy, `{{secret:key}}` resolved at runtime, never stored in YAML | OWASP Agentic #7 |
 | **Audit log** | Hash-chained JSON Lines, tamper-evident, 5 event types, secret redaction | OWASP Agentic #9 |
 | **Input validation** | Type checking, length limits, injection pattern detection (shell, SQL, LLM prompt) | OWASP Agentic #1 |
 | **Config signing** | HMAC-SHA256 on all agent configs, tamper detection | OWASP Agentic #8 |
 | **Config quarantine** | AI-generated configs staged for review before promotion | OWASP Agentic #8 |
-| **Rate limiting** | Sliding window per-agent per-tool | OWASP Agentic #4 |
+| **Rate limiting** | Sliding window per-config per-tool | OWASP Agentic #4 |
 | **Sandbox policies** | Docker container config generation and network policies (enforcement planned) | OWASP Agentic #6 |
 | **Escalation rules** | Conditional hold-for-review when parameters match thresholds or patterns | OWASP Agentic #3 |
 
@@ -164,7 +166,7 @@ Heddle's security controls map to OWASP Agentic Top 10, NIST AI RMF, and MAESTRO
 Ready-made configs for common services. Copy one into `agents/`, update the base URL or credentials, validate, and run. See [packs/](packs/) for full docs.
 
 | Pack | Tools | Trust | Description |
-|------|-------|-------|-------------|
+|:-----|:------|:------|:------------|
 | [prometheus](packs/prometheus.yaml) | 5 | T1 read-only | PromQL queries, targets, alerts, metric discovery |
 | [grafana](packs/grafana.yaml) | 5 | T1 read-only | Dashboards, datasources, alert rules |
 | [git-forge](packs/git-forge.yaml) | 3 | T1 read-only | Repos, issues (Gitea/GitHub/Forgejo) |
@@ -181,15 +183,19 @@ heddle run agents/prometheus.yaml --port 8200
 These show Heddle beyond simple API bridging.
 
 ### Tool Mesh
+
 Multiple configs share a single MCP connection to Claude Desktop. The mesh launcher loads all configs, merges tools, and serves them through one stdio transport.
 
 ### VRAM Orchestrator
+
 A higher-trust agent that manages GPU memory across Ollama and a local GGUF model library, including smart loading and automatic eviction when VRAM is constrained.
 
 ### Daily Ops Orchestrator
+
 An orchestration agent that queries Prometheus, a RAG search API, and Ollama in parallel, then synthesizes a daily operations briefing with a local model.
 
 ### Web Dashboard
+
 A FastAPI + React dashboard for mesh topology, agent status, live audit stream, credential policy, and config signatures.
 
 ---
@@ -254,7 +260,7 @@ To expose a unified Heddle mesh to Claude Desktop:
 ## CLI Reference
 
 | Command | Description |
-|---------|-------------|
+|:--------|:------------|
 | `heddle run <config>` | Run a single agent from YAML |
 | `heddle validate <config>` | Validate a config without running it |
 | `heddle generate "<prompt>"` | Generate a config from natural language |
@@ -263,7 +269,8 @@ To expose a unified Heddle mesh to Claude Desktop:
 | `heddle registry` | Show all registered tools |
 | `heddle info <agent>` | Show detailed agent info |
 | `heddle probe <server>` | Discover tools on a running MCP server |
-| `heddle audit show\|verify` | Inspect and verify the audit chain |
+| `heddle audit show` | Inspect audit log entries |
+| `heddle audit verify` | Verify hash chain integrity |
 | `heddle secrets` | Manage credential broker |
 | `heddle sign` | Sign and verify configs |
 | `heddle quarantine` | Stage AI-generated configs for review |
@@ -271,7 +278,7 @@ To expose a unified Heddle mesh to Claude Desktop:
 
 ## Project Structure
 
-```
+```text
 heddle/
 ├── agents/              # YAML agent configs
 ├── packs/               # Starter pack configs
@@ -299,4 +306,4 @@ Python 3.11+ · FastMCP · FastAPI · Pydantic v2 · httpx · Click · SQLite ·
 
 ## License
 
-MIT
+MIT — see [LICENSE](LICENSE).
