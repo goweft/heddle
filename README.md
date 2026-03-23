@@ -54,7 +54,7 @@ heddle run agents/prometheus-bridge.yaml
 
 Claude can now query Prometheus in natural language.
 
-**Current demo environment:** 46 tools across 9 configs through a single MCP connection.
+**Current demo environment:** 46 tools from 9 active configs through a single MCP connection (11 configs total, 2 excluded for incompatible transports).
 
 ```
 daily-ops        (T3): daily_briefing, system_health_check, threat_landscape
