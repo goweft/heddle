@@ -1,7 +1,7 @@
 """Heddle credential broker — runtime secret injection.
 
 Agents never see raw credentials in their YAML configs. Instead, they
-reference credential keys like {{secret:weft-intel-token}}, and the
+reference credential keys like {{secret:intel-rag-token}}, and the
 broker resolves them at runtime from an encrypted secrets store.
 
 Secrets are stored in a JSON file (encrypted at rest in Phase 3+) at
@@ -41,16 +41,16 @@ class CredentialBroker:
 
     Secrets file format (~/.heddle/secrets.json):
     {
-        "weft-intel-token": "a6e60bd2...",
+        "intel-rag-token": "a6e60bd2...",
         "gitea-api-token": "abc123...",
         "rocketchat-webhook": "https://..."
     }
 
     Policy file format (~/.heddle/credential_policy.json):
     {
-        "weft-intel-bridge": ["weft-intel-token"],
+        "intel-rag-bridge": ["intel-rag-token"],
         "gitea-api-bridge": ["gitea-api-token"],
-        "rc-poster": ["rocketchat-webhook", "weft-intel-token"]
+        "rc-poster": ["rocketchat-webhook", "intel-rag-token"]
     }
     """
 

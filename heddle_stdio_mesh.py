@@ -77,7 +77,7 @@ try:
 
     @unified.tool()
     async def daily_briefing_tool() -> str:
-        """Generate a comprehensive daily operations briefing covering system health, intelligence trends, and model status. Uses a local LLM to synthesize data from Prometheus, weft-intel, and Ollama."""
+        """Generate a comprehensive daily operations briefing covering system health, intelligence trends, and model status. Uses a local LLM to synthesize data from Prometheus, intel-rag, and Ollama."""
         return await daily_briefing()
 
     @unified.tool()
@@ -87,7 +87,7 @@ try:
 
     @unified.tool()
     async def threat_landscape_tool() -> str:
-        """Get a synthesized view of the current threat landscape from weft-intel, summarized by the local LLM."""
+        """Get a synthesized view of the current threat landscape from intel-rag, summarized by the local LLM."""
         return await threat_landscape()
 
     total_tools += 3

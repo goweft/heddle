@@ -1,10 +1,10 @@
-# Heddle Agent: weft-intel-bridge v1.3.0
+# Heddle Agent: intel-rag-bridge v1.3.0
 # Wraps the live WEFT Intelligence platform API (port 9090).
 # Credentials resolved at runtime via the Heddle credential broker.
 # Token stored in ~/.heddle/secrets.json, access granted in credential_policy.json.
 
 agent:
-  name: weft-intel-bridge
+  name: intel-rag-bridge
   version: "1.3.0"
   description: >
     Bridge to the WEFT Intelligence platform. Provides RAG-powered
@@ -102,13 +102,13 @@ agent:
         question: "{{question}}"
       headers:
         Content-Type: "application/json"
-        Authorization: "Bearer {{secret:weft-intel-token}}"
+        Authorization: "Bearer {{secret:intel-rag-token}}"
 
     - tool_name: get_dossier
       method: GET
       url: "http://localhost:9090/api/dossier/{{entity_name}}"
       headers:
-        Authorization: "Bearer {{secret:weft-intel-token}}"
+        Authorization: "Bearer {{secret:intel-rag-token}}"
 
     - tool_name: get_trending
       method: GET
@@ -117,19 +117,19 @@ agent:
         hours: hours
         limit: limit
       headers:
-        Authorization: "Bearer {{secret:weft-intel-token}}"
+        Authorization: "Bearer {{secret:intel-rag-token}}"
 
     - tool_name: get_patterns
       method: GET
       url: "http://localhost:9090/api/patterns"
       headers:
-        Authorization: "Bearer {{secret:weft-intel-token}}"
+        Authorization: "Bearer {{secret:intel-rag-token}}"
 
     - tool_name: get_daily_brief
       method: GET
       url: "http://localhost:9090/api/brief"
       headers:
-        Authorization: "Bearer {{secret:weft-intel-token}}"
+        Authorization: "Bearer {{secret:intel-rag-token}}"
 
     - tool_name: get_communities
       method: GET
@@ -137,19 +137,19 @@ agent:
       query_params:
         min_size: min_size
       headers:
-        Authorization: "Bearer {{secret:weft-intel-token}}"
+        Authorization: "Bearer {{secret:intel-rag-token}}"
 
     - tool_name: get_stats
       method: GET
       url: "http://localhost:9090/api/stats/v2"
       headers:
-        Authorization: "Bearer {{secret:weft-intel-token}}"
+        Authorization: "Bearer {{secret:intel-rag-token}}"
 
     - tool_name: get_emerging_relationships
       method: GET
       url: "http://localhost:9090/api/emerging-relationships"
       headers:
-        Authorization: "Bearer {{secret:weft-intel-token}}"
+        Authorization: "Bearer {{secret:intel-rag-token}}"
 
   runtime:
     sandbox: none

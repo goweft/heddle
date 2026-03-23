@@ -4,7 +4,7 @@
 #
 # This is NOT a simple API bridge. It:
 # 1. Queries Prometheus for system health
-# 2. Queries weft-intel for trending entities and patterns  
+# 2. Queries intel-rag for trending entities and patterns  
 # 3. Checks Ollama model status
 # 4. Feeds all data to a local LLM for synthesis
 # 5. Produces a formatted daily operations report
@@ -14,7 +14,7 @@ agent:
   version: "1.0.0"
   description: >
     Advanced orchestrating agent that synthesizes a daily operations
-    report by querying Prometheus (system health), weft-intel
+    report by querying Prometheus (system health), intel-rag
     (intelligence trends), and Ollama (model status), then using
     a local LLM to produce a coherent briefing.
 
@@ -52,7 +52,7 @@ agent:
     - name: threat_landscape
       description: >
         Get a synthesized view of the current threat landscape
-        from weft-intel, summarized by the local LLM.
+        from intel-rag, summarized by the local LLM.
       returns:
         type: string
         description: "Markdown threat landscape summary"

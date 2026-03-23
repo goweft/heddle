@@ -89,14 +89,14 @@ async def gather_system_health() -> dict[str, Any]:
 
 
 async def gather_intel_summary() -> dict[str, Any]:
-    """Gather intelligence data from weft-intel."""
+    """Gather intelligence data from intel-rag."""
     intel = {"trending": [], "stats": {}, "patterns": []}
 
     # Get the auth token
     from heddle.security.credentials import get_credential_broker
     broker = get_credential_broker()
     try:
-        token = broker.get_credential("weft-intel-bridge", "weft-intel-token")
+        token = broker.get_credential("intel-rag-bridge", "intel-rag-token")
         headers = {"Authorization": f"Bearer {token}"}
     except Exception:
         headers = {}
@@ -176,7 +176,7 @@ Targets: {json.dumps(health['targets'])}
 Metrics: {json.dumps(health['metrics'])}
 Alerts: {json.dumps(health['alerts'])}
 
-## INTELLIGENCE FEED (from weft-intel)
+## INTELLIGENCE FEED (from intel-rag)
 Stats: {json.dumps(intel['stats'])}
 Top trending entities (24h): {json.dumps(intel['trending'])}
 Detected patterns: {json.dumps(intel['patterns'][:3]) if intel['patterns'] else 'None'}
@@ -216,7 +216,7 @@ async def system_health_check() -> str:
 
 
 async def threat_landscape() -> str:
-    """Synthesized threat landscape from weft-intel."""
+    """Synthesized threat landscape from intel-rag."""
     intel = await gather_intel_summary()
 
     llm = LLMClient(provider="ollama", model="qwen3:14b", temperature=0.3)

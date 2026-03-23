@@ -10,7 +10,7 @@ MINIMAL_CONFIG = {"agent": {"name": "test-agent", "version": "1.0.0", "descripti
 
 FULL_CONFIG = {
     "agent": {
-        "name": "intel-bridge", "version": "2.0.0", "description": "Wraps weft-intel",
+        "name": "intel-bridge", "version": "2.0.0", "description": "Wraps intel-rag",
         "model": {"provider": "none"},
         "exposes": [
             {"name": "ask_intel", "description": "Ask a question",

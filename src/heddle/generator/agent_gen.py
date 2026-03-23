@@ -101,7 +101,7 @@ EXAMPLE_CONFIG = """\
 EXAMPLE (a working agent that bridges a REST API):
 
 agent:
-  name: weft-intel-bridge
+  name: intel-rag-bridge
   version: "1.0.0"
   description: "Bridge to the WEFT Intelligence platform for news analysis."
 
