@@ -82,7 +82,7 @@ The violation was logged, the request was rejected, and the hash chain links thi
 
 <h2 id="why-loom">Why Heddle Instead Of...</h2>
 
-| | **LOOM** | Hand-written FastMCP | OpenAPI wrapper gen | n8n / workflow tools |
+| | **Heddle** | Hand-written FastMCP | OpenAPI wrapper gen | n8n / workflow tools |
 |---|---|---|---|---|
 | **New tool** | Write YAML, done | Write Python handler per tool | Generate stubs, then customize | Drag nodes, wire connections |
 | **Security** | Trust tiers, credential broker, audit log, input validation, config signing — all built in | You build it yourself | None | Platform-level auth only |
@@ -100,6 +100,23 @@ Heddle is for the case where you have REST APIs that you want to expose as MCP t
 <p align="center">
   <img src="docs/assets/architecture.svg" alt="Heddle runtime pipeline" width="720">
 </p>
+
+## Current Status
+
+| Layer | Status | Detail |
+|-------|--------|--------|
+| Config → MCP server | **Shipped** | YAML configs become typed MCP tools with HTTP bridging |
+| Trust tiers (T1–T4) | **Shipped** | Runtime-enforced, violations blocked and logged |
+| Credential broker | **Shipped** | Per-config secret policy, `{{secret:key}}` resolution |
+| Audit logging | **Shipped** | Hash-chained JSON Lines, tamper-evident |
+| Input validation | **Shipped** | Type checking, injection detection, rate limiting |
+| Access mode annotations | **Shipped** | read/write on tools, T1 write blocked at load + runtime |
+| Escalation rules | **Shipped** | Conditional hold-for-review on parameter thresholds |
+| Config signing | **Shipped** | HMAC-SHA256, tamper detection |
+| Config quarantine | **Shipped** | AI-generated configs staged for review |
+| AI config generator | **Shipped** | Natural language → validated YAML via local LLM |
+| Sandbox policies | **Partial** | Container config generation exists; runtime isolation not yet enforced |
+| Network isolation | **Planned** | Container-level network enforcement |
 
 ## Core Features
 
@@ -126,7 +143,7 @@ See the full [threat model](docs/threat-model.md) and [security controls referen
 | **Config signing** | HMAC-SHA256 on all agent configs, tamper detection | OWASP Agentic #8 |
 | **Config quarantine** | AI-generated configs staged for review before promotion | OWASP Agentic #8 |
 | **Rate limiting** | Sliding window per-agent per-tool | OWASP Agentic #4 |
-| **Sandbox framework** | Docker container config generation, network policies, resource limits by tier | OWASP Agentic #6 |
+| **Sandbox policies** | Docker container config generation and network policies (enforcement planned) | OWASP Agentic #6 |
 | **Escalation rules** | Conditional hold-for-review when parameters match thresholds or patterns | OWASP Agentic #3 |
 
 ---
@@ -172,7 +189,7 @@ FastAPI backend + React frontend showing mesh topology, agent status, live audit
 
 ```bash
 # Clone and install
-git clone https://github.com/goweft/heddle.git && cd loom
+git clone https://github.com/goweft/heddle.git && cd heddle
 python -m venv venv && source venv/bin/activate
 pip install -e ".[dev]"
 
@@ -203,8 +220,8 @@ heddle sandbox agents/my-agent.yaml
 {
   "mcpServers": {
     "heddle-mesh": {
-      "command": "/path/to/loom/venv/bin/python",
-      "args": ["/path/to/loom/heddle_stdio_mesh.py"]
+      "command": "/path/to/heddle/venv/bin/python",
+      "args": ["/path/to/heddle/heddle_stdio_mesh.py"]
     }
   }
 }
