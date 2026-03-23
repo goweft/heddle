@@ -1,66 +1,77 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="720" height="200" viewBox="0 0 720 200">
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="220" viewBox="0 0 900 220">
   <style>
     text { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
-    .label { font-size: 13px; fill: #c0c0c0; font-weight: 500; }
-    .sub { font-size: 10px; fill: #6c7086; }
-    .arrow { stroke: #45475a; stroke-width: 1.5; fill: none; marker-end: url(#ah); }
+    .title { font-size: 14px; font-weight: 600; }
+    .detail { font-size: 10.5px; fill: #7f849c; }
+    .flow { font-size: 11px; fill: #585b70; letter-spacing: 0.3px; }
+    .arrow { stroke: #585b70; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+    .box { fill: #1e1e2e; rx: 10; ry: 10; stroke-width: 1.4; }
   </style>
   <defs>
-    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M1 1L9 5L1 9" fill="none" stroke="#45475a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <marker id="arrowhead" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M1 1.5L8 5L1 8.5" fill="none" stroke="#585b70" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
     </marker>
   </defs>
 
-  <!-- YAML Config -->
-  <rect x="16" y="50" width="110" height="68" rx="8" fill="#1e1e2e" stroke="#6c5ce7" stroke-width="1.2"/>
-  <text x="71" y="78" text-anchor="middle" class="label" fill="#cba6f7">YAML config</text>
-  <text x="71" y="96" text-anchor="middle" class="sub">tools, trust tier,</text>
-  <text x="71" y="108" text-anchor="middle" class="sub">credentials, access</text>
+  <!-- Flow label -->
+  <text x="450" y="22" text-anchor="middle" class="flow">config in  →  validated  →  secured  →  MCP tool out  →  backend</text>
+
+  <!-- Box dimensions: 140w x 120h, spaced 30px apart -->
+
+  <!-- 1. YAML Config -->
+  <rect x="30" y="45" width="140" height="120" class="box" stroke="#cba6f7"/>
+  <text x="100" y="75" text-anchor="middle" class="title" fill="#cba6f7">YAML Config</text>
+  <text x="100" y="96" text-anchor="middle" class="detail">tools, trust tier,</text>
+  <text x="100" y="110" text-anchor="middle" class="detail">credentials, access</text>
+  <text x="100" y="124" text-anchor="middle" class="detail">modes, escalation</text>
+  <text x="100" y="138" text-anchor="middle" class="detail">rules, http bridge</text>
 
   <!-- Arrow 1 -->
-  <line x1="130" y1="84" x2="168" y2="84" class="arrow"/>
+  <line x1="174" y1="105" x2="204" y2="105" class="arrow"/>
 
-  <!-- Validation -->
-  <rect x="172" y="50" width="110" height="68" rx="8" fill="#1e1e2e" stroke="#f9e2af" stroke-width="1.2"/>
-  <text x="227" y="78" text-anchor="middle" class="label" fill="#f9e2af">Validation</text>
-  <text x="227" y="96" text-anchor="middle" class="sub">Pydantic schema,</text>
-  <text x="227" y="108" text-anchor="middle" class="sub">cross-field checks</text>
+  <!-- 2. Validation -->
+  <rect x="208" y="45" width="140" height="120" class="box" stroke="#f9e2af"/>
+  <text x="278" y="75" text-anchor="middle" class="title" fill="#f9e2af">Validation</text>
+  <text x="278" y="96" text-anchor="middle" class="detail">Pydantic schema</text>
+  <text x="278" y="110" text-anchor="middle" class="detail">cross-field checks</text>
+  <text x="278" y="124" text-anchor="middle" class="detail">access ↔ trust tier</text>
+  <text x="278" y="138" text-anchor="middle" class="detail">bridge ref integrity</text>
 
   <!-- Arrow 2 -->
-  <line x1="286" y1="84" x2="324" y2="84" class="arrow"/>
+  <line x1="352" y1="105" x2="382" y2="105" class="arrow"/>
 
-  <!-- Security -->
-  <rect x="328" y="30" width="110" height="108" rx="8" fill="#1e1e2e" stroke="#a6e3a1" stroke-width="1.2"/>
-  <text x="383" y="54" text-anchor="middle" class="label" fill="#a6e3a1">Security</text>
-  <text x="383" y="72" text-anchor="middle" class="sub">trust tiers</text>
-  <text x="383" y="84" text-anchor="middle" class="sub">credential broker</text>
-  <text x="383" y="96" text-anchor="middle" class="sub">input validation</text>
-  <text x="383" y="108" text-anchor="middle" class="sub">audit logging</text>
-  <text x="383" y="120" text-anchor="middle" class="sub">access modes</text>
-  <text x="383" y="132" text-anchor="middle" class="sub">config signing</text>
+  <!-- 3. Security -->
+  <rect x="386" y="45" width="140" height="120" class="box" stroke="#a6e3a1"/>
+  <text x="456" y="75" text-anchor="middle" class="title" fill="#a6e3a1">Security</text>
+  <text x="456" y="96" text-anchor="middle" class="detail">trust tiers (T1–T4)</text>
+  <text x="456" y="110" text-anchor="middle" class="detail">credential broker</text>
+  <text x="456" y="124" text-anchor="middle" class="detail">input validation</text>
+  <text x="456" y="138" text-anchor="middle" class="detail">audit · signing · rate</text>
+  <text x="456" y="152" text-anchor="middle" class="detail">escalation rules</text>
 
   <!-- Arrow 3 -->
-  <line x1="442" y1="84" x2="480" y2="84" class="arrow"/>
+  <line x1="530" y1="105" x2="560" y2="105" class="arrow"/>
 
-  <!-- MCP Server -->
-  <rect x="484" y="50" width="110" height="68" rx="8" fill="#1e1e2e" stroke="#89b4fa" stroke-width="1.2"/>
-  <text x="539" y="78" text-anchor="middle" class="label" fill="#89b4fa">MCP server</text>
-  <text x="539" y="96" text-anchor="middle" class="sub">typed tools,</text>
-  <text x="539" y="108" text-anchor="middle" class="sub">stdio / HTTP</text>
+  <!-- 4. MCP Server -->
+  <rect x="564" y="45" width="140" height="120" class="box" stroke="#89b4fa"/>
+  <text x="634" y="75" text-anchor="middle" class="title" fill="#89b4fa">MCP Server</text>
+  <text x="634" y="96" text-anchor="middle" class="detail">typed tool registry</text>
+  <text x="634" y="110" text-anchor="middle" class="detail">stdio or HTTP</text>
+  <text x="634" y="124" text-anchor="middle" class="detail">template rendering</text>
+  <text x="634" y="138" text-anchor="middle" class="detail">{{secret}} resolution</text>
 
   <!-- Arrow 4 -->
-  <line x1="598" y1="84" x2="636" y2="84" class="arrow"/>
+  <line x1="708" y1="105" x2="738" y2="105" class="arrow"/>
 
-  <!-- Backend -->
-  <rect x="640" y="50" width="66" height="68" rx="8" fill="#1e1e2e" stroke="#45475a" stroke-width="1.2"/>
-  <text x="673" y="78" text-anchor="middle" class="label">APIs</text>
-  <text x="673" y="96" text-anchor="middle" class="sub">REST,</text>
-  <text x="673" y="108" text-anchor="middle" class="sub">services</text>
+  <!-- 5. Backend APIs -->
+  <rect x="742" y="45" width="140" height="120" class="box" stroke="#f38ba8"/>
+  <text x="812" y="75" text-anchor="middle" class="title" fill="#f38ba8">Backend APIs</text>
+  <text x="812" y="96" text-anchor="middle" class="detail">Prometheus</text>
+  <text x="812" y="110" text-anchor="middle" class="detail">Grafana · Ollama</text>
+  <text x="812" y="124" text-anchor="middle" class="detail">Gitea · RSS</text>
+  <text x="812" y="138" text-anchor="middle" class="detail">any REST service</text>
 
-  <!-- Top label -->
-  <text x="360" y="18" text-anchor="middle" font-size="11" fill="#585b70" font-family="'Segoe UI', system-ui, sans-serif">config in → validated → secured → MCP tool out</text>
-
-  <!-- Bottom: Claude Desktop -->
-  <text x="539" y="155" text-anchor="middle" class="sub">Claude Desktop / any MCP client</text>
-  <line x1="539" y1="142" x2="539" y2="122" stroke="#45475a" stroke-width="1" stroke-dasharray="4 3"/>
+  <!-- Claude Desktop connection (below MCP Server) -->
+  <line x1="634" y1="169" x2="634" y2="190" stroke="#585b70" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="634" y="206" text-anchor="middle" class="detail">Claude Desktop / any MCP client</text>
 </svg>

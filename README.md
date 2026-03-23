@@ -106,7 +106,7 @@ Heddle is for exposing APIs as MCP tools with real runtime controls — not just
 ## How It Works
 
 <p align="center">
-  <img src="docs/assets/architecture.svg" alt="Heddle runtime pipeline" width="720">
+  <img src="docs/assets/architecture.svg" alt="Heddle runtime pipeline" width="900">
 </p>
 
 <h2 id="current-status">Current Status</h2>
