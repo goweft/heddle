@@ -131,7 +131,7 @@
   <g class="l14">
     <text x="20" y="392" class="prompt">❯</text>
     <text x="40" y="392" class="grn">heddle mesh</text>
-    <text x="120" y="392" class="cmd"> agents/</text>
+    <text x="140" y="392" class="cmd"> agents/</text>
   </g>
   <g class="l15">
     <text x="20" y="412" class="cyn">▶</text>
