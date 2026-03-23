@@ -35,8 +35,6 @@
     .grn  { fill: #98c379; }
     .cyn  { fill: #56b6c2; }
     .ylw  { fill: #e5c07b; }
-    .red  { fill: #e06c75; }
-    .mag  { fill: #c678dd; }
     .dim  { fill: #5c6370; }
     .wht  { fill: #abb2bf; }
     .bld  { fill: #e0e0e0; font-weight: 600; }
@@ -54,91 +52,61 @@
 
   <!-- Line 1: validate -->
   <g class="l1">
-    <text x="20" y="60" class="prompt">❯</text>
-    <text x="40" y="60" class="grn">heddle validate</text>
-    <text x="176" y="60" class="cmd"> agents/prometheus-bridge.yaml</text>
+    <text x="20" y="60"><tspan class="prompt">❯ </tspan><tspan class="grn">heddle validate</tspan><tspan class="cmd"> agents/prometheus-bridge.yaml</tspan></text>
   </g>
   <g class="l2">
-    <text x="20" y="80" class="grn">✓</text>
-    <text x="40" y="80" class="wht">Valid: prometheus-bridge v1.0.0 (5 tools, T1 observer)</text>
+    <text x="20" y="80"><tspan class="grn">✓ </tspan><tspan class="wht">Valid: prometheus-bridge v1.0.0 (5 tools, T1 observer)</tspan></text>
   </g>
 
   <!-- Line 2: run -->
   <g class="l3">
-    <text x="20" y="112" class="prompt">❯</text>
-    <text x="40" y="112" class="grn">heddle run</text>
-    <text x="120" y="112" class="cmd"> agents/prometheus-bridge.yaml --port 8200</text>
+    <text x="20" y="112"><tspan class="prompt">❯ </tspan><tspan class="grn">heddle run</tspan><tspan class="cmd"> agents/prometheus-bridge.yaml --port 8200</tspan></text>
   </g>
   <g class="l4">
-    <text x="20" y="132" class="cyn">▶</text>
-    <text x="40" y="132" class="wht">MCP server heddle-prometheus-bridge on</text>
-    <text x="374" y="132" class="cyn">http://0.0.0.0:8200/mcp</text>
+    <text x="20" y="132"><tspan class="cyn">▶ </tspan><tspan class="wht">MCP server heddle-prometheus-bridge on </tspan><tspan class="cyn">http://0.0.0.0:8200/mcp</tspan></text>
   </g>
 
   <!-- Line 3: generate -->
   <g class="l5">
-    <text x="20" y="164" class="prompt">❯</text>
-    <text x="40" y="164" class="grn">heddle generate</text>
-    <text x="188" y="164" class="ylw"> "agent that wraps the Gitea API"</text>
+    <text x="20" y="164"><tspan class="prompt">❯ </tspan><tspan class="grn">heddle generate</tspan><tspan class="ylw"> "agent that wraps the Gitea API"</tspan></text>
   </g>
   <g class="l6">
     <text x="20" y="184" class="dim">  Generating with qwen3:14b...</text>
   </g>
   <g class="l7">
-    <text x="20" y="204" class="grn">✓</text>
-    <text x="40" y="204" class="wht">Generated gitea-api-bridge.yaml (2 tools) in 20.3s</text>
+    <text x="20" y="204"><tspan class="grn">✓ </tspan><tspan class="wht">Generated gitea-api-bridge.yaml (2 tools) in 20.3s</tspan></text>
   </g>
 
   <!-- Line 4: audit -->
   <g class="l8">
-    <text x="20" y="236" class="prompt">❯</text>
-    <text x="40" y="236" class="grn">heddle audit verify</text>
+    <text x="20" y="236"><tspan class="prompt">❯ </tspan><tspan class="grn">heddle audit verify</tspan></text>
   </g>
   <g class="l9">
-    <text x="20" y="256" class="grn">✓</text>
-    <text x="40" y="256" class="wht">Chain valid: 599 entries</text>
+    <text x="20" y="256"><tspan class="grn">✓ </tspan><tspan class="wht">Chain valid: 599 entries</tspan></text>
   </g>
 
   <!-- Line 5: sign -->
   <g class="l10">
-    <text x="20" y="288" class="prompt">❯</text>
-    <text x="40" y="288" class="grn">heddle sign verify</text>
-    <text x="192" y="288" class="cmd"> agents/</text>
+    <text x="20" y="288"><tspan class="prompt">❯ </tspan><tspan class="grn">heddle sign verify</tspan><tspan class="cmd"> agents/</tspan></text>
   </g>
   <g class="l11">
-    <text x="20" y="308" class="grn">✓</text>
-    <text x="40" y="308" class="wht">All 11 configs verified</text>
+    <text x="20" y="308"><tspan class="grn">✓ </tspan><tspan class="wht">All 11 configs verified</tspan></text>
   </g>
 
   <!-- Line 6: sandbox -->
   <g class="l12">
-    <text x="20" y="340" class="prompt">❯</text>
-    <text x="40" y="340" class="grn">heddle sandbox</text>
-    <text x="152" y="340" class="cmd"> agents/intel-rag-bridge.yaml</text>
+    <text x="20" y="340"><tspan class="prompt">❯ </tspan><tspan class="grn">heddle sandbox</tspan><tspan class="cmd"> agents/intel-rag-bridge.yaml</tspan></text>
   </g>
   <g class="l13">
-    <text x="20" y="360" class="wht">  Memory:</text>
-    <text x="100" y="360" class="cyn">512m</text>
-    <text x="146" y="360" class="wht"> CPU:</text>
-    <text x="188" y="360" class="cyn">0.5</text>
-    <text x="214" y="360" class="wht"> Network:</text>
-    <text x="302" y="360" class="cyn">bridge</text>
-    <text x="358" y="360" class="wht"> Read-only:</text>
-    <text x="458" y="360" class="grn">true</text>
+    <text x="20" y="360"><tspan class="wht">  Memory: </tspan><tspan class="cyn">512m</tspan><tspan class="wht">  CPU: </tspan><tspan class="cyn">0.5</tspan><tspan class="wht">  Network: </tspan><tspan class="cyn">bridge</tspan><tspan class="wht">  Read-only: </tspan><tspan class="grn">true</tspan></text>
   </g>
 
   <!-- Line 7: mesh -->
   <g class="l14">
-    <text x="20" y="392" class="prompt">❯</text>
-    <text x="40" y="392" class="grn">heddle mesh</text>
-    <text x="140" y="392" class="cmd"> agents/</text>
+    <text x="20" y="392"><tspan class="prompt">❯ </tspan><tspan class="grn">heddle mesh</tspan><tspan class="cmd"> agents/</tspan></text>
   </g>
   <g class="l15">
-    <text x="20" y="412" class="cyn">▶</text>
-    <text x="40" y="412" class="wht">Unified MCP server:</text>
-    <text x="234" y="412" class="bld">46 tools</text>
-    <text x="314" y="412" class="wht">from</text>
-    <text x="346" y="412" class="bld">9 agents</text>
+    <text x="20" y="412"><tspan class="cyn">▶ </tspan><tspan class="wht">Unified MCP server: </tspan><tspan class="bld">46 tools</tspan><tspan class="wht"> from </tspan><tspan class="bld">9 agents</tspan></text>
   </g>
   <g class="l15">
     <text x="40" y="432" class="dim">  intel-rag-bridge: 8 tools  prometheus-bridge: 5 tools</text>
