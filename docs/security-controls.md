@@ -69,9 +69,9 @@ Violations are **blocked** (not warned) and logged to the audit trail.
 - Promote/reject workflow with manifest tracking
 - CLI: `heddle quarantine list`, `promote`, `reject`
 
-### Sandbox Framework (`security/sandbox.py`)
+### Sandbox Policy Generation (`security/sandbox.py`)
 
-- Docker container config generation from agent YAML
+- Docker container config generation from agent YAML (policy generation, not runtime enforcement yet)
 - Resource limits scaled by trust tier (T1=256MB, T3=1GB)
 - Network policy: configs can only reach declared http_bridge hosts
 - Read-only root filesystem, scoped writable volumes

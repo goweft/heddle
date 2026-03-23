@@ -4,7 +4,7 @@
 >
 > **Last updated:** March 2026  
 
-> **System:** Heddle v0.1.0 — 10 agents, 44 tools, 292+ audit entries
+> **System:** Heddle v0.1.0 — 11 agent configs, 51 tools defined, 46 in active mesh
 
 ---
 
@@ -158,7 +158,7 @@ Credential Policy:
 - **CLI for log inspection.** `heddle audit show` displays recent entries with rich formatting. `heddle audit verify` checks chain integrity. Both support event-type filtering.
 
 **Production metrics (as of this writing):**
-- 292+ audit entries
+- Audit chain active (fresh after development reset)
 - Chain integrity: verified valid
 - Trust violations captured: 5+ (including the T1/POST real bug)
 - Credential access events: 12+ granted, 8+ denied
@@ -271,13 +271,13 @@ Credential Policy:
 |---|---------|--------|---------------|----------|
 | 1 | Trust tier enforcement | **Implemented** | `security/trust.py` | Real T1/POST violation caught and blocked |
 | 2 | Credential broker | **Implemented** | `security/credentials.py` | 2 secrets, per-agent policy for 8 agents |
-| 3 | Hash-chained audit log | **Implemented** | `security/audit.py` | 292+ entries, chain verified valid |
+| 3 | Hash-chained audit log | **Implemented** | `security/audit.py` | Hash chain active and verified |
 | 4 | Secret redaction | **Implemented** | `security/audit.py` | Tokens replaced with `***REDACTED***` in logs |
 | 5 | Schema validation | **Implemented** | `config/schema.py`, `config/loader.py` | Pydantic v2, cross-field checks |
 | 6 | Dry-run validation | **Implemented** | `cli.py`, `generator/agent_gen.py` | `heddle validate`, `heddle generate --dry-run` |
 | 7 | Self-correcting generation | **Implemented** | `generator/agent_gen.py` | Retry with error feedback |
 | 8 | Execution timeout | **Implemented** | Agent YAML `max_execution_time` | Per-agent, enforced by HTTP client |
-| 9 | Docker sandboxing framework | **Implemented** | `security/sandbox.py` | Container config generation, network policies |
+| 9 | Sandbox policy generation | **Implemented** | `security/sandbox.py` | Container configs and network policies (runtime enforcement planned) |
 | 10 | Input validation | **Implemented** | `security/validation.py` | Type checking, injection detection, length limits |
 | 11 | Config signing | **Implemented** | `security/signing.py` | HMAC-SHA256, tamper detection |
 | 12 | Config quarantine | **Implemented** | `security/signing.py` | Staging directory, promote/reject workflow |
@@ -374,4 +374,4 @@ Credential Policy:
 
 ---
 
-*This threat model is a living document. It will be updated as Heddle progresses through Phase 3 hardening (Docker sandboxing, input validation, config signing) and as new threat patterns emerge in the agentic AI landscape.*
+*This threat model is a living document. It will be updated as Heddle progresses through runtime sandboxing enforcement and as new threat patterns emerge in the agentic AI landscape.*
