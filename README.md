@@ -37,11 +37,11 @@ agent:
   http_bridge:
     - tool_name: query_prometheus
       method: GET
-      url: "http://localhost:9092/api/v1/query"
+      url: "http://localhost:9090/api/v1/query"
       query_params: { query: query }
     - tool_name: get_alerts
       method: GET
-      url: "http://localhost:9092/api/v1/alerts"
+      url: "http://localhost:9090/api/v1/alerts"
   runtime:
     trust_tier: 1  # enforced: GET/HEAD only, no writes, no cross-agent calls
 ```

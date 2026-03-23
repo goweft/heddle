@@ -9,13 +9,12 @@ Claude Desktop gets every tool through one connection.
 """
 import logging
 import sys
+from pathlib import Path
 
 logging.basicConfig(stream=sys.stderr, level=logging.INFO,
                     format="%(asctime)s [%(levelname)s] %(message)s")
 
-sys.path.insert(0, "/mnt/workspace/projects/loom/src")
-
-from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
 from fastmcp import FastMCP
 from heddle.config.loader import load_agent_config, discover_configs
 from heddle.mcp.server import _register_http_tool, _register_passthrough_tool
@@ -23,7 +22,7 @@ from heddle.security.audit import get_audit_logger
 from heddle.security.trust import TrustEnforcer
 from heddle.security.credentials import get_credential_broker
 
-AGENTS_DIR = Path("/mnt/workspace/projects/loom/agents")
+AGENTS_DIR = Path(__file__).resolve().parent / "agents"
 
 # Agents to exclude from HTTP bridge loading (custom handlers registered below)
 EXCLUDE = {

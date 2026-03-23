@@ -43,14 +43,14 @@ class CredentialBroker:
     {
         "intel-rag-token": "a6e60bd2...",
         "gitea-api-token": "abc123...",
-        "rocketchat-webhook": "https://..."
+        "service-webhook": "https://..."
     }
 
     Policy file format (~/.heddle/credential_policy.json):
     {
         "intel-rag-bridge": ["intel-rag-token"],
         "gitea-api-bridge": ["gitea-api-token"],
-        "rc-poster": ["rocketchat-webhook", "intel-rag-token"]
+        "webhook-poster": ["service-webhook", "intel-rag-token"]
     }
     """
 

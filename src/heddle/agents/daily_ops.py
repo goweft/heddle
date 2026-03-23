@@ -20,7 +20,7 @@ from heddle.security.audit import get_audit_logger
 
 logger = logging.getLogger(__name__)
 
-PROMETHEUS_URL = "http://localhost:9092"
+PROMETHEUS_URL = "http://localhost:9090"
 INTEL_URL = "http://localhost:9090"
 OLLAMA_URL = "http://localhost:11434"
 

@@ -23,7 +23,7 @@ from heddle.generator.llm import LLMClient, DEFAULT_MODEL
 
 logger = logging.getLogger(__name__)
 
-AGENTS_DIR = Path("/mnt/workspace/projects/loom/agents")
+AGENTS_DIR = Path.home() / ".heddle" / "agents"
 
 # ── System prompt ────────────────────────────────────────────────────
 

@@ -48,13 +48,13 @@ agent:
   http_bridge:
     - tool_name: list_user_repos
       method: GET
-      url: "http://localhost:3080/api/v1/users/{{owner}}/repos"
+      url: "http://localhost:3000/api/v1/users/{{owner}}/repos"
       query_params:
         limit: limit
 
     - tool_name: list_repo_issues
       method: GET
-      url: "http://localhost:3080/api/v1/repos/{{owner}}/{{repo}}/issues"
+      url: "http://localhost:3000/api/v1/repos/{{owner}}/{{repo}}/issues"
       query_params:
         state: state
 

@@ -77,13 +77,13 @@ agent:
   http_bridge:
     - tool_name: query_prometheus
       method: GET
-      url: "http://localhost:9092/api/v1/query"
+      url: "http://localhost:9090/api/v1/query"
       query_params:
         query: query
 
     - tool_name: query_range
       method: GET
-      url: "http://localhost:9092/api/v1/query_range"
+      url: "http://localhost:9090/api/v1/query_range"
       query_params:
         query: query
         start: start
@@ -92,15 +92,15 @@ agent:
 
     - tool_name: get_targets
       method: GET
-      url: "http://localhost:9092/api/v1/targets"
+      url: "http://localhost:9090/api/v1/targets"
 
     - tool_name: get_alerts
       method: GET
-      url: "http://localhost:9092/api/v1/alerts"
+      url: "http://localhost:9090/api/v1/alerts"
 
     - tool_name: get_metric_names
       method: GET
-      url: "http://localhost:9092/api/v1/label/__name__/values"
+      url: "http://localhost:9090/api/v1/label/__name__/values"
 
   runtime:
     sandbox: none

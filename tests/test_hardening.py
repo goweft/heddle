@@ -344,7 +344,7 @@ def test_sandbox_docker_run_args():
 def test_sandbox_network_policy():
     sandbox = SandboxConfig(
         agent_name="test",
-        allowed_hosts=["localhost:9090", "localhost:3005"],
+        allowed_hosts=["localhost:9090", "localhost:3000"],
         network_mode="bridge",
     )
     mgr = SandboxManager()

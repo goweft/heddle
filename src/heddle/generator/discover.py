@@ -1,7 +1,7 @@
 """API discovery — probe a running HTTP service to find endpoints.
 
 Used by the generator to auto-discover what a target API exposes,
-so the user can say "wrap the API at localhost:8080" and LOOM
+so the user can say "wrap the API at localhost:8080" and Heddle
 figures out the available endpoints.
 """
 

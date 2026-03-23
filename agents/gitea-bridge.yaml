@@ -38,13 +38,13 @@ agent:
   http_bridge:
     - tool_name: list_repos
       method: GET
-      url: "http://localhost:3080/api/v1/repos?owner={{owner}}"
+      url: "http://localhost:3000/api/v1/repos?owner={{owner}}"
       headers:
         Accept: "application/json"
 
     - tool_name: list_issues
       method: GET
-      url: "http://localhost:3080/api/v1/repos/{{owner}}/{{repo}}/issues"
+      url: "http://localhost:3000/api/v1/repos/{{owner}}/{{repo}}/issues"
       headers:
         Accept: "application/json"
 

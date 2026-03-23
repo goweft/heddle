@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Heddle Web Dashboard launcher."""
 import sys
-sys.path.insert(0, "/mnt/workspace/projects/loom/src")
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
 
 import uvicorn
 from heddle.web.api import create_app

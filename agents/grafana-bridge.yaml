@@ -54,31 +54,31 @@ agent:
   http_bridge:
     - tool_name: list_dashboards
       method: GET
-      url: "http://localhost:3005/api/search?type=dash-db"
+      url: "http://localhost:3000/api/search?type=dash-db"
       headers:
         Authorization: "{{secret:grafana-basic-auth}}"
 
     - tool_name: get_dashboard
       method: GET
-      url: "http://localhost:3005/api/dashboards/uid/{{uid}}"
+      url: "http://localhost:3000/api/dashboards/uid/{{uid}}"
       headers:
         Authorization: "{{secret:grafana-basic-auth}}"
 
     - tool_name: list_datasources
       method: GET
-      url: "http://localhost:3005/api/datasources"
+      url: "http://localhost:3000/api/datasources"
       headers:
         Authorization: "{{secret:grafana-basic-auth}}"
 
     - tool_name: get_alert_rules
       method: GET
-      url: "http://localhost:3005/api/ruler/grafana/api/v1/rules"
+      url: "http://localhost:3000/api/ruler/grafana/api/v1/rules"
       headers:
         Authorization: "{{secret:grafana-basic-auth}}"
 
     - tool_name: grafana_health
       method: GET
-      url: "http://localhost:3005/api/health"
+      url: "http://localhost:3000/api/health"
 
   runtime:
     sandbox: none

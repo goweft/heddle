@@ -1,13 +1,13 @@
-# Heddle Agent: nexus-bridge
-# Bridges the NEXUS AI Platform API on the server (port 8080).
+# Heddle Agent: ai-platform-bridge
+# Bridges the AI platform API on the server (port 8080).
 # 45 endpoints available, exposing the most useful ones for Claude.
-# NEXUS provides multi-LLM routing, RAG, code analysis, and app management.
+# AI Platform provides multi-LLM routing, RAG, code analysis, and app management.
 
 agent:
-  name: nexus-bridge
+  name: ai-platform-bridge
   version: "1.0.0"
   description: >
-    Bridge to the NEXUS AI Platform. Provides health checks,
+    Bridge to the AI platform. Provides health checks,
     AI routing stats and costs, app management, codebase Q&A,
     and drift detection across the WEFT ecosystem.
 
@@ -18,7 +18,7 @@ agent:
 
   exposes:
     - name: nexus_health
-      description: "Get NEXUS platform health including providers, RAG status, and version."
+      description: "Get AI Platform platform health including providers, RAG status, and version."
       returns:
         type: string
         description: "JSON health object with status, providers, and capabilities"
@@ -48,7 +48,7 @@ agent:
         description: "JSON array of recent cost entries"
 
     - name: list_apps
-      description: "List all NEXUS-managed applications and services."
+      description: "List all AI Platform-managed applications and services."
       returns:
         type: string
         description: "JSON array of app objects with name, status, and config"
@@ -60,7 +60,7 @@ agent:
         description: "JSON drift detection results"
 
     - name: evolution_stats
-      description: "Get prompt evolution statistics from the NEXUS evolve system."
+      description: "Get prompt evolution statistics from the AI Platform evolve system."
       returns:
         type: string
         description: "JSON evolution stats"

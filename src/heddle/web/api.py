@@ -23,7 +23,7 @@ from heddle.security.credentials import get_credential_broker
 from heddle.security.signing import ConfigSigner, AgentQuarantine
 from heddle.security.sandbox import SandboxManager
 
-AGENTS_DIR = Path("/mnt/workspace/projects/loom/agents")
+AGENTS_DIR = Path(__file__).resolve().parent.parent.parent.parent / "agents"
 WEB_DIR = Path(__file__).parent / "static"
 
 
