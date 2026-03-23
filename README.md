@@ -6,7 +6,7 @@
 </p>
 <p align="center">
   <a href="#proof">See It Work</a> ·
-  <a href="#why-loom">Why Heddle</a> ·
+  <a href="#why-heddle">Why Heddle</a> ·
   <a href="#security">Security</a> ·
   <a href="docs/threat-model.md">Threat Model</a> ·
   <a href="#quick-start">Quick Start</a>
@@ -80,7 +80,7 @@ The violation was logged, the request was rejected, and the hash chain links thi
 
 ---
 
-<h2 id="why-loom">Why Heddle Instead Of...</h2>
+<h2 id="why-heddle">Why Heddle Instead Of...</h2>
 
 | | **Heddle** | Hand-written FastMCP | OpenAPI wrapper gen | n8n / workflow tools |
 |---|---|---|---|---|
