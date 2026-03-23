@@ -1,5 +1,5 @@
 # Heddle Agent: grafana-bridge
-# Bridges the Grafana API on weftbox (port 3005).
+# Bridges the Grafana API on the server (port 3005).
 # Auth via credential broker (grafana-basic-auth).
 # 1 dashboard (WEFT LLM & GPU Metrics), 1 datasource (Prometheus), 4 alert rules.
 
@@ -27,7 +27,7 @@ agent:
       parameters:
         uid:
           type: string
-          description: "Dashboard UID, e.g. 'weft-llm-gpu'"
+          description: "Dashboard UID, e.g. 'llm-service-gpu'"
           required: true
       returns:
         type: string

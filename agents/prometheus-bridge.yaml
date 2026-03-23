@@ -1,6 +1,6 @@
 # Heddle Agent: prometheus-bridge
-# Bridges the Prometheus API on weftbox (port 9092).
-# 4 scrape targets: node-exporter, prometheus, intel-rag, weft-llm
+# Bridges the Prometheus API on the server (port 9092).
+# 4 scrape targets: node-exporter, prometheus, intel-rag, llm-service
 
 agent:
   name: prometheus-bridge
@@ -8,7 +8,7 @@ agent:
   description: >
     Bridge to the Prometheus monitoring API. Query metrics, check
     target health, list alerts, and run PromQL queries across
-    weftbox infrastructure (node-exporter, intel-rag, weft-llm).
+    server infrastructure (node-exporter, intel-rag, llm-service).
 
   model:
     provider: none

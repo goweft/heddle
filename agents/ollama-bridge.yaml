@@ -1,5 +1,5 @@
 # Heddle Agent: ollama-bridge
-# Bridges the Ollama API on weftbox (port 11434).
+# Bridges the Ollama API on the server (port 11434).
 # 7 models installed, GPU-accelerated inference.
 
 agent:

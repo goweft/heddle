@@ -206,7 +206,7 @@ Credential Policy:
 **Now implemented (Phase 3f):**
 - **Generated agent quarantine.** AI-generated configs land in a staging directory and require explicit promotion before they can be registered or run.
 - **Config signing.** YAML configs can be cryptographically signed; the runtime verifies signatures before loading.
-- **URL allowlist.** Bridge URLs are checked against a set of known weftbox service endpoints.
+- **URL allowlist.** Bridge URLs are checked against a set of known server service endpoints.
 
 **Framework mapping:**
 | Control | OWASP Agentic | NIST AI RMF | MAESTRO |

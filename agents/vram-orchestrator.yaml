@@ -10,7 +10,7 @@ agent:
   name: vram-orchestrator
   version: "1.0.0"
   description: >
-    GPU VRAM orchestrator for weftbox. Manages model loading across
+    GPU VRAM orchestrator for server. Manages model loading across
     Ollama and llama.cpp, tracks VRAM usage, provides intelligent
     model selection, and optimizes GPU memory allocation.
     24GB RX 7900 XTX with 30 GGUFs + 7 Ollama models available.
