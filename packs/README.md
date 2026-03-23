@@ -10,6 +10,8 @@ Ready-made Heddle configs for common services. Copy one to `agents/`, update the
 | [grafana.yaml](grafana.yaml) | 5 | T1 (read-only) | Dashboards, datasources, alert rules, health |
 | [git-forge.yaml](git-forge.yaml) | 3 | T1 (read-only) | Repos, issues, repo details (Gitea/GitHub/Forgejo) |
 | [ollama.yaml](ollama.yaml) | 4 | T2 (worker) | Model listing, VRAM status, text generation, model info |
+| [sonarr.yaml](sonarr.yaml) | 6 | T1 (read-only) | TV library, download queue, search, calendar, history |
+| [radarr.yaml](radarr.yaml) | 6 | T1 (read-only) | Movie library, download queue, search, calendar, history |
 
 ## Usage
 

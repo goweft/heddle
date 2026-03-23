@@ -171,6 +171,8 @@ Ready-made configs for common services. Copy one into `agents/`, update the base
 | [grafana](packs/grafana.yaml) | 5 | T1 read-only | Dashboards, datasources, alert rules |
 | [git-forge](packs/git-forge.yaml) | 3 | T1 read-only | Repos, issues (Gitea/GitHub/Forgejo) |
 | [ollama](packs/ollama.yaml) | 4 | T2 worker | Model listing, text generation, VRAM status |
+| [sonarr](packs/sonarr.yaml) | 6 | T1 read-only | TV library, download queue, search, calendar, history |
+| [radarr](packs/radarr.yaml) | 6 | T1 read-only | Movie library, download queue, search, calendar, history |
 
 ```bash
 cp packs/prometheus.yaml agents/

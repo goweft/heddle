@@ -1,0 +1,96 @@
+# Heddle Starter Pack: Radarr
+# Movie management and monitoring via Radarr's API.
+#
+# Usage:
+#   1. Copy to agents/
+#   2. Update the base URL if Radarr isn't on localhost:7878
+#   3. Store your API key:
+#      heddle secrets set radarr-api-key "your-api-key-here"
+#      heddle secrets grant radarr radarr-api-key
+#   4. heddle validate agents/radarr.yaml
+#   5. heddle run agents/radarr.yaml --port 8211
+#
+# All tools are read-only (T1). Safe to deploy without review.
+# Find your API key in Radarr → Settings → General → API Key.
+
+agent:
+  name: radarr
+  version: "1.0.0"
+  description: >
+    Read-only Radarr bridge. Browse your movie library, check the download
+    queue, search for movies, and see upcoming releases.
+
+  exposes:
+    - name: get_movies
+      access: read
+      description: "List all movies in your library with quality and status."
+
+    - name: get_movie_detail
+      access: read
+      description: "Get details for a specific movie by ID."
+      parameters:
+        id: { type: integer, required: true, description: "Radarr movie ID" }
+
+    - name: get_queue
+      access: read
+      description: "Show the current download queue — what's downloading right now."
+
+    - name: search_movies
+      access: read
+      description: "Search for a movie by name. Returns results from indexers."
+      parameters:
+        term: { type: string, required: true, description: "Search term (e.g. 'Inception')" }
+
+    - name: get_calendar
+      access: read
+      description: "Upcoming movie releases (physical and digital) in the next 30 days."
+
+    - name: get_history
+      access: read
+      description: "Recent download/import history."
+      parameters:
+        page_size: { type: integer, required: false, default: 20 }
+
+  http_bridge:
+    - tool_name: get_movies
+      method: GET
+      url: "http://localhost:7878/api/v3/movie"
+      headers:
+        X-Api-Key: "{{secret:radarr-api-key}}"
+
+    - tool_name: get_movie_detail
+      method: GET
+      url: "http://localhost:7878/api/v3/movie/{{id}}"
+      headers:
+        X-Api-Key: "{{secret:radarr-api-key}}"
+
+    - tool_name: get_queue
+      method: GET
+      url: "http://localhost:7878/api/v3/queue"
+      headers:
+        X-Api-Key: "{{secret:radarr-api-key}}"
+
+    - tool_name: search_movies
+      method: GET
+      url: "http://localhost:7878/api/v3/movie/lookup?term={{term}}"
+      headers:
+        X-Api-Key: "{{secret:radarr-api-key}}"
+
+    - tool_name: get_calendar
+      method: GET
+      url: "http://localhost:7878/api/v3/calendar"
+      headers:
+        X-Api-Key: "{{secret:radarr-api-key}}"
+
+    - tool_name: get_history
+      method: GET
+      url: "http://localhost:7878/api/v3/history?pageSize={{page_size}}&sortKey=date&sortDirection=descending"
+      headers:
+        X-Api-Key: "{{secret:radarr-api-key}}"
+
+  runtime:
+    trust_tier: 1
+    max_execution_time: 30s
+
+  triggers:
+    - type: on_demand
