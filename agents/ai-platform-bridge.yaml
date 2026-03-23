@@ -9,7 +9,7 @@ agent:
   description: >
     Bridge to the AI platform. Provides health checks,
     AI routing stats and costs, app management, codebase Q&A,
-    and drift detection across the WEFT ecosystem.
+    and drift detection across platform services.
 
   model:
     provider: none
@@ -54,7 +54,7 @@ agent:
         description: "JSON array of app objects with name, status, and config"
 
     - name: detect_drift
-      description: "Detect configuration or behavior drift across WEFT services."
+      description: "Detect configuration or behavior drift across platform services."
       returns:
         type: string
         description: "JSON drift detection results"

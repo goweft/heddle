@@ -1,7 +1,7 @@
 # Heddle Agent: grafana-bridge
 # Bridges the Grafana API on the server (port 3005).
 # Auth via credential broker (grafana-basic-auth).
-# 1 dashboard (WEFT LLM & GPU Metrics), 1 datasource (Prometheus), 4 alert rules.
+# 1 dashboard (LLM & GPU Metrics), 1 datasource (Prometheus), 4 alert rules.
 
 agent:
   name: grafana-bridge
