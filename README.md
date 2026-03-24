@@ -109,12 +109,6 @@ Heddle is for exposing APIs as MCP tools with real runtime controls — not just
   <img src="docs/assets/architecture.svg" alt="Heddle runtime pipeline" width="900">
 </p>
 
-- **Load** — YAML config is parsed, validated against Pydantic schema, and checked for cross-field consistency
-- **Generate** — Each `exposes` entry becomes a typed MCP tool with parameter schemas
-- **Bridge** — HTTP bridge maps tool calls to API requests with `{{param}}` template rendering
-- **Enforce** — Every call passes through a six-layer dispatch pipeline: rate limiting → access mode check → escalation rules → trust tier enforcement → input validation → execution
-- **Audit** — Every tool call, violation, and credential access is logged to a hash-chained, tamper-evident audit trail
-
 <h2 id="current-status">Current Status</h2>
 
 What Heddle can do today, what is partially implemented, and what is still planned:
@@ -155,15 +149,15 @@ Heddle's security controls map to OWASP Agentic Top 10, NIST AI RMF, and MAESTRO
 
 | Control | What It Does | Framework |
 |:-------:|:-------------|:---------:|
-| **Trust tiers** | 4 levels (observer → privileged), runtime-enforced, violations blocked and logged | OWASP Agentic #3 |
-| **Credential broker** | Per-config secret access policy, `{{secret:key}}` resolved at runtime, never stored in YAML | OWASP Agentic #7 |
-| **Audit log** | Hash-chained JSON Lines, tamper-evident, 5 event types, secret redaction | OWASP Agentic #9 |
-| **Input validation** | Type checking, length limits, injection pattern detection (shell, SQL, LLM prompt) | OWASP Agentic #1 |
-| **Config signing** | HMAC-SHA256 on all agent configs, tamper detection | OWASP Agentic #8 |
-| **Config quarantine** | AI-generated configs staged for review before promotion | OWASP Agentic #8 |
-| **Rate limiting** | Sliding window per-config per-tool | OWASP Agentic #4 |
-| **Sandbox policies** | Docker container config generation and network policies (enforcement planned) | OWASP Agentic #6 |
-| **Escalation rules** | Conditional hold-for-review when parameters match thresholds or patterns | OWASP Agentic #3 |
+| **Trust tiers** | 4 levels (observer → privileged), runtime-enforced, violations blocked and logged | OWASP&nbsp;Agentic&nbsp;#3 |
+| **Credential broker** | Per-config secret access policy, `{{secret:key}}` resolved at runtime, never stored in YAML | OWASP&nbsp;Agentic&nbsp;#7 |
+| **Audit log** | Hash-chained JSON Lines, tamper-evident, 5 event types, secret redaction | OWASP&nbsp;Agentic&nbsp;#9 |
+| **Input validation** | Type checking, length limits, injection pattern detection (shell, SQL, LLM prompt) | OWASP&nbsp;Agentic&nbsp;#1 |
+| **Config signing** | HMAC-SHA256 on all agent configs, tamper detection | OWASP&nbsp;Agentic&nbsp;#8 |
+| **Config quarantine** | AI-generated configs staged for review before promotion | OWASP&nbsp;Agentic&nbsp;#8 |
+| **Rate limiting** | Sliding window per-config per-tool | OWASP&nbsp;Agentic&nbsp;#4 |
+| **Sandbox policies** | Docker container config generation and network policies (enforcement planned) | OWASP&nbsp;Agentic&nbsp;#6 |
+| **Escalation rules** | Conditional hold-for-review when parameters match thresholds or patterns | OWASP&nbsp;Agentic&nbsp;#3 |
 
 ---
 

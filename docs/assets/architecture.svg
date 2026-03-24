@@ -6,6 +6,7 @@
     .flow { font-size: 11px; fill: #585b70; letter-spacing: 0.3px; }
     .arrow { stroke: #585b70; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
     .box { fill: #1e1e2e; rx: 10; ry: 10; stroke-width: 1.4; }
+    .bullet { font-size: 10.5px; fill: #7f849c; }
   </style>
   <defs>
     <marker id="arrowhead" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
@@ -16,15 +17,14 @@
   <!-- Flow label -->
   <text x="450" y="22" text-anchor="middle" class="flow">config in  →  validated  →  secured  →  MCP tool out  →  backend</text>
 
-  <!-- Boxes start at y=65 (was 45) — 43px gap from label instead of 23px -->
-
   <!-- 1. YAML Config -->
   <rect x="30" y="65" width="140" height="120" class="box" stroke="#cba6f7"/>
   <text x="100" y="95" text-anchor="middle" class="title" fill="#cba6f7">YAML Config</text>
-  <text x="100" y="116" text-anchor="middle" class="detail">tools, trust tier,</text>
-  <text x="100" y="130" text-anchor="middle" class="detail">credentials, access</text>
-  <text x="100" y="144" text-anchor="middle" class="detail">modes, escalation</text>
-  <text x="100" y="158" text-anchor="middle" class="detail">rules, http bridge</text>
+  <text x="60" y="116" class="bullet">•  Tools &amp; parameters</text>
+  <text x="60" y="131" class="bullet">•  Trust tier</text>
+  <text x="60" y="146" class="bullet">•  Access modes</text>
+  <text x="60" y="161" class="bullet">•  Escalation rules</text>
+  <text x="60" y="176" class="bullet">•  HTTP bridge</text>
 
   <!-- Arrow 1 -->
   <line x1="174" y1="125" x2="204" y2="125" class="arrow"/>
@@ -32,10 +32,10 @@
   <!-- 2. Validation -->
   <rect x="208" y="65" width="140" height="120" class="box" stroke="#f9e2af"/>
   <text x="278" y="95" text-anchor="middle" class="title" fill="#f9e2af">Validation</text>
-  <text x="278" y="116" text-anchor="middle" class="detail">Pydantic schema</text>
-  <text x="278" y="130" text-anchor="middle" class="detail">cross-field checks</text>
-  <text x="278" y="144" text-anchor="middle" class="detail">access ↔ trust tier</text>
-  <text x="278" y="158" text-anchor="middle" class="detail">bridge ref integrity</text>
+  <text x="238" y="116" class="bullet">•  Pydantic schema</text>
+  <text x="238" y="131" class="bullet">•  Cross-field checks</text>
+  <text x="238" y="146" class="bullet">•  Access ↔ trust tier</text>
+  <text x="238" y="161" class="bullet">•  Bridge ref integrity</text>
 
   <!-- Arrow 2 -->
   <line x1="352" y1="125" x2="382" y2="125" class="arrow"/>
@@ -43,11 +43,11 @@
   <!-- 3. Security -->
   <rect x="386" y="65" width="140" height="120" class="box" stroke="#a6e3a1"/>
   <text x="456" y="95" text-anchor="middle" class="title" fill="#a6e3a1">Security</text>
-  <text x="456" y="116" text-anchor="middle" class="detail">trust tiers (T1–T4)</text>
-  <text x="456" y="130" text-anchor="middle" class="detail">credential broker</text>
-  <text x="456" y="144" text-anchor="middle" class="detail">input validation</text>
-  <text x="456" y="158" text-anchor="middle" class="detail">audit · signing · rate</text>
-  <text x="456" y="172" text-anchor="middle" class="detail">escalation rules</text>
+  <text x="416" y="116" class="bullet">•  Trust tiers (T1–T4)</text>
+  <text x="416" y="131" class="bullet">•  Credential broker</text>
+  <text x="416" y="146" class="bullet">•  Input validation</text>
+  <text x="416" y="161" class="bullet">•  Audit &amp; signing</text>
+  <text x="416" y="176" class="bullet">•  Escalation rules</text>
 
   <!-- Arrow 3 -->
   <line x1="530" y1="125" x2="560" y2="125" class="arrow"/>
@@ -55,10 +55,10 @@
   <!-- 4. MCP Server -->
   <rect x="564" y="65" width="140" height="120" class="box" stroke="#89b4fa"/>
   <text x="634" y="95" text-anchor="middle" class="title" fill="#89b4fa">MCP Server</text>
-  <text x="634" y="116" text-anchor="middle" class="detail">typed tool registry</text>
-  <text x="634" y="130" text-anchor="middle" class="detail">stdio or HTTP</text>
-  <text x="634" y="144" text-anchor="middle" class="detail">template rendering</text>
-  <text x="634" y="158" text-anchor="middle" class="detail">{{secret}} resolution</text>
+  <text x="594" y="116" class="bullet">•  Typed tool registry</text>
+  <text x="594" y="131" class="bullet">•  stdio or HTTP</text>
+  <text x="594" y="146" class="bullet">•  Template rendering</text>
+  <text x="594" y="161" class="bullet">•  Secret resolution</text>
 
   <!-- Arrow 4 -->
   <line x1="708" y1="125" x2="738" y2="125" class="arrow"/>
@@ -66,10 +66,10 @@
   <!-- 5. Backend APIs -->
   <rect x="742" y="65" width="140" height="120" class="box" stroke="#f38ba8"/>
   <text x="812" y="95" text-anchor="middle" class="title" fill="#f38ba8">Backend APIs</text>
-  <text x="812" y="116" text-anchor="middle" class="detail">Prometheus</text>
-  <text x="812" y="130" text-anchor="middle" class="detail">Grafana · Ollama</text>
-  <text x="812" y="144" text-anchor="middle" class="detail">Gitea · RSS</text>
-  <text x="812" y="158" text-anchor="middle" class="detail">any REST service</text>
+  <text x="772" y="116" class="bullet">•  Prometheus</text>
+  <text x="772" y="131" class="bullet">•  Grafana · Ollama</text>
+  <text x="772" y="146" class="bullet">•  Gitea · RSS</text>
+  <text x="772" y="161" class="bullet">•  Any REST service</text>
 
   <!-- Claude Desktop connection (below MCP Server) -->
   <line x1="634" y1="189" x2="634" y2="212" stroke="#585b70" stroke-width="1" stroke-dasharray="4 3"/>
