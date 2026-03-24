@@ -91,7 +91,7 @@ The request was rejected, the violation was logged, and the hash chain links thi
 <h2 id="why-heddle">Why Heddle Instead Of...</h2>
 
 | | **Heddle** | **Hand-written FastMCP** | **OpenAPI wrapper gen** | **n8n / workflow tools** |
-|:--|:--|:--|:--|:--|
+|:--:|:--:|:--:|:--:|:--:|
 | **New tool** | Write YAML, done | Write Python handler per tool | Generate stubs, then customize | Drag nodes, wire connections |
 | **Security** | Trust tiers, credential broker, audit log, input validation, config signing — all built in | You build it yourself | None | Platform-level auth only |
 | **AI-generatable** | `heddle generate "wrap the Gitea API"` → valid config in 20s | LLM can write code but can't validate it | Not designed for LLM generation | Visual-only, not scriptable |
@@ -109,12 +109,18 @@ Heddle is for exposing APIs as MCP tools with real runtime controls — not just
   <img src="docs/assets/architecture.svg" alt="Heddle runtime pipeline" width="900">
 </p>
 
+- **Load** — YAML config is parsed, validated against Pydantic schema, and checked for cross-field consistency
+- **Generate** — Each `exposes` entry becomes a typed MCP tool with parameter schemas
+- **Bridge** — HTTP bridge maps tool calls to API requests with `{{param}}` template rendering
+- **Enforce** — Every call passes through a six-layer dispatch pipeline: rate limiting → access mode check → escalation rules → trust tier enforcement → input validation → execution
+- **Audit** — Every tool call, violation, and credential access is logged to a hash-chained, tamper-evident audit trail
+
 <h2 id="current-status">Current Status</h2>
 
 What Heddle can do today, what is partially implemented, and what is still planned:
 
 | Layer | Status | Detail |
-|:------|:-------|:-------|
+|:-----:|:------:|:-------|
 | Config → MCP server | **Shipped** | YAML configs become typed MCP tools with HTTP bridging |
 | Trust tiers (T1–T4) | **Shipped** | Runtime-enforced, violations blocked and logged |
 | Credential broker | **Shipped** | Per-config secret policy, `{{secret:key}}` resolution |
@@ -148,7 +154,7 @@ $ heddle generate "agent that wraps the Gitea API" --model qwen3:14b
 Heddle's security controls map to OWASP Agentic Top 10, NIST AI RMF, and MAESTRO. See the full [threat model](docs/threat-model.md) and [security controls reference](docs/security-controls.md).
 
 | Control | What It Does | Framework |
-|:--------|:-------------|:----------|
+|:-------:|:-------------|:---------:|
 | **Trust tiers** | 4 levels (observer → privileged), runtime-enforced, violations blocked and logged | OWASP Agentic #3 |
 | **Credential broker** | Per-config secret access policy, `{{secret:key}}` resolved at runtime, never stored in YAML | OWASP Agentic #7 |
 | **Audit log** | Hash-chained JSON Lines, tamper-evident, 5 event types, secret redaction | OWASP Agentic #9 |
