@@ -14,8 +14,6 @@
     </marker>
   </defs>
 
-  <!-- Flow label -->
-  <text x="450" y="22" text-anchor="middle" class="flow">config in  →  validated  →  secured  →  MCP tool out  →  backend</text>
 
   <!-- 1. YAML Config -->
   <rect x="30" y="65" width="140" height="120" class="box" stroke="#cba6f7"/>
