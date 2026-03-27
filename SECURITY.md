@@ -4,7 +4,9 @@ Heddle is a security-focused MCP runtime. If you find a vulnerability in the sec
 
 ## Reporting
 
-Open a GitHub issue with the label `security`. If the issue involves credential exposure or a bypass of trust enforcement, please email instead of posting publicly.
+For sensitive security issues (credential exposure, trust enforcement bypass, audit chain compromise), use [GitHub's private vulnerability reporting](https://github.com/goweft/heddle/security/advisories/new) to report confidentially.
+
+For non-sensitive issues, open a GitHub issue with the label `security`.
 
 ## Scope
 
