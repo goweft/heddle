@@ -10,19 +10,19 @@
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0a0a0f;
-      --bg2: #12121a;
-      --bg3: #1a1a26;
-      --border: #2a2a3a;
-      --text: #e0e0e8;
-      --muted: #888898;
-      --accent: #6c5ce7;
-      --accent2: #00cec9;
-      --green: #00b894;
-      --amber: #fdcb6e;
-      --red: #e17055;
-      --blue: #74b9ff;
-      --purple: #a29bfe;
+      --bg:      #0e0c0a;
+      --bg2:     #16130f;
+      --bg3:     #1e1a14;
+      --border:  #2e2820;
+      --text:    #f2ede6;
+      --muted:   #8a7d6e;
+      --accent:  #e8a020;
+      --accent2: #5ebfb0;
+      --green:   #6bbf72;
+      --amber:   #e8c840;
+      --red:     #d46060;
+      --blue:    #7aaccc;
+      --purple:  #b08ee8;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -39,7 +39,7 @@
       border-bottom: 1px solid var(--border);
       padding: 16px 0;
       position: sticky; top: 0; z-index: 100;
-      background: rgba(10,10,15,0.95);
+      background: rgba(14,12,10,0.96);
       backdrop-filter: blur(12px);
     }
     .header-inner { display: flex; align-items: center; justify-content: space-between; }
@@ -49,13 +49,13 @@
       display: inline-flex; align-items: center; gap: 6px;
       padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500;
     }
-    .status-pill.ok { background: rgba(0,184,148,0.15); color: var(--green); }
-    .status-pill.warn { background: rgba(253,203,110,0.15); color: var(--amber); }
-    .status-pill.err { background: rgba(225,112,85,0.15); color: var(--red); }
+    .status-pill.ok   { background: rgba(107,191,114,0.12); color: var(--green); }
+    .status-pill.warn { background: rgba(232,200,64,0.12);  color: var(--amber); }
+    .status-pill.err  { background: rgba(212,96,96,0.12);   color: var(--red); }
     .dot { width: 6px; height: 6px; border-radius: 50%; }
     .dot.green { background: var(--green); box-shadow: 0 0 6px var(--green); }
     .dot.amber { background: var(--amber); }
-    .dot.red { background: var(--red); }
+    .dot.red   { background: var(--red); }
 
     /* Grid */
     .grid { display: grid; gap: 16px; margin-top: 20px; }
@@ -97,10 +97,10 @@
       display: inline-flex; align-items: center; gap: 4px;
       padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;
     }
-    .badge.t1 { background: rgba(116,185,255,0.15); color: var(--blue); }
-    .badge.t2 { background: rgba(0,206,201,0.15); color: var(--accent2); }
-    .badge.t3 { background: rgba(253,203,110,0.15); color: var(--amber); }
-    .badge.t4 { background: rgba(225,112,85,0.15); color: var(--red); }
+    .badge.t1 { background: rgba(122,172,204,0.15); color: var(--blue); }
+    .badge.t2 { background: rgba(94,191,176,0.15);  color: var(--accent2); }
+    .badge.t3 { background: rgba(232,200,64,0.15);  color: var(--amber); }
+    .badge.t4 { background: rgba(212,96,96,0.15);   color: var(--red); }
     .tool-list { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
     .tool-tag {
       font-size: 11px; padding: 2px 8px; border-radius: 4px;
@@ -110,17 +110,17 @@
     /* Audit log */
     .audit-row {
       display: grid; grid-template-columns: 100px 120px 130px 1fr;
-      gap: 8px; padding: 6px 0; border-bottom: 1px solid rgba(42,42,58,0.5);
+      gap: 8px; padding: 6px 0; border-bottom: 1px solid rgba(46,40,32,0.6);
       font-size: 12px; align-items: center;
     }
     .audit-row:last-child { border-bottom: none; }
     .audit-time { color: var(--muted); }
     .audit-event { font-weight: 500; }
-    .audit-event.tool_call { color: var(--blue); }
-    .audit-event.http_bridge { color: var(--accent2); }
-    .audit-event.trust_violation { color: var(--red); }
+    .audit-event.tool_call        { color: var(--blue); }
+    .audit-event.http_bridge      { color: var(--accent2); }
+    .audit-event.trust_violation  { color: var(--red); }
     .audit-event.credential_access { color: var(--amber); }
-    .audit-event.agent_lifecycle { color: var(--purple); }
+    .audit-event.agent_lifecycle  { color: var(--purple); }
 
     /* Mesh SVG */
     .mesh-container { position: relative; width: 100%; min-height: 300px; }
@@ -129,9 +129,9 @@
       font-weight: 500; text-align: center; cursor: default; transition: transform 0.2s;
     }
     .mesh-node:hover { transform: scale(1.05); }
-    .mesh-node.client { background: var(--accent); color: white; }
+    .mesh-node.client  { background: var(--accent);  color: var(--bg); }
     .mesh-node.runtime { background: var(--accent2); color: var(--bg); font-weight: 700; }
-    .mesh-node.agent { background: var(--bg3); border: 1px solid var(--border); }
+    .mesh-node.agent   { background: var(--bg3); border: 1px solid var(--border); }
     .mesh-node.service { background: var(--bg2); border: 1px solid var(--border); color: var(--muted); font-size: 11px; }
 
     /* Tabs */
@@ -145,8 +145,8 @@
     .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
 
     /* Security */
-    .sig-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; border-bottom: 1px solid rgba(42,42,58,0.3); }
-    .sig-ok { color: var(--green); }
+    .sig-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; border-bottom: 1px solid rgba(46,40,32,0.4); }
+    .sig-ok   { color: var(--green); }
     .sig-fail { color: var(--red); }
 
     /* Loading */
@@ -182,8 +182,8 @@
         <header className="header">
           <div className="container header-inner">
             <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-              <div className="logo">LOO<span>M</span></div>
-              <span style={{ color: 'var(--muted)', fontSize: 12 }}>The WEFT Agent & MCP Mesh Runtime</span>
+              <div className="logo">HEDDLE</div>
+              <span style={{ color: 'var(--muted)', fontSize: 12 }}>MCP Mesh Runtime</span>
             </div>
             <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
               {health && (
@@ -213,10 +213,10 @@
       return (
         <div className="grid grid-4 fade-in">
           {[
-            { value: agents?.total || 0, label: 'Agents', color: 'var(--accent)' },
-            { value: totalTools, label: 'Tools', color: 'var(--accent2)' },
-            { value: audit?.total || 0, label: 'Audit entries', color: 'var(--blue)' },
-            { value: violations, label: 'Trust violations', color: violations > 0 ? 'var(--amber)' : 'var(--green)' },
+            { value: agents?.total || 0, label: 'Agents',          color: 'var(--accent)' },
+            { value: totalTools,          label: 'Tools',           color: 'var(--accent2)' },
+            { value: audit?.total || 0,   label: 'Audit entries',   color: 'var(--blue)' },
+            { value: violations,          label: 'Trust violations', color: violations > 0 ? 'var(--amber)' : 'var(--green)' },
           ].map((s, i) => (
             <div className="card stat" key={i}>
               <div className="stat-value" style={{ color: s.color }}>{s.value}</div>
@@ -285,10 +285,10 @@
                 <span className={`audit-event ${e.event}`}>{e.event}</span>
                 <span style={{ color: 'var(--accent2)' }}>{e.agent}</span>
                 <span style={{ color: 'var(--muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {e.event === 'tool_call' ? `${e.tool} [${e.status}] ${Math.round(e.duration_ms || 0)}ms` :
-                   e.event === 'http_bridge' ? `${e.method} → ${e.status_code}` :
-                   e.event === 'trust_violation' ? e.detail?.slice(0, 60) :
-                   e.event === 'credential_access' ? `${e.credential_key} ${e.granted ? 'granted' : 'denied'}` :
+                  {e.event === 'tool_call'         ? `${e.tool} [${e.status}] ${Math.round(e.duration_ms || 0)}ms` :
+                   e.event === 'http_bridge'        ? `${e.method} → ${e.status_code}` :
+                   e.event === 'trust_violation'    ? e.detail?.slice(0, 60) :
+                   e.event === 'credential_access'  ? `${e.credential_key} ${e.granted ? 'granted' : 'denied'}` :
                    e.detail?.slice(0, 60) || e.action || ''}
                 </span>
               </div>
@@ -347,35 +347,34 @@
           <svg viewBox="0 0 800 380" style={{ width: '100%', height: 'auto' }}>
             <defs>
               <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
-                <path d="M0,0 L8,3 L0,6" fill="none" stroke="#6c5ce7" strokeWidth="1"/>
+                <path d="M0,0 L8,3 L0,6" fill="none" stroke="#e8a020" strokeWidth="1"/>
               </marker>
               <marker id="arrowhead2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
-                <path d="M0,0 L8,3 L0,6" fill="none" stroke="#00cec9" strokeWidth="1"/>
+                <path d="M0,0 L8,3 L0,6" fill="none" stroke="#5ebfb0" strokeWidth="1"/>
               </marker>
             </defs>
             {/* Claude Desktop */}
-            <rect x="310" y="10" width="180" height="36" rx="18" fill="#6c5ce7" />
-            <text x="400" y="33" textAnchor="middle" fill="white" fontSize="13" fontWeight="600" fontFamily="DM Sans">Claude Desktop</text>
+            <rect x="310" y="10" width="180" height="36" rx="18" fill="#e8a020" />
+            <text x="400" y="33" textAnchor="middle" fill="#0e0c0a" fontSize="13" fontWeight="700" fontFamily="DM Sans">Claude Desktop</text>
             {/* Arrow to Heddle */}
-            <line x1="400" y1="46" x2="400" y2="72" stroke="#6c5ce7" strokeWidth="1.5" markerEnd="url(#arrowhead)" />
+            <line x1="400" y1="46" x2="400" y2="72" stroke="#e8a020" strokeWidth="1.5" markerEnd="url(#arrowhead)" />
             {/* Heddle Mesh */}
-            <rect x="260" y="74" width="280" height="36" rx="8" fill="#12121a" stroke="#00cec9" strokeWidth="1.5" />
-            <text x="400" y="97" textAnchor="middle" fill="#00cec9" fontSize="13" fontWeight="700" fontFamily="DM Sans">Heddle Mesh · 39 tools</text>
+            <rect x="260" y="74" width="280" height="36" rx="8" fill="#16130f" stroke="#5ebfb0" strokeWidth="1.5" />
+            <text x="400" y="97" textAnchor="middle" fill="#5ebfb0" fontSize="13" fontWeight="700" fontFamily="DM Sans">Heddle Mesh · 39 tools</text>
             {/* Agents */}
             {agents.map((a, i) => {
               const cols = Math.min(agents.length, 5);
-              const rows = Math.ceil(agents.length / cols);
               const col = i % cols;
               const row = Math.floor(i / cols);
               const x = 50 + col * (700 / cols);
               const y = 150 + row * 70;
               const w = Math.min(130, 680 / cols - 10);
-              const tierColor = { 1: '#74b9ff', 2: '#00cec9', 3: '#fdcb6e' }[a.trust_tier] || '#888898';
+              const tierColor = { 1: '#7aaccc', 2: '#5ebfb0', 3: '#e8c840' }[a.trust_tier] || '#8a7d6e';
               return (
                 <g key={a.id}>
-                  <line x1="400" y1="110" x2={x + w/2} y2={y} stroke="#2a2a3a" strokeWidth="1" strokeDasharray="3 3" />
-                  <rect x={x} y={y} width={w} height={50} rx="6" fill="#1a1a26" stroke={tierColor} strokeWidth="0.8" />
-                  <text x={x + w/2} y={y + 20} textAnchor="middle" fill="#e0e0e8" fontSize="11" fontWeight="600" fontFamily="DM Sans">{a.label}</text>
+                  <line x1="400" y1="110" x2={x + w/2} y2={y} stroke="#2e2820" strokeWidth="1" strokeDasharray="3 3" />
+                  <rect x={x} y={y} width={w} height={50} rx="6" fill="#1e1a14" stroke={tierColor} strokeWidth="0.8" />
+                  <text x={x + w/2} y={y + 20} textAnchor="middle" fill="#f2ede6" fontSize="11" fontWeight="600" fontFamily="DM Sans">{a.label}</text>
                   <text x={x + w/2} y={y + 36} textAnchor="middle" fill={tierColor} fontSize="10" fontFamily="JetBrains Mono">T{a.trust_tier} · {a.tools} tools</text>
                 </g>
               );
@@ -386,9 +385,9 @@
               const y = 340;
               return (
                 <g key={s.id}>
-                  <line x1={x + 50} y1={y} x2={x + 50} y2={y - 20} stroke="#2a2a3a" strokeWidth="0.8" strokeDasharray="2 2" />
-                  <rect x={x} y={y} width={100} height={28} rx="4" fill="#12121a" stroke="#2a2a3a" strokeWidth="0.5" />
-                  <text x={x + 50} y={y + 18} textAnchor="middle" fill="#888898" fontSize="9" fontFamily="JetBrains Mono">{s.label}</text>
+                  <line x1={x + 50} y1={y} x2={x + 50} y2={y - 20} stroke="#2e2820" strokeWidth="0.8" strokeDasharray="2 2" />
+                  <rect x={x} y={y} width={100} height={28} rx="4" fill="#16130f" stroke="#2e2820" strokeWidth="0.5" />
+                  <text x={x + 50} y={y + 18} textAnchor="middle" fill="#8a7d6e" fontSize="9" fontFamily="JetBrains Mono">{s.label}</text>
                 </g>
               );
             })}
@@ -399,12 +398,12 @@
 
     function App() {
       const [tab, setTab] = useState('mesh');
-      const { data: health } = useFetch('/api/health', 10000);
-      const { data: agents } = useFetch('/api/agents');
-      const { data: audit } = useFetch('/api/audit?n=50', 5000);
+      const { data: health }     = useFetch('/api/health', 10000);
+      const { data: agents }     = useFetch('/api/agents');
+      const { data: audit }      = useFetch('/api/audit?n=50', 5000);
       const { data: auditStats } = useFetch('/api/audit/stats');
-      const { data: mesh } = useFetch('/api/mesh');
-      const { data: policy } = useFetch('/api/security/policy');
+      const { data: mesh }       = useFetch('/api/mesh');
+      const { data: policy }     = useFetch('/api/security/policy');
       const { data: signatures } = useFetch('/api/security/signatures');
 
       return (
@@ -420,9 +419,9 @@
                   </div>
                 ))}
               </div>
-              {tab === 'mesh' && <MeshPanel mesh={mesh} />}
-              {tab === 'agents' && <AgentsPanel agents={agents} />}
-              {tab === 'audit' && <AuditPanel audit={audit} />}
+              {tab === 'mesh'     && <MeshPanel     mesh={mesh} />}
+              {tab === 'agents'   && <AgentsPanel   agents={agents} />}
+              {tab === 'audit'    && <AuditPanel    audit={audit} />}
               {tab === 'security' && <SecurityPanel policy={policy} signatures={signatures} />}
             </div>
           </div>
