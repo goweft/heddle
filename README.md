@@ -313,6 +313,8 @@ Python 3.11+ · FastMCP · FastAPI · Pydantic v2 · httpx · Click · SQLite ·
 - **[tenter](https://github.com/goweft/tenter)** — Pre-publish artifact integrity scanner. Catches source maps, debug artifacts, and secrets before they ship.
 - **[unshear](https://github.com/goweft/unshear)** — AI agent fork divergence detector. Reveals where someone cut the safety weave from a forked codebase.
 
+- **[ratine](https://github.com/goweft/ratine)** — Agent memory poisoning detector
+
 ## License
 
 MIT — see [LICENSE](LICENSE).

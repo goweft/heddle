@@ -5,7 +5,7 @@ from pathlib import Path
 
 from heddle.security.audit import AuditLogger
 from heddle.security.trust import TrustEnforcer, TrustViolation
-from heddle.security.credentials import CredentialBroker, CredentialDenied
+from heddle.security.credentials import CredentialBroker, CredentialDenied, SecretBuffer
 
 
 # ── Audit Logger ─────────────────────────────────────────────────────
@@ -332,3 +332,65 @@ agent:
 """)
     config = validate_config(raw, source="<test>")
     assert config.agent.exposes[0].access == "read"
+
+
+# -- SecretBuffer ---------------------------------------------------------
+
+def test_secret_buffer_decodes_correctly():
+    buf = SecretBuffer("my-api-key-abc123")
+    assert buf.decode() == "my-api-key-abc123"
+
+def test_secret_buffer_zero_overwrites():
+    buf = SecretBuffer("supersecret")
+    buf.zero()
+    assert all(b == 0 for b in buf._buf)
+
+def test_secret_buffer_zero_clears_lock_flag():
+    buf = SecretBuffer("supersecret")
+    buf.zero()
+    assert buf._locked is False
+
+def test_secret_buffer_repr_does_not_leak():
+    buf = SecretBuffer("do-not-expose-me")
+    r = repr(buf)
+    assert "do-not-expose-me" not in r
+    assert "SecretBuffer" in r
+
+def test_secret_buffer_len():
+    buf = SecretBuffer("hello")
+    assert len(buf) == 5
+
+
+# -- Hardened broker behaviour --------------------------------------------
+
+def test_broker_secrets_stored_as_secret_buffer(broker):
+    for key, val in broker._secrets.items():
+        assert isinstance(val, SecretBuffer), f"{key} is {type(val)}, expected SecretBuffer"
+
+def test_broker_use_credential_context_manager(broker):
+    with broker.use_credential("intel-bridge", "intel-token") as token:
+        assert token == "abc123secret"
+
+def test_broker_use_credential_denied(broker):
+    with pytest.raises(CredentialDenied):
+        with broker.use_credential("intel-bridge", "admin-key") as _:
+            pass
+
+def test_broker_remove_secret_zeroes_buffer(broker):
+    buf = broker._secrets["intel-token"]
+    broker.remove_secret("intel-token")
+    assert all(b == 0 for b in buf._buf), "Buffer was not zeroed on removal"
+    assert "intel-token" not in broker._secrets
+
+def test_broker_set_secret_zeroes_old_buffer(broker):
+    old_buf = broker._secrets["intel-token"]
+    broker.set_secret("intel-token", "new-value")
+    assert all(b == 0 for b in old_buf._buf), "Old buffer was not zeroed on replacement"
+    assert broker.get_credential("intel-bridge", "intel-token") == "new-value"
+
+def test_broker_close_zeroes_all_buffers(broker):
+    bufs = dict(broker._secrets)
+    broker.close()
+    for key, buf in bufs.items():
+        assert all(b == 0 for b in buf._buf), f"Buffer for {key!r} not zeroed after close()"
+    assert len(broker._secrets) == 0
