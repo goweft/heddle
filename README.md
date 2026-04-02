@@ -46,6 +46,8 @@ agent:
       url: "http://localhost:9090/api/v1/alerts"
   runtime:
     trust_tier: 1  # enforced: GET/HEAD only, no writes, no cross-agent calls
+
+[![SafeSkill 88/100](https://img.shields.io/badge/SafeSkill-88%2F100_Passes%20with%20Notes-yellow)](https://safeskill.dev/scan/goweft-heddle)
 ```
 
 Run it:
