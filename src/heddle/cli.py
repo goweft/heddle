@@ -181,7 +181,7 @@ async def _generate_async(description, model, discover_url, output_dir, dry_run,
     with console.status("[bold]Generating..."):
         result = await (retry_generate if retries > 0 else generate_agent)(
             description, model=model, context=context,
-            **({"max_retries": retries, "output_dir": output_dir} if retries > 0
+            **({"max_retries": retries, "output_dir": output_dir, "validate_only": dry_run} if retries > 0
                else {"output_dir": output_dir, "validate_only": dry_run}),
         )
     if result["errors"]:

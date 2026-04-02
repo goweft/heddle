@@ -271,6 +271,7 @@ async def retry_generate(
     context: str = "",
     max_retries: int = 2,
     output_dir: str | Path | None = None,
+    validate_only: bool = False,
 ) -> dict[str, Any]:
     """Generate with retry on validation failure.
 
@@ -296,8 +297,8 @@ async def retry_generate(
         )
         attempt += 1
 
-    # Final save if valid
-    if not result["errors"] and result["config"]:
+    # Final save if valid (skip if dry-run)
+    if not result["errors"] and result["config"] and not validate_only:
         out = Path(output_dir) if output_dir else AGENTS_DIR
         agent_name = result["config"].agent.name
         output_path = out / f"{agent_name}.yaml"

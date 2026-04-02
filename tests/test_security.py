@@ -273,7 +273,7 @@ def test_trust_t3_allows_write_tool():
 def test_access_mode_t1_write_rejected():
     """T1 agent config with a write tool should fail validation."""
     import yaml
-    from heddle.config.loader import validate_config
+    from heddle.config.loader import validate_config, ConfigError
     raw = yaml.safe_load("""
 agent:
   name: bad-agent
@@ -288,7 +288,7 @@ agent:
   triggers:
     - type: on_demand
 """)
-    with pytest.raises(ValueError, match="write.*T1"):
+    with pytest.raises(ConfigError, match="write.*T1"):
         validate_config(raw, source="<test>")
 
 
