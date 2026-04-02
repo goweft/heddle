@@ -7,6 +7,7 @@ as REST endpoints for the React frontend dashboard.
 from __future__ import annotations
 
 import json
+import sys
 import time
 from pathlib import Path
 from typing import Any
@@ -26,6 +27,11 @@ from heddle.security.sandbox import SandboxManager
 AGENTS_DIR = Path(__file__).resolve().parent.parent.parent.parent / "agents"
 WEB_DIR = Path(__file__).parent / "static"
 
+# CAS source path — sibling project
+_CAS_SRC = Path.home() / "projects" / "cas" / "src"
+if _CAS_SRC.exists() and str(_CAS_SRC) not in sys.path:
+    sys.path.insert(0, str(_CAS_SRC))
+
 
 def create_app() -> FastAPI:
     app = FastAPI(title="Heddle Dashboard", version="1.0.0")
@@ -36,6 +42,19 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+    # ── CAS — Conversational Agent Shell ─────────────────────────
+    # Mounted here so CAS shares the Heddle process and port.
+    # CAS depends on Heddle; Heddle does not import CAS at module level.
+
+    try:
+        from cas.api import create_router as _cas_create_router
+        app.include_router(_cas_create_router())
+        import logging
+        logging.getLogger(__name__).info("CAS router mounted at /api/cas")
+    except ImportError as _exc:
+        import logging
+        logging.getLogger(__name__).warning("CAS not available: %s", _exc)
 
     # ── Health ───────────────────────────────────────────────────
 

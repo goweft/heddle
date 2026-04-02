@@ -1,3 +1,5 @@
+<p align="center"><img src="banner.svg" alt="heddle" width="100%"></p>
+
 <h1 align="center">Heddle</h1>
 <p align="center"><strong>The policy-and-trust layer for MCP tool servers.</strong></p>
 <p align="center">
