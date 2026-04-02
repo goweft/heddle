@@ -315,6 +315,8 @@ Python 3.11+ · FastMCP · FastAPI · Pydantic v2 · httpx · Click · SQLite ·
 
 - **[ratine](https://github.com/goweft/ratine)** — Agent memory poisoning detector
 
+- **[crocking](https://github.com/goweft/crocking)** — AI authorship detector for git repositories
+
 ## License
 
 MIT — see [LICENSE](LICENSE).
