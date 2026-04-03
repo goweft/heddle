@@ -19,7 +19,7 @@
 <h2 id="see-it-work">See It Work</h2>
 
 <p align="center">
-  <img src="docs/assets/demo.svg" alt="Heddle CLI demo" width="750">
+  <img src="docs/assets/demo.gif" alt="Heddle CLI demo" width="750">
 </p>
 
 **One config, one MCP server.** This YAML is a complete tool server — no Python, no boilerplate:
