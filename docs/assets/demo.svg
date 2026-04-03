@@ -1,305 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="660" height="852" viewBox="0 0 660 852" role="img" aria-label="Heddle CLI demo">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
-  text {
-    font-family: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
-    font-size: 13px;
-    white-space: pre;
-  }
-  .line { opacity: 0; }
-@keyframes l0 {
-  0%       { opacity: 0; }
-  0.00%  { opacity: 0; }
-  1.25%  { opacity: 1; }
-  99.9% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-@keyframes l1 {
-  0%       { opacity: 0; }
-  3.12%  { opacity: 0; }
-  4.38%  { opacity: 1; }
-  99.9% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-@keyframes l2 {
-  0%       { opacity: 0; }
-  5.00%  { opacity: 0; }
-  6.25%  { opacity: 1; }
-  99.9% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-@keyframes l3 {
-  0%       { opacity: 0; }
-  6.25%  { opacity: 0; }
-  7.50%  { opacity: 1; }
-  99.9% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-@keyframes l4 {
-  0%       { opacity: 0; }
-  7.50%  { opacity: 0; }
-  8.75%  { opacity: 1; }
-  99.9% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-@keyframes l5 {
-  0%       { opacity: 0; }
-  8.75%  { opacity: 0; }
-  10.00%  { opacity: 1; }
-  99.9% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-@keyframes l6 {
-  0%       { opacity: 0; }
-  10.00%  { opacity: 0; }
-  11.25%  { opacity: 1; }
-  99.9% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-@keyframes l7 {
-  0%       { opacity: 0; }
-  11.25%  { opacity: 0; }
-  12.50%  { opacity: 1; }
-  99.9% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-@keyframes l8 {
-  0%       { opacity: 0; }
-  13.12%  { opacity: 0; }
-  14.37%  { opacity: 1; }
-  99.9% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-@keyframes l9 {
-  0%       { opacity: 0; }
-  15.00%  { opacity: 0; }
-  16.25%  { opacity: 1; }
-  99.9% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-@keyframes l10 {
-  0%       { opacity: 0; }
-  16.88%  { opacity: 0; }
-  18.12%  { opacity: 1; }
-  99.9% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-@keyframes l11 {
-  0%       { opacity: 0; }
-  18.75%  { opacity: 0; }
-  20.00%  { opacity: 1; }
-  99.9% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-@keyframes l12 {
-  0%       { opacity: 0; }
-  20.62%  { opacity: 0; }
-  21.88%  { opacity: 1; }
-  99.9% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-@keyframes l13 {
-  0%       { opacity: 0; }
-  22.50%  { opacity: 0; }
-  23.75%  { opacity: 1; }
-  99.9% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-@keyframes l14 {
-  0%       { opacity: 0; }
-  23.75%  { opacity: 0; }
-  25.00%  { opacity: 1; }
-  99.9% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-@keyframes l15 {
-  0%       { opacity: 0; }
-  25.00%  { opacity: 0; }
-  26.25%  { opacity: 1; }
-  99.9% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-@keyframes l16 {
-  0%       { opacity: 0; }
-  26.25%  { opacity: 0; }
-  27.50%  { opacity: 1; }
-  99.9% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-@keyframes l17 {
-  0%       { opacity: 0; }
-  27.50%  { opacity: 0; }
-  28.75%  { opacity: 1; }
-  99.9% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-@keyframes l18 {
-  0%       { opacity: 0; }
-  29.38%  { opacity: 0; }
-  30.62%  { opacity: 1; }
-  99.9% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-@keyframes l19 {
-  0%       { opacity: 0; }
-  31.25%  { opacity: 0; }
-  32.50%  { opacity: 1; }
-  99.9% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-@keyframes l20 {
-  0%       { opacity: 0; }
-  32.50%  { opacity: 0; }
-  33.75%  { opacity: 1; }
-  99.9% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-@keyframes l21 {
-  0%       { opacity: 0; }
-  33.75%  { opacity: 0; }
-  35.00%  { opacity: 1; }
-  99.9% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-@keyframes l22 {
-  0%       { opacity: 0; }
-  35.00%  { opacity: 0; }
-  36.25%  { opacity: 1; }
-  99.9% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-@keyframes l23 {
-  0%       { opacity: 0; }
-  37.50%  { opacity: 0; }
-  38.75%  { opacity: 1; }
-  99.9% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-@keyframes l24 {
-  0%       { opacity: 0; }
-  39.38%  { opacity: 0; }
-  40.62%  { opacity: 1; }
-  99.9% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-@keyframes l25 {
-  0%       { opacity: 0; }
-  41.25%  { opacity: 0; }
-  42.50%  { opacity: 1; }
-  99.9% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-@keyframes l26 {
-  0%       { opacity: 0; }
-  43.12%  { opacity: 0; }
-  44.38%  { opacity: 1; }
-  99.9% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-@keyframes l27 {
-  0%       { opacity: 0; }
-  45.00%  { opacity: 0; }
-  46.25%  { opacity: 1; }
-  99.9% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-@keyframes l28 {
-  0%       { opacity: 0; }
-  46.25%  { opacity: 0; }
-  47.50%  { opacity: 1; }
-  99.9% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-@keyframes l29 {
-  0%       { opacity: 0; }
-  47.50%  { opacity: 0; }
-  48.75%  { opacity: 1; }
-  99.9% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-@keyframes l30 {
-  0%       { opacity: 0; }
-  48.75%  { opacity: 0; }
-  50.00%  { opacity: 1; }
-  99.9% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-@keyframes l31 {
-  0%       { opacity: 0; }
-  50.00%  { opacity: 0; }
-  51.25%  { opacity: 1; }
-  99.9% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-@keyframes l32 {
-  0%       { opacity: 0; }
-  51.87%  { opacity: 0; }
-  53.12%  { opacity: 1; }
-  99.9% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-@keyframes l33 {
-  0%       { opacity: 0; }
-  53.12%  { opacity: 0; }
-  54.38%  { opacity: 1; }
-  99.9% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-@keyframes l34 {
-  0%       { opacity: 0; }
-  54.38%  { opacity: 0; }
-  55.62%  { opacity: 1; }
-  99.9% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-@keyframes l35 {
-  0%       { opacity: 0; }
-  55.62%  { opacity: 0; }
-  56.88%  { opacity: 1; }
-  99.9% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-@keyframes l36 {
-  0%       { opacity: 0; }
-  56.88%  { opacity: 0; }
-  58.13%  { opacity: 1; }
-  99.9% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-@keyframes l37 {
-  0%       { opacity: 0; }
-  58.12%  { opacity: 0; }
-  59.38%  { opacity: 1; }
-  99.9% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-@keyframes l38 {
-  0%       { opacity: 0; }
-  59.38%  { opacity: 0; }
-  60.63%  { opacity: 1; }
-  99.9% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-@keyframes l39 {
-  0%       { opacity: 0; }
-  60.63%  { opacity: 0; }
-  61.88%  { opacity: 1; }
-  99.9% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-@keyframes l40 {
-  0%       { opacity: 0; }
-  61.88%  { opacity: 0; }
-  62.50%  { opacity: 1; }
-  99.9% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-@keyframes l41 {
-  0%       { opacity: 0; }
-  62.50%  { opacity: 0; }
-  62.50%  { opacity: 1; }
-  99.9% { opacity: 1; }
-  100%     { opacity: 0; }
+text {
+  font-family: ui-monospace, 'Cascadia Code', 'Fira Code', Menlo, Consolas, monospace;
+  font-size: 13px;
 }
 </style>
 <rect width="660" height="852" fill="#0d1117" rx="8"/>
@@ -308,223 +11,265 @@
 <circle cx="16" cy="16" r="5" fill="#ff5f57"/>
 <circle cx="36" cy="16" r="5" fill="#ffbd2e"/>
 <circle cx="56" cy="16" r="5" fill="#28c840"/>
-<text x="330" y="20" text-anchor="middle" fill="#6e7681" font-size="12" font-family="inherit">heddle — MCP policy &amp; trust layer</text>
-<g class="line" style="animation: l0 12.0s linear infinite;">
-<text x="16.0" y="76" fill="#58a6ff" font-weight="bold">$ </text>
-<text x="31.6" y="76" fill="#e6edf3" font-weight="bold">heddle validate packs/prometheus.yaml</text>
+<text x="330" y="21" text-anchor="middle" fill="#6e7681" font-size="12">heddle — MCP policy &amp; trust layer</text>
+<g opacity="0">
+  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.0000;0.0125;0.9999;1" dur="12.0s" repeatCount="indefinite" calcMode="linear"/>
+  <text x="16.0" y="76" fill="#58a6ff" font-weight="bold">$ </text>
+  <text x="31.6" y="76" fill="#e6edf3" font-weight="bold">heddle validate packs/prometheus.yaml</text>
 </g>
-<g class="line" style="animation: l1 12.0s linear infinite;">
-<text x="16.0" y="94" fill="#3fb950" font-weight="bold">OK </text>
-<text x="39.4" y="94" fill="#e6edf3" font-weight="normal">Config valid: </text>
-<text x="148.6" y="94" fill="#79c0ff" font-weight="bold">prometheus</text>
-<text x="226.6" y="94" fill="#e6edf3" font-weight="normal"> v1.0.0</text>
+<g opacity="0">
+  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.0312;0.0438;0.9999;1" dur="12.0s" repeatCount="indefinite" calcMode="linear"/>
+  <text x="16.0" y="94" fill="#3fb950" font-weight="bold">OK </text>
+  <text x="39.4" y="94" fill="#e6edf3" font-weight="normal">Config valid: </text>
+  <text x="148.6" y="94" fill="#79c0ff" font-weight="bold">prometheus</text>
+  <text x="226.6" y="94" fill="#e6edf3" font-weight="normal"> v1.0.0</text>
 </g>
-<g class="line" style="animation: l2 12.0s linear infinite;">
-<text x="16.0" y="112" fill="#6e7681" font-weight="normal">  Read-only Prometheus bridge — PromQL, targets, alerts, metrics.</text>
+<g opacity="0">
+  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.0500;0.0625;0.9999;1" dur="12.0s" repeatCount="indefinite" calcMode="linear"/>
+  <text x="16.0" y="112" fill="#6e7681" font-weight="normal">  Read-only bridge — PromQL, targets, alerts, metrics.</text>
 </g>
-<g class="line" style="animation: l3 12.0s linear infinite;">
+<g opacity="0">
+  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.0625;0.0750;0.9999;1" dur="12.0s" repeatCount="indefinite" calcMode="linear"/>
 </g>
-<g class="line" style="animation: l4 12.0s linear infinite;">
-<text x="16.0" y="148" fill="#e6edf3" font-weight="bold">                 Exposed Tools                  </text>
+<g opacity="0">
+  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.0750;0.0875;0.9999;1" dur="12.0s" repeatCount="indefinite" calcMode="linear"/>
+  <text x="16.0" y="148" fill="#e6edf3" font-weight="bold">                 Exposed Tools                  </text>
 </g>
-<g class="line" style="animation: l5 12.0s linear infinite;">
-<text x="16.0" y="166" fill="#6e7681" font-weight="normal">┏━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━┓</text>
+<g opacity="0">
+  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.0875;0.1000;0.9999;1" dur="12.0s" repeatCount="indefinite" calcMode="linear"/>
+  <text x="16.0" y="166" fill="#6e7681" font-weight="normal">┏━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━┓</text>
 </g>
-<g class="line" style="animation: l6 12.0s linear infinite;">
-<text x="16.0" y="184" fill="#6e7681" font-weight="normal">┃ </text>
-<text x="31.6" y="184" fill="#e6edf3" font-weight="bold">Tool        </text>
-<text x="125.2" y="184" fill="#6e7681" font-weight="normal">┃ </text>
-<text x="140.8" y="184" fill="#e6edf3" font-weight="bold">Bridge </text>
-<text x="195.4" y="184" fill="#6e7681" font-weight="normal">┃ </text>
-<text x="211.0" y="184" fill="#e6edf3" font-weight="bold">Parameters              </text>
-<text x="398.2" y="184" fill="#6e7681" font-weight="normal">┃</text>
+<g opacity="0">
+  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.1000;0.1125;0.9999;1" dur="12.0s" repeatCount="indefinite" calcMode="linear"/>
+  <text x="16.0" y="184" fill="#6e7681" font-weight="normal">┃ </text>
+  <text x="31.6" y="184" fill="#e6edf3" font-weight="bold">Tool        </text>
+  <text x="125.2" y="184" fill="#6e7681" font-weight="normal">┃ </text>
+  <text x="140.8" y="184" fill="#e6edf3" font-weight="bold">Bridge </text>
+  <text x="195.4" y="184" fill="#6e7681" font-weight="normal">┃ </text>
+  <text x="211.0" y="184" fill="#e6edf3" font-weight="bold">Parameters              </text>
+  <text x="398.2" y="184" fill="#6e7681" font-weight="normal">┃</text>
 </g>
-<g class="line" style="animation: l7 12.0s linear infinite;">
-<text x="16.0" y="202" fill="#6e7681" font-weight="normal">┡━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━┩</text>
+<g opacity="0">
+  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.1125;0.1250;0.9999;1" dur="12.0s" repeatCount="indefinite" calcMode="linear"/>
+  <text x="16.0" y="202" fill="#6e7681" font-weight="normal">┡━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━┩</text>
 </g>
-<g class="line" style="animation: l8 12.0s linear infinite;">
-<text x="16.0" y="220" fill="#6e7681" font-weight="normal">│ </text>
-<text x="31.6" y="220" fill="#79c0ff" font-weight="normal">query       </text>
-<text x="125.2" y="220" fill="#6e7681" font-weight="normal">│ </text>
-<text x="140.8" y="220" fill="#e6edf3" font-weight="normal">http   </text>
-<text x="195.4" y="220" fill="#6e7681" font-weight="normal">│ </text>
-<text x="211.0" y="220" fill="#e6edf3" font-weight="normal">query                   </text>
+<g opacity="0">
+  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.1313;0.1437;0.9999;1" dur="12.0s" repeatCount="indefinite" calcMode="linear"/>
+  <text x="16.0" y="220" fill="#6e7681" font-weight="normal">│ </text>
+  <text x="31.6" y="220" fill="#79c0ff" font-weight="normal">query       </text>
+  <text x="125.2" y="220" fill="#6e7681" font-weight="normal">│ </text>
+  <text x="140.8" y="220" fill="#e6edf3" font-weight="normal">http   </text>
+  <text x="195.4" y="220" fill="#6e7681" font-weight="normal">│ </text>
+  <text x="211.0" y="220" fill="#e6edf3" font-weight="normal">query                   </text>
 </g>
-<g class="line" style="animation: l9 12.0s linear infinite;">
-<text x="16.0" y="238" fill="#6e7681" font-weight="normal">│ </text>
-<text x="31.6" y="238" fill="#79c0ff" font-weight="normal">query_range </text>
-<text x="125.2" y="238" fill="#6e7681" font-weight="normal">│ </text>
-<text x="140.8" y="238" fill="#e6edf3" font-weight="normal">http   </text>
-<text x="195.4" y="238" fill="#6e7681" font-weight="normal">│ </text>
-<text x="211.0" y="238" fill="#e6edf3" font-weight="normal">query, start, end, step </text>
+<g opacity="0">
+  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.1562;0.1687;0.9999;1" dur="12.0s" repeatCount="indefinite" calcMode="linear"/>
+  <text x="16.0" y="238" fill="#6e7681" font-weight="normal">│ </text>
+  <text x="31.6" y="238" fill="#79c0ff" font-weight="normal">query_range </text>
+  <text x="125.2" y="238" fill="#6e7681" font-weight="normal">│ </text>
+  <text x="140.8" y="238" fill="#e6edf3" font-weight="normal">http   </text>
+  <text x="195.4" y="238" fill="#6e7681" font-weight="normal">│ </text>
+  <text x="211.0" y="238" fill="#e6edf3" font-weight="normal">query, start, end, step </text>
 </g>
-<g class="line" style="animation: l10 12.0s linear infinite;">
-<text x="16.0" y="256" fill="#6e7681" font-weight="normal">│ </text>
-<text x="31.6" y="256" fill="#79c0ff" font-weight="normal">targets     </text>
-<text x="125.2" y="256" fill="#6e7681" font-weight="normal">│ </text>
-<text x="140.8" y="256" fill="#e6edf3" font-weight="normal">http   </text>
-<text x="195.4" y="256" fill="#6e7681" font-weight="normal">│ </text>
-<text x="211.0" y="256" fill="#e6edf3" font-weight="normal">-                       </text>
+<g opacity="0">
+  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.1750;0.1875;0.9999;1" dur="12.0s" repeatCount="indefinite" calcMode="linear"/>
+  <text x="16.0" y="256" fill="#6e7681" font-weight="normal">│ </text>
+  <text x="31.6" y="256" fill="#79c0ff" font-weight="normal">targets     </text>
+  <text x="125.2" y="256" fill="#6e7681" font-weight="normal">│ </text>
+  <text x="140.8" y="256" fill="#e6edf3" font-weight="normal">http   </text>
+  <text x="195.4" y="256" fill="#6e7681" font-weight="normal">│ </text>
+  <text x="211.0" y="256" fill="#e6edf3" font-weight="normal">-                       </text>
 </g>
-<g class="line" style="animation: l11 12.0s linear infinite;">
-<text x="16.0" y="274" fill="#6e7681" font-weight="normal">│ </text>
-<text x="31.6" y="274" fill="#79c0ff" font-weight="normal">alerts      </text>
-<text x="125.2" y="274" fill="#6e7681" font-weight="normal">│ </text>
-<text x="140.8" y="274" fill="#e6edf3" font-weight="normal">http   </text>
-<text x="195.4" y="274" fill="#6e7681" font-weight="normal">│ </text>
-<text x="211.0" y="274" fill="#e6edf3" font-weight="normal">-                       </text>
+<g opacity="0">
+  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.1938;0.2063;0.9999;1" dur="12.0s" repeatCount="indefinite" calcMode="linear"/>
+  <text x="16.0" y="274" fill="#6e7681" font-weight="normal">│ </text>
+  <text x="31.6" y="274" fill="#79c0ff" font-weight="normal">alerts      </text>
+  <text x="125.2" y="274" fill="#6e7681" font-weight="normal">│ </text>
+  <text x="140.8" y="274" fill="#e6edf3" font-weight="normal">http   </text>
+  <text x="195.4" y="274" fill="#6e7681" font-weight="normal">│ </text>
+  <text x="211.0" y="274" fill="#e6edf3" font-weight="normal">-                       </text>
 </g>
-<g class="line" style="animation: l12 12.0s linear infinite;">
-<text x="16.0" y="292" fill="#6e7681" font-weight="normal">│ </text>
-<text x="31.6" y="292" fill="#79c0ff" font-weight="normal">metrics     </text>
-<text x="125.2" y="292" fill="#6e7681" font-weight="normal">│ </text>
-<text x="140.8" y="292" fill="#e6edf3" font-weight="normal">http   </text>
-<text x="195.4" y="292" fill="#6e7681" font-weight="normal">│ </text>
-<text x="211.0" y="292" fill="#e6edf3" font-weight="normal">-                       </text>
+<g opacity="0">
+  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.2125;0.2250;0.9999;1" dur="12.0s" repeatCount="indefinite" calcMode="linear"/>
+  <text x="16.0" y="292" fill="#6e7681" font-weight="normal">│ </text>
+  <text x="31.6" y="292" fill="#79c0ff" font-weight="normal">metrics     </text>
+  <text x="125.2" y="292" fill="#6e7681" font-weight="normal">│ </text>
+  <text x="140.8" y="292" fill="#e6edf3" font-weight="normal">http   </text>
+  <text x="195.4" y="292" fill="#6e7681" font-weight="normal">│ </text>
+  <text x="211.0" y="292" fill="#e6edf3" font-weight="normal">-                       </text>
 </g>
-<g class="line" style="animation: l13 12.0s linear infinite;">
-<text x="16.0" y="310" fill="#6e7681" font-weight="normal">└─────────────┴────────┴─────────────────────────┘</text>
+<g opacity="0">
+  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.2312;0.2437;0.9999;1" dur="12.0s" repeatCount="indefinite" calcMode="linear"/>
+  <text x="16.0" y="310" fill="#6e7681" font-weight="normal">└─────────────┴────────┴─────────────────────────┘</text>
 </g>
-<g class="line" style="animation: l14 12.0s linear infinite;">
+<g opacity="0">
+  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.2437;0.2562;0.9999;1" dur="12.0s" repeatCount="indefinite" calcMode="linear"/>
 </g>
-<g class="line" style="animation: l15 12.0s linear infinite;">
-<text x="16.0" y="346" fill="#58a6ff" font-weight="bold">$ </text>
-<text x="31.6" y="346" fill="#e6edf3" font-weight="bold">heddle run agents/prometheus-bridge.yaml</text>
+<g opacity="0">
+  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.2563;0.2687;0.9999;1" dur="12.0s" repeatCount="indefinite" calcMode="linear"/>
+  <text x="16.0" y="346" fill="#58a6ff" font-weight="bold">$ </text>
+  <text x="31.6" y="346" fill="#e6edf3" font-weight="bold">heddle run agents/prometheus-bridge.yaml</text>
 </g>
-<g class="line" style="animation: l16 12.0s linear infinite;">
+<g opacity="0">
+  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.2687;0.2812;0.9999;1" dur="12.0s" repeatCount="indefinite" calcMode="linear"/>
 </g>
-<g class="line" style="animation: l17 12.0s linear infinite;">
-<text x="16.0" y="382" fill="#79c0ff" font-weight="bold">Heddle </text>
-<text x="70.6" y="382" fill="#e6edf3" font-weight="normal">Starting agent </text>
-<text x="187.6" y="382" fill="#e6edf3" font-weight="bold">prometheus</text>
-<text x="265.6" y="382" fill="#e6edf3" font-weight="normal"> v1.0.0</text>
+<g opacity="0">
+  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.2812;0.2938;0.9999;1" dur="12.0s" repeatCount="indefinite" calcMode="linear"/>
+  <text x="16.0" y="382" fill="#79c0ff" font-weight="bold">Heddle </text>
+  <text x="70.6" y="382" fill="#e6edf3" font-weight="normal">Starting agent </text>
+  <text x="187.6" y="382" fill="#e6edf3" font-weight="bold">prometheus</text>
+  <text x="265.6" y="382" fill="#e6edf3" font-weight="normal"> v1.0.0</text>
 </g>
-<g class="line" style="animation: l18 12.0s linear infinite;">
-<text x="16.0" y="400" fill="#6e7681" font-weight="normal">  Tools: </text>
-<text x="86.2" y="400" fill="#e6edf3" font-weight="normal">5 exposed</text>
-<text x="156.4" y="400" fill="#6e7681" font-weight="normal">, 0 consumed</text>
+<g opacity="0">
+  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.3000;0.3125;0.9999;1" dur="12.0s" repeatCount="indefinite" calcMode="linear"/>
+  <text x="16.0" y="400" fill="#6e7681" font-weight="normal">  Tools: </text>
+  <text x="86.2" y="400" fill="#e6edf3" font-weight="normal">5 exposed</text>
+  <text x="156.4" y="400" fill="#6e7681" font-weight="normal">,  0 consumed</text>
 </g>
-<g class="line" style="animation: l19 12.0s linear infinite;">
-<text x="16.0" y="418" fill="#6e7681" font-weight="normal">  Trust tier: </text>
-<text x="125.2" y="418" fill="#e6edf3" font-weight="normal">1</text>
+<g opacity="0">
+  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.3125;0.3250;0.9999;1" dur="12.0s" repeatCount="indefinite" calcMode="linear"/>
+  <text x="16.0" y="418" fill="#6e7681" font-weight="normal">  Trust tier: </text>
+  <text x="125.2" y="418" fill="#e6edf3" font-weight="normal">1</text>
 </g>
-<g class="line" style="animation: l20 12.0s linear infinite;">
-<text x="16.0" y="436" fill="#6e7681" font-weight="normal">  Endpoint: </text>
-<text x="109.6" y="436" fill="#6e7681" font-weight="normal">http://0.0.0.0:8200/mcp</text>
+<g opacity="0">
+  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.3250;0.3375;0.9999;1" dur="12.0s" repeatCount="indefinite" calcMode="linear"/>
+  <text x="16.0" y="436" fill="#6e7681" font-weight="normal">  Endpoint: </text>
+  <text x="109.6" y="436" fill="#6e7681" font-weight="normal">http://0.0.0.0:8200/mcp</text>
 </g>
-<g class="line" style="animation: l21 12.0s linear infinite;">
+<g opacity="0">
+  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.3375;0.3500;0.9999;1" dur="12.0s" repeatCount="indefinite" calcMode="linear"/>
 </g>
-<g class="line" style="animation: l22 12.0s linear infinite;">
-<text x="16.0" y="472" fill="#58a6ff" font-weight="bold">$ </text>
-<text x="31.6" y="472" fill="#e6edf3" font-weight="bold">heddle sign verify agents/</text>
+<g opacity="0">
+  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.3500;0.3625;0.9999;1" dur="12.0s" repeatCount="indefinite" calcMode="linear"/>
+  <text x="16.0" y="472" fill="#58a6ff" font-weight="bold">$ </text>
+  <text x="31.6" y="472" fill="#e6edf3" font-weight="bold">heddle sign verify agents/</text>
 </g>
-<g class="line" style="animation: l23 12.0s linear infinite;">
-<text x="16.0" y="490" fill="#e6edf3" font-weight="normal">  </text>
-<text x="31.6" y="490" fill="#3fb950" font-weight="bold">OK </text>
-<text x="55.0" y="490" fill="#e6edf3" font-weight="normal">prometheus-bridge.yaml</text>
+<g opacity="0">
+  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.3687;0.3813;0.9999;1" dur="12.0s" repeatCount="indefinite" calcMode="linear"/>
+  <text x="16.0" y="490" fill="#e6edf3" font-weight="normal">  </text>
+  <text x="31.6" y="490" fill="#3fb950" font-weight="bold">OK </text>
+  <text x="55.0" y="490" fill="#e6edf3" font-weight="normal">prometheus-bridge.yaml</text>
 </g>
-<g class="line" style="animation: l24 12.0s linear infinite;">
-<text x="16.0" y="508" fill="#e6edf3" font-weight="normal">  </text>
-<text x="31.6" y="508" fill="#3fb950" font-weight="bold">OK </text>
-<text x="55.0" y="508" fill="#e6edf3" font-weight="normal">grafana-bridge.yaml</text>
+<g opacity="0">
+  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.3875;0.4000;0.9999;1" dur="12.0s" repeatCount="indefinite" calcMode="linear"/>
+  <text x="16.0" y="508" fill="#e6edf3" font-weight="normal">  </text>
+  <text x="31.6" y="508" fill="#3fb950" font-weight="bold">OK </text>
+  <text x="55.0" y="508" fill="#e6edf3" font-weight="normal">grafana-bridge.yaml</text>
 </g>
-<g class="line" style="animation: l25 12.0s linear infinite;">
-<text x="16.0" y="526" fill="#e6edf3" font-weight="normal">  </text>
-<text x="31.6" y="526" fill="#3fb950" font-weight="bold">OK </text>
-<text x="55.0" y="526" fill="#e6edf3" font-weight="normal">ollama-bridge.yaml</text>
+<g opacity="0">
+  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.4062;0.4188;0.9999;1" dur="12.0s" repeatCount="indefinite" calcMode="linear"/>
+  <text x="16.0" y="526" fill="#e6edf3" font-weight="normal">  </text>
+  <text x="31.6" y="526" fill="#3fb950" font-weight="bold">OK </text>
+  <text x="55.0" y="526" fill="#e6edf3" font-weight="normal">ollama-bridge.yaml</text>
 </g>
-<g class="line" style="animation: l26 12.0s linear infinite;">
-<text x="16.0" y="544" fill="#e6edf3" font-weight="normal">  </text>
-<text x="31.6" y="544" fill="#3fb950" font-weight="bold">OK </text>
-<text x="55.0" y="544" fill="#e6edf3" font-weight="normal">vram-orchestrator.yaml</text>
+<g opacity="0">
+  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.4250;0.4375;0.9999;1" dur="12.0s" repeatCount="indefinite" calcMode="linear"/>
+  <text x="16.0" y="544" fill="#e6edf3" font-weight="normal">  </text>
+  <text x="31.6" y="544" fill="#3fb950" font-weight="bold">OK </text>
+  <text x="55.0" y="544" fill="#e6edf3" font-weight="normal">vram-orchestrator.yaml</text>
 </g>
-<g class="line" style="animation: l27 12.0s linear infinite;">
-<text x="16.0" y="562" fill="#e6edf3" font-weight="normal">  </text>
-<text x="31.6" y="562" fill="#3fb950" font-weight="bold">OK </text>
-<text x="55.0" y="562" fill="#e6edf3" font-weight="normal">rsshub-bridge.yaml</text>
+<g opacity="0">
+  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.4438;0.4563;0.9999;1" dur="12.0s" repeatCount="indefinite" calcMode="linear"/>
+  <text x="16.0" y="562" fill="#e6edf3" font-weight="normal">  </text>
+  <text x="31.6" y="562" fill="#3fb950" font-weight="bold">OK </text>
+  <text x="55.0" y="562" fill="#e6edf3" font-weight="normal">rsshub-bridge.yaml</text>
 </g>
-<g class="line" style="animation: l28 12.0s linear infinite;">
+<g opacity="0">
+  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.4562;0.4688;0.9999;1" dur="12.0s" repeatCount="indefinite" calcMode="linear"/>
 </g>
-<g class="line" style="animation: l29 12.0s linear infinite;">
-<text x="16.0" y="598" fill="#3fb950" font-weight="bold">All 5 configs verified</text>
+<g opacity="0">
+  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.4688;0.4813;0.9999;1" dur="12.0s" repeatCount="indefinite" calcMode="linear"/>
+  <text x="16.0" y="598" fill="#3fb950" font-weight="bold">All 5 configs verified</text>
 </g>
-<g class="line" style="animation: l30 12.0s linear infinite;">
+<g opacity="0">
+  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.4813;0.4938;0.9999;1" dur="12.0s" repeatCount="indefinite" calcMode="linear"/>
 </g>
-<g class="line" style="animation: l31 12.0s linear infinite;">
-<text x="16.0" y="634" fill="#58a6ff" font-weight="bold">$ </text>
-<text x="31.6" y="634" fill="#e6edf3" font-weight="bold">heddle audit show -n 5</text>
+<g opacity="0">
+  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.4937;0.5062;0.9999;1" dur="12.0s" repeatCount="indefinite" calcMode="linear"/>
+  <text x="16.0" y="634" fill="#58a6ff" font-weight="bold">$ </text>
+  <text x="31.6" y="634" fill="#e6edf3" font-weight="bold">heddle audit show -n 5</text>
 </g>
-<g class="line" style="animation: l32 12.0s linear infinite;">
-<text x="16.0" y="652" fill="#e6edf3" font-weight="bold">              Audit Log (last 5)              </text>
+<g opacity="0">
+  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.5125;0.5250;0.9999;1" dur="12.0s" repeatCount="indefinite" calcMode="linear"/>
+  <text x="16.0" y="652" fill="#e6edf3" font-weight="bold">              Audit Log (last 5)              </text>
 </g>
-<g class="line" style="animation: l33 12.0s linear infinite;">
-<text x="16.0" y="670" fill="#6e7681" font-weight="normal">┏━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━┓</text>
+<g opacity="0">
+  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.5250;0.5375;0.9999;1" dur="12.0s" repeatCount="indefinite" calcMode="linear"/>
+  <text x="16.0" y="670" fill="#6e7681" font-weight="normal">┏━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━┓</text>
 </g>
-<g class="line" style="animation: l34 12.0s linear infinite;">
-<text x="16.0" y="688" fill="#6e7681" font-weight="normal">┃ </text>
-<text x="31.6" y="688" fill="#e6edf3" font-weight="bold">Time               </text>
-<text x="179.8" y="688" fill="#6e7681" font-weight="normal">┃ </text>
-<text x="195.4" y="688" fill="#e6edf3" font-weight="bold">Event          </text>
-<text x="312.4" y="688" fill="#6e7681" font-weight="normal">┃ </text>
-<text x="328.0" y="688" fill="#e6edf3" font-weight="bold">Agent      </text>
-<text x="413.8" y="688" fill="#6e7681" font-weight="normal">┃ </text>
-<text x="429.4" y="688" fill="#e6edf3" font-weight="bold">Detail            </text>
-<text x="569.8" y="688" fill="#6e7681" font-weight="normal">┃</text>
+<g opacity="0">
+  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.5375;0.5500;0.9999;1" dur="12.0s" repeatCount="indefinite" calcMode="linear"/>
+  <text x="16.0" y="688" fill="#6e7681" font-weight="normal">┃ </text>
+  <text x="31.6" y="688" fill="#e6edf3" font-weight="bold">Time               </text>
+  <text x="179.8" y="688" fill="#6e7681" font-weight="normal">┃ </text>
+  <text x="195.4" y="688" fill="#e6edf3" font-weight="bold">Event          </text>
+  <text x="312.4" y="688" fill="#6e7681" font-weight="normal">┃ </text>
+  <text x="328.0" y="688" fill="#e6edf3" font-weight="bold">Agent     </text>
+  <text x="406.0" y="688" fill="#6e7681" font-weight="normal">┃ </text>
+  <text x="421.6" y="688" fill="#e6edf3" font-weight="bold">Detail             </text>
+  <text x="569.8" y="688" fill="#6e7681" font-weight="normal">┃</text>
 </g>
-<g class="line" style="animation: l35 12.0s linear infinite;">
-<text x="16.0" y="706" fill="#6e7681" font-weight="normal">┡━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━┩</text>
+<g opacity="0">
+  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.5500;0.5625;0.9999;1" dur="12.0s" repeatCount="indefinite" calcMode="linear"/>
+  <text x="16.0" y="706" fill="#6e7681" font-weight="normal">┡━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━┩</text>
 </g>
-<g class="line" style="animation: l36 12.0s linear infinite;">
-<text x="16.0" y="724" fill="#6e7681" font-weight="normal">│ </text>
-<text x="31.6" y="724" fill="#6e7681" font-weight="normal">2026-04-03T09:12:01</text>
-<text x="179.8" y="724" fill="#6e7681" font-weight="normal"> │ </text>
-<text x="203.2" y="724" fill="#e6edf3" font-weight="normal">tool_call      </text>
-<text x="320.2" y="724" fill="#6e7681" font-weight="normal"> │ </text>
-<text x="343.6" y="724" fill="#79c0ff" font-weight="normal">prometheus </text>
-<text x="429.4" y="724" fill="#6e7681" font-weight="normal"> │ </text>
-<text x="452.8" y="724" fill="#e6edf3" font-weight="normal">query [ok] 42ms   </text>
+<g opacity="0">
+  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.5625;0.5750;0.9999;1" dur="12.0s" repeatCount="indefinite" calcMode="linear"/>
+  <text x="16.0" y="724" fill="#6e7681" font-weight="normal">│ </text>
+  <text x="31.6" y="724" fill="#6e7681" font-weight="normal">2026-04-03T09:12:01</text>
+  <text x="179.8" y="724" fill="#6e7681" font-weight="normal"> │ </text>
+  <text x="203.2" y="724" fill="#e6edf3" font-weight="normal">tool_call      </text>
+  <text x="320.2" y="724" fill="#6e7681" font-weight="normal"> │ </text>
+  <text x="343.6" y="724" fill="#79c0ff" font-weight="normal">prometheus</text>
+  <text x="421.6" y="724" fill="#6e7681" font-weight="normal"> │ </text>
+  <text x="445.0" y="724" fill="#e6edf3" font-weight="normal">query [ok] 42ms    </text>
 </g>
-<g class="line" style="animation: l37 12.0s linear infinite;">
-<text x="16.0" y="742" fill="#6e7681" font-weight="normal">│ </text>
-<text x="31.6" y="742" fill="#6e7681" font-weight="normal">2026-04-03T09:12:03</text>
-<text x="179.8" y="742" fill="#6e7681" font-weight="normal"> │ </text>
-<text x="203.2" y="742" fill="#e6edf3" font-weight="normal">tool_call      </text>
-<text x="320.2" y="742" fill="#6e7681" font-weight="normal"> │ </text>
-<text x="343.6" y="742" fill="#79c0ff" font-weight="normal">grafana    </text>
-<text x="429.4" y="742" fill="#6e7681" font-weight="normal"> │ </text>
-<text x="452.8" y="742" fill="#e6edf3" font-weight="normal">dashboards [ok]   </text>
+<g opacity="0">
+  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.5750;0.5875;0.9999;1" dur="12.0s" repeatCount="indefinite" calcMode="linear"/>
+  <text x="16.0" y="742" fill="#6e7681" font-weight="normal">│ </text>
+  <text x="31.6" y="742" fill="#6e7681" font-weight="normal">2026-04-03T09:12:03</text>
+  <text x="179.8" y="742" fill="#6e7681" font-weight="normal"> │ </text>
+  <text x="203.2" y="742" fill="#e6edf3" font-weight="normal">tool_call      </text>
+  <text x="320.2" y="742" fill="#6e7681" font-weight="normal"> │ </text>
+  <text x="343.6" y="742" fill="#79c0ff" font-weight="normal">grafana   </text>
+  <text x="421.6" y="742" fill="#6e7681" font-weight="normal"> │ </text>
+  <text x="445.0" y="742" fill="#e6edf3" font-weight="normal">dashboards [ok]    </text>
 </g>
-<g class="line" style="animation: l38 12.0s linear infinite;">
-<text x="16.0" y="760" fill="#6e7681" font-weight="normal">│ </text>
-<text x="31.6" y="760" fill="#6e7681" font-weight="normal">2026-04-03T09:12:08</text>
-<text x="179.8" y="760" fill="#6e7681" font-weight="normal"> │ </text>
-<text x="203.2" y="760" fill="#f85149" font-weight="bold">trust_violation</text>
-<text x="320.2" y="760" fill="#6e7681" font-weight="normal"> │ </text>
-<text x="343.6" y="760" fill="#79c0ff" font-weight="normal">prometheus </text>
-<text x="429.4" y="760" fill="#6e7681" font-weight="normal"> │ </text>
-<text x="452.8" y="760" fill="#e6edf3" font-weight="normal">write_tool: T1 ok </text>
+<g opacity="0">
+  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.5875;0.6000;0.9999;1" dur="12.0s" repeatCount="indefinite" calcMode="linear"/>
+  <text x="16.0" y="760" fill="#6e7681" font-weight="normal">│ </text>
+  <text x="31.6" y="760" fill="#6e7681" font-weight="normal">2026-04-03T09:12:08</text>
+  <text x="179.8" y="760" fill="#6e7681" font-weight="normal"> │ </text>
+  <text x="203.2" y="760" fill="#f85149" font-weight="bold">trust_violation</text>
+  <text x="320.2" y="760" fill="#6e7681" font-weight="normal"> │ </text>
+  <text x="343.6" y="760" fill="#79c0ff" font-weight="normal">prometheus</text>
+  <text x="421.6" y="760" fill="#6e7681" font-weight="normal"> │ </text>
+  <text x="445.0" y="760" fill="#e6edf3" font-weight="normal">write_tool: T1     </text>
 </g>
-<g class="line" style="animation: l39 12.0s linear infinite;">
-<text x="16.0" y="778" fill="#6e7681" font-weight="normal">│ </text>
-<text x="31.6" y="778" fill="#6e7681" font-weight="normal">2026-04-03T09:12:11</text>
-<text x="179.8" y="778" fill="#6e7681" font-weight="normal"> │ </text>
-<text x="203.2" y="778" fill="#e6edf3" font-weight="normal">tool_call      </text>
-<text x="320.2" y="778" fill="#6e7681" font-weight="normal"> │ </text>
-<text x="343.6" y="778" fill="#79c0ff" font-weight="normal">ollama     </text>
-<text x="429.4" y="778" fill="#6e7681" font-weight="normal"> │ </text>
-<text x="452.8" y="778" fill="#e6edf3" font-weight="normal">generate [ok]1.2s </text>
+<g opacity="0">
+  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.6000;0.6125;0.9999;1" dur="12.0s" repeatCount="indefinite" calcMode="linear"/>
+  <text x="16.0" y="778" fill="#6e7681" font-weight="normal">│ </text>
+  <text x="31.6" y="778" fill="#6e7681" font-weight="normal">2026-04-03T09:12:11</text>
+  <text x="179.8" y="778" fill="#6e7681" font-weight="normal"> │ </text>
+  <text x="203.2" y="778" fill="#e6edf3" font-weight="normal">tool_call      </text>
+  <text x="320.2" y="778" fill="#6e7681" font-weight="normal"> │ </text>
+  <text x="343.6" y="778" fill="#79c0ff" font-weight="normal">ollama    </text>
+  <text x="421.6" y="778" fill="#6e7681" font-weight="normal"> │ </text>
+  <text x="445.0" y="778" fill="#e6edf3" font-weight="normal">generate [ok] 1.2s </text>
 </g>
-<g class="line" style="animation: l40 12.0s linear infinite;">
-<text x="16.0" y="796" fill="#6e7681" font-weight="normal">│ </text>
-<text x="31.6" y="796" fill="#6e7681" font-weight="normal">2026-04-03T09:12:15</text>
-<text x="179.8" y="796" fill="#6e7681" font-weight="normal"> │ </text>
-<text x="203.2" y="796" fill="#e6edf3" font-weight="normal">credential_accs</text>
-<text x="320.2" y="796" fill="#6e7681" font-weight="normal"> │ </text>
-<text x="343.6" y="796" fill="#79c0ff" font-weight="normal">ollama     </text>
-<text x="429.4" y="796" fill="#6e7681" font-weight="normal"> │ </text>
-<text x="452.8" y="796" fill="#e6edf3" font-weight="normal">ollama-token ✓    </text>
+<g opacity="0">
+  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.6125;0.6250;0.9999;1" dur="12.0s" repeatCount="indefinite" calcMode="linear"/>
+  <text x="16.0" y="796" fill="#6e7681" font-weight="normal">│ </text>
+  <text x="31.6" y="796" fill="#6e7681" font-weight="normal">2026-04-03T09:12:15</text>
+  <text x="179.8" y="796" fill="#6e7681" font-weight="normal"> │ </text>
+  <text x="203.2" y="796" fill="#e6edf3" font-weight="normal">credential_accs</text>
+  <text x="320.2" y="796" fill="#6e7681" font-weight="normal"> │ </text>
+  <text x="343.6" y="796" fill="#79c0ff" font-weight="normal">ollama    </text>
+  <text x="421.6" y="796" fill="#6e7681" font-weight="normal"> │ </text>
+  <text x="445.0" y="796" fill="#e6edf3" font-weight="normal">ollama-token ✓     </text>
 </g>
-<g class="line" style="animation: l41 12.0s linear infinite;">
-<text x="16.0" y="814" fill="#6e7681" font-weight="normal">└─────────────────────┴─────────────────┴─────────────┴────────────────────┘</text>
+<g opacity="0">
+  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.6250;0.6250;0.9999;1" dur="12.0s" repeatCount="indefinite" calcMode="linear"/>
+  <text x="16.0" y="814" fill="#6e7681" font-weight="normal">└─────────────────────┴─────────────────┴────────────┴─────────────────────┘</text>
 </g>
 </svg>
