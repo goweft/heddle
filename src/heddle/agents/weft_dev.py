@@ -35,7 +35,7 @@ logger = logging.getLogger(__name__)
 _HOME = Path.home()
 _PROJECTS = {
     "cas":     _HOME / "projects" / "cas",
-    "cas-go":  _HOME / "projects" / "cas-go",
+    "cas-go":  _HOME / "projects" / "cas",  # legacy alias
     "heddle":  _HOME / "projects" / "loom",
     "loom":    _HOME / "projects" / "loom",
 }
@@ -103,7 +103,7 @@ def _session_name(name: str) -> str:
 async def build(project: str, flags: str = "") -> str:
     """Build a Go project. Returns exit code, stdout, and stderr.
 
-    project: project name (cas-go, heddle) or absolute path
+    project: project name (cas, heddle, loom) or absolute path
     flags:   extra flags passed to go build, e.g. "-race -v"
     """
     root = _resolve_project(project)
@@ -190,7 +190,7 @@ async def read_file(path: str) -> str:
 async def run_tui(binary: str, session: str, args: str = "") -> str:
     """Spawn a TUI binary in a detached tmux session for interactive testing.
 
-    binary:  path to the binary (e.g. ~/projects/cas-go/cas)
+    binary:  path to the binary (e.g. ~/projects/cas/cas)
     session: short session name (weft-dev- prefix added automatically)
     args:    extra arguments passed to the binary (e.g. "--memory")
 
