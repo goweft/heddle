@@ -143,5 +143,63 @@ try:
 except Exception as exc:
     logging.error(f"Failed to load vram-orchestrator: {exc}")
 
+# weft-dev: build, test, and interactive TUI testing agent
+try:
+    from heddle.agents.weft_dev import (
+        build, run_tests, git_status, read_file,
+        run_tui, send_keys, capture_screen, kill_session, list_sessions,
+    )
+
+    @unified.tool()
+    async def weft_build(project: str, flags: str = "") -> str:
+        """Build a goweft project. project: cas-go | cas | heddle | loom, or absolute path. flags: extra go build flags."""
+        return await build(project, flags)
+
+    @unified.tool()
+    async def weft_test(project: str, pattern: str = "./...") -> str:
+        """Run Go tests for a project. project: cas-go | cas | heddle | loom. pattern: e.g. './internal/intent/...' or '-run TestDetect ./...'"""
+        return await run_tests(project, pattern)
+
+    @unified.tool()
+    async def weft_git_status(project: str) -> str:
+        """Get git status for a project: branch, dirty files, last 5 commits. project: cas-go | cas | heddle | loom."""
+        return await git_status(project)
+
+    @unified.tool()
+    async def weft_read_file(path: str) -> str:
+        """Read a file from the weftbox filesystem. Path may use ~ for home directory."""
+        return await read_file(path)
+
+    @unified.tool()
+    async def weft_run_tui(binary: str, session: str, args: str = "") -> str:
+        """Spawn a TUI binary in a detached tmux session. binary: path to binary (e.g. ~/projects/cas-go/cas), session: short name, args: extra args (e.g. --memory). Returns initial screen capture."""
+        return await run_tui(binary, session, args)
+
+    @unified.tool()
+    async def weft_send_keys(session: str, keys: str) -> str:
+        """Send keystrokes to a running tmux session. keys in tmux format: 'hello world' for text, 'Enter' for enter, 'Tab', 'C-c', 'Escape'. Returns screen after keypress."""
+        return await send_keys(session, keys)
+
+    @unified.tool()
+    async def weft_capture_screen(session: str) -> str:
+        """Capture current terminal contents of a tmux session as text. Shows exactly what is rendered in the TUI."""
+        return await capture_screen(session)
+
+    @unified.tool()
+    async def weft_kill_session(session: str) -> str:
+        """Kill a tmux session started by weft_run_tui."""
+        return await kill_session(session)
+
+    @unified.tool()
+    async def weft_list_sessions() -> str:
+        """List all active weft-dev tmux sessions."""
+        return await list_sessions()
+
+    total_tools += 9
+    loaded_agents += 1
+    logging.info("Loaded weft-dev: 9 tools (custom handlers)")
+except Exception as exc:
+    logging.error(f"Failed to load weft-dev: {exc}")
+
 logging.info(f"Unified MCP server: {total_tools} tools from {loaded_agents} agents")
 unified.run(transport="stdio")
