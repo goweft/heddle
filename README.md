@@ -248,7 +248,7 @@ heddle sandbox agents/my-agent.yaml
 
 ### Claude Desktop Integration
 
-To expose a unified Heddle mesh to Claude Desktop:
+To expose a unified Heddle mesh to Claude Desktop (and optionally to [CAS](https://github.com/goweft/cas)):
 
 ```json
 {
@@ -308,14 +308,36 @@ heddle/
 
 Python 3.11+ · FastMCP · FastAPI · Pydantic v2 · httpx · Click · SQLite · Ollama
 
-## Also by goweft
+## The WEFT Ecosystem
 
-- **[tenter](https://github.com/goweft/tenter)** — Pre-publish artifact integrity scanner. Catches source maps, debug artifacts, and secrets before they ship.
-- **[unshear](https://github.com/goweft/unshear)** — AI agent fork divergence detector. Reveals where someone cut the safety weave from a forked codebase.
+Heddle is the trust and policy layer. The rest of the stack:
 
-- **[ratine](https://github.com/goweft/ratine)** — Agent memory poisoning detector
+| Project | Language | What it does |
+|---|---|---|
+| **[cas](https://github.com/goweft/cas)** | Go | Conversational Agent Shell — terminal TUI where conversation generates workspaces. Heddle adds optional trust enforcement and audit logging. |
+| **[tenter](https://github.com/goweft/tenter)** | Python | Pre-publish artifact scanner — catches source maps, secrets, debug artifacts before they ship. On GitHub Marketplace. |
+| **[tenter-rs](https://github.com/goweft/tenter-rs)** | Rust | tenter v2 — static binary, no runtime required. |
+| **[unshear](https://github.com/goweft/unshear)** | Rust | Fork divergence detector — reveals where safety mechanisms were stripped from a forked agent codebase. |
+| **[ratine](https://github.com/goweft/ratine)** | Python | Agent memory poisoning detector. |
+| **[crocking](https://github.com/goweft/crocking)** | Python | AI authorship detector for git repositories. |
 
-- **[crocking](https://github.com/goweft/crocking)** — AI authorship detector for git repositories
+### Heddle + CAS
+
+CAS runs standalone. Heddle integration is optional and adds:
+- **Trust enforcement** — every tool call CAS makes passes through Heddle's tier system
+- **Credential brokering** — `{{secret:key}}` resolution, credentials never in config
+- **Audit logging** — hash-chained, tamper-evident record of every workspace operation
+
+```json
+{
+  "mcpServers": {
+    "heddle-mesh": {
+      "command": "/path/to/heddle/venv/bin/python",
+      "args": ["/path/to/heddle/heddle_stdio_mesh.py"]
+    }
+  }
+}
+```
 
 ## License
 
