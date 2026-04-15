@@ -1,0 +1,6 @@
+# reality-check config for heddle (dir still named loom/)
+# See ~/projects/goweft-scripts/reality-check.sh
+
+TEST_CMD="source venv/bin/activate && pytest -q --no-header 2>&1 | tail -3"
+CODE_GLOB="*.py"
+KEY_DIRS="src/heddle tests docs agents packs"
