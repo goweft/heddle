@@ -29,6 +29,8 @@ dev = [
 
 [project.scripts]
 heddle = "heddle.cli:cli"
+heddle-dashboard = "heddle.dashboard:main"
+heddle-mesh = "heddle.stdio_mesh:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
