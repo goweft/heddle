@@ -254,8 +254,7 @@ To expose a unified Heddle mesh to Claude Desktop (and optionally to [CAS](https
 {
   "mcpServers": {
     "heddle-mesh": {
-      "command": "/path/to/heddle/venv/bin/python",
-      "args": ["/path/to/heddle/heddle_stdio_mesh.py"]
+      "command": "/path/to/heddle/venv/bin/heddle-mesh"
     }
   }
 }
@@ -300,8 +299,7 @@ heddle/
 │   ├── agents/          # Custom higher-level handlers
 │   └── web/             # Dashboard backend and frontend
 ├── tests/
-├── heddle_stdio_mesh.py # Unified Claude Desktop launcher
-└── heddle_dashboard.py  # Web dashboard launcher
+└── pyproject.toml       # Entry points: heddle, heddle-dashboard, heddle-mesh
 ```
 
 ## Tech Stack
@@ -332,8 +330,7 @@ CAS runs standalone. Heddle integration is optional and adds:
 {
   "mcpServers": {
     "heddle-mesh": {
-      "command": "/path/to/heddle/venv/bin/python",
-      "args": ["/path/to/heddle/heddle_stdio_mesh.py"]
+      "command": "/path/to/heddle/venv/bin/heddle-mesh"
     }
   }
 }
