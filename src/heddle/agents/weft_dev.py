@@ -36,8 +36,8 @@ _HOME = Path.home()
 _PROJECTS = {
     "cas":     _HOME / "projects" / "cas",
     "cas-go":  _HOME / "projects" / "cas",  # legacy alias
-    "heddle":  _HOME / "projects" / "loom",
-    "loom":    _HOME / "projects" / "loom",
+    "heddle":  _HOME / "projects" / "heddle",
+    "loom":    _HOME / "projects" / "heddle",
 }
 
 # Tmux session prefix to namespace weft-dev sessions
