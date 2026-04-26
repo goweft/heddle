@@ -16,6 +16,7 @@ from heddle.security.validation import InputValidator, RateLimiter, ValidationEr
 from heddle.security.signing import ConfigSigner, AgentQuarantine, SignatureError
 from heddle.security.sandbox import SandboxManager, SandboxConfig
 from heddle.security.escalation import EscalationEngine, EscalationRule, EscalationHold
+from heddle.security.anomaly import AnomalyDetector, get_anomaly_detector
 
 __all__ = [
     "AuditLogger", "get_audit_logger",
@@ -25,4 +26,5 @@ __all__ = [
     "ConfigSigner", "AgentQuarantine", "SignatureError",
     "SandboxManager", "SandboxConfig",
     "EscalationEngine", "EscalationRule", "EscalationHold",
+    "AnomalyDetector", "get_anomaly_detector",
 ]

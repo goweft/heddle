@@ -42,6 +42,16 @@ class AuditLogger:
         self._log_dir.mkdir(parents=True, exist_ok=True)
         self._log_file = self._log_dir / "audit.jsonl"
         self._prev_hash = self._compute_last_hash()
+        self._observers: list = []
+
+    def add_observer(self, callback) -> None:
+        """Register a callback invoked after each audit entry is written.
+
+        Callback receives the entry dict. Observers that write their own
+        audit entries (e.g. anomaly detector) must guard against recursion
+        by checking entry['event'] != 'anomaly'.
+        """
+        self._observers.append(callback)
 
     def _compute_last_hash(self) -> str:
         """Read the last line of the log to get the chain hash."""
@@ -88,6 +98,14 @@ class AuditLogger:
             finally:
                 if _HAS_FCNTL:
                     fcntl.flock(f, fcntl.LOCK_UN)
+
+        # Notify observers (skip anomaly events to prevent recursion)
+        if entry.get("event") != "anomaly":
+            for obs in self._observers:
+                try:
+                    obs(entry)
+                except Exception:
+                    pass  # observers must not break the audit pipeline
 
     # ── Public logging methods ───────────────────────────────────────
 
@@ -300,4 +318,11 @@ def get_audit_logger() -> AuditLogger:
     global _global_audit
     if _global_audit is None:
         _global_audit = AuditLogger()
+        # Attach anomaly detector as observer
+        try:
+            from heddle.security.anomaly import AnomalyDetector
+            detector = AnomalyDetector(audit_logger=_global_audit)
+            _global_audit.add_observer(detector.observe)
+        except Exception:
+            pass  # anomaly detection is optional
     return _global_audit
