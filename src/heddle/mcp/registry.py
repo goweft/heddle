@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+import hashlib
+import hmac
 import json
+import os
 import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
@@ -39,6 +42,31 @@ class Registry:
         self._conn.execute("PRAGMA journal_mode=WAL")
         self._conn.execute("PRAGMA foreign_keys=ON")
         self._conn.executescript(_SCHEMA)
+        self._ensure_hmac_column()
+        self._signing_key = self._load_or_create_key()
+
+    def _ensure_hmac_column(self) -> None:
+        """Add row_hmac column if it doesn't exist (schema migration)."""
+        cols = [r[1] for r in self._conn.execute("PRAGMA table_info(agents)").fetchall()]
+        if "row_hmac" not in cols:
+            self._conn.execute("ALTER TABLE agents ADD COLUMN row_hmac TEXT DEFAULT ''")
+            self._conn.commit()
+
+    def _load_or_create_key(self) -> bytes:
+        """Load or generate the registry signing key."""
+        key_path = self._db_path.parent / "registry.key"
+        if key_path.exists():
+            return key_path.read_bytes()
+        key = os.urandom(32)
+        key_path.write_bytes(key)
+        key_path.chmod(0o600)
+        return key
+
+    def _compute_row_hmac(self, name: str, version: str, description: str,
+                          config_path: str, trust_tier: int, status: str) -> str:
+        """Compute HMAC-SHA256 over agent row content."""
+        payload = f"{name}|{version}|{description}|{config_path}|{trust_tier}|{status}"
+        return hmac.new(self._signing_key, payload.encode(), hashlib.sha256).hexdigest()
 
     def register_agent(self, name: str, version: str, description: str = "",
                        config_path: str = "", host: str = "localhost",
@@ -64,11 +92,19 @@ class Registry:
                 (name, t["name"], t.get("description", ""),
                  json.dumps(t.get("parameters", {})), json.dumps(t.get("returns", {})),
                  t.get("bridge_type", "none")))
+        row_hmac = self._compute_row_hmac(name, version, description, config_path, trust_tier, "registered")
+        self._conn.execute("UPDATE agents SET row_hmac=? WHERE name=?", (row_hmac, name))
         self._conn.commit()
 
     def set_status(self, name: str, status: str) -> None:
         now = datetime.now(timezone.utc).isoformat()
         self._conn.execute("UPDATE agents SET status=?, updated_at=? WHERE name=?", (status, now, name))
+        # Recompute HMAC with new status
+        row = self._conn.execute("SELECT * FROM agents WHERE name=?", (name,)).fetchone()
+        if row:
+            row_hmac = self._compute_row_hmac(row["name"], row["version"], row["description"],
+                                              row["config_path"], row["trust_tier"], status)
+            self._conn.execute("UPDATE agents SET row_hmac=? WHERE name=?", (row_hmac, name))
         self._conn.commit()
 
     def unregister_agent(self, name: str) -> bool:
@@ -120,6 +156,25 @@ class Registry:
                 "tools": [{"name": t["name"], "description": t["description"]} for t in a["tools"]],
             } for a in agents],
         }
+
+    def verify_registry(self) -> tuple[bool, int, list[str]]:
+        """Verify HMAC integrity of all agent rows.
+
+        Returns (all_valid, rows_checked, list_of_issues).
+        """
+        rows = self._conn.execute("SELECT * FROM agents ORDER BY name").fetchall()
+        issues = []
+        for row in rows:
+            expected = self._compute_row_hmac(
+                row["name"], row["version"], row["description"],
+                row["config_path"], row["trust_tier"], row["status"],
+            )
+            stored = row["row_hmac"] if "row_hmac" in row.keys() else ""
+            if not stored:
+                issues.append(f"{row['name']}: no HMAC (unsigned row)")
+            elif stored != expected:
+                issues.append(f"{row['name']}: HMAC mismatch (row modified outside broker)")
+        return len(issues) == 0, len(rows), issues
 
     def close(self) -> None:
         self._conn.close()

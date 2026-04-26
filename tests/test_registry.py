@@ -65,3 +65,63 @@ def test_discovery_manifest(registry):
     assert manifest["heddle_version"] == "0.1.0"
     assert len(manifest["agents"]) == 1
     assert manifest["agents"][0]["endpoint"] == "http://localhost:8200/mcp"
+
+
+# ── Registry HMAC integrity ──────────────────────────────────────────
+
+def test_register_sets_hmac(registry):
+    registry.register_agent(name="signed-agent", version="1.0.0", description="test")
+    row = registry._conn.execute("SELECT row_hmac FROM agents WHERE name='signed-agent'").fetchone()
+    assert row["row_hmac"] != ""
+    assert len(row["row_hmac"]) == 64  # SHA-256 hex
+
+
+def test_verify_passes_for_clean_registry(registry):
+    registry.register_agent(name="agent-a", version="1.0.0")
+    registry.register_agent(name="agent-b", version="2.0.0")
+    valid, count, issues = registry.verify_registry()
+    assert valid is True
+    assert count == 2
+    assert issues == []
+
+
+def test_verify_detects_tampered_row(registry):
+    registry.register_agent(name="target", version="1.0.0", description="original")
+    # Tamper: modify description directly in SQLite, bypassing the broker
+    registry._conn.execute("UPDATE agents SET description='TAMPERED' WHERE name='target'")
+    registry._conn.commit()
+    valid, count, issues = registry.verify_registry()
+    assert valid is False
+    assert len(issues) == 1
+    assert "HMAC mismatch" in issues[0]
+
+
+def test_verify_detects_unsigned_row(registry):
+    registry.register_agent(name="legit", version="1.0.0")
+    # Insert a row directly without HMAC
+    registry._conn.execute(
+        "INSERT INTO agents (name, version, registered_at, updated_at, row_hmac) "
+        "VALUES ('rogue', '0.0.0', '2026-01-01', '2026-01-01', '')"
+    )
+    registry._conn.commit()
+    valid, count, issues = registry.verify_registry()
+    assert valid is False
+    assert any("unsigned" in i for i in issues)
+
+
+def test_set_status_updates_hmac(registry):
+    registry.register_agent(name="agent", version="1.0.0")
+    old_hmac = registry._conn.execute("SELECT row_hmac FROM agents WHERE name='agent'").fetchone()["row_hmac"]
+    registry.set_status("agent", "running")
+    new_hmac = registry._conn.execute("SELECT row_hmac FROM agents WHERE name='agent'").fetchone()["row_hmac"]
+    assert old_hmac != new_hmac  # HMAC changed because status changed
+    # But verify should still pass
+    valid, _, _ = registry.verify_registry()
+    assert valid is True
+
+
+def test_upsert_updates_hmac(registry):
+    registry.register_agent(name="evolving", version="1.0.0")
+    registry.register_agent(name="evolving", version="2.0.0")
+    valid, _, _ = registry.verify_registry()
+    assert valid is True

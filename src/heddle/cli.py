@@ -410,6 +410,40 @@ async def _probe_async(uri: str):
 
 
 
+# ── Registry integrity ────────────────────────────────────────────────
+
+@cli.group("reg")
+def reg_group():
+    """Registry integrity management."""
+
+
+@reg_group.command("verify")
+def reg_verify():
+    """Verify HMAC integrity of all registry rows."""
+    registry = _get_registry()
+    valid, count, issues = registry.verify_registry()
+    if valid:
+        console.print(f"[bold green]OK[/] Registry intact: {count} agent(s), all HMACs valid")
+    else:
+        console.print(f"[bold red]INTEGRITY ISSUES[/] in {len(issues)} of {count} row(s):")
+        for issue in issues:
+            console.print(f"  [red]•[/] {issue}")
+        sys.exit(1)
+
+
+@reg_group.command("resign")
+def reg_resign():
+    """Recompute HMACs for all registry rows.
+
+    Use after schema migration or to fix unsigned rows.
+    """
+    registry = _get_registry()
+    agents = registry.list_agents()
+    for a in agents:
+        registry.set_status(a["name"], a["status"])  # triggers HMAC recompute
+    console.print(f"[green]OK[/] Re-signed {len(agents)} agent(s)")
+
+
 # ── Phase 3f: Signing & Quarantine ───────────────────────────────────
 
 @cli.group()
