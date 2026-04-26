@@ -18,6 +18,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+try:
+    import fcntl
+    _HAS_FCNTL = True
+except ImportError:
+    _HAS_FCNTL = False  # Windows
+
 logger = logging.getLogger(__name__)
 
 DEFAULT_LOG_DIR = Path.home() / ".heddle" / "audit"
@@ -58,15 +64,30 @@ class AuditLogger:
         return "GENESIS"
 
     def _write_entry(self, entry: dict[str, Any]) -> None:
-        """Write a single audit entry, updating the chain hash."""
-        entry["chain_hash"] = self._prev_hash
-        entry["timestamp"] = datetime.now(timezone.utc).isoformat()
+        """Write a single audit entry, updating the chain hash.
 
-        line = json.dumps(entry, default=str, separators=(",", ":"))
-        self._prev_hash = hashlib.sha256(line.encode()).hexdigest()
-
+        Uses file locking to prevent chain breaks when multiple
+        processes (e.g. dashboard + test suite) write concurrently.
+        """
         with open(self._log_file, "a") as f:
-            f.write(line + "\n")
+            if _HAS_FCNTL:
+                fcntl.flock(f, fcntl.LOCK_EX)
+            try:
+                # Re-read last hash under lock in case another process
+                # appended since we last computed it.
+                self._prev_hash = self._compute_last_hash()
+
+                entry["chain_hash"] = self._prev_hash
+                entry["timestamp"] = datetime.now(timezone.utc).isoformat()
+
+                line = json.dumps(entry, default=str, separators=(",", ":"))
+                self._prev_hash = hashlib.sha256(line.encode()).hexdigest()
+
+                f.write(line + "\n")
+                f.flush()
+            finally:
+                if _HAS_FCNTL:
+                    fcntl.flock(f, fcntl.LOCK_UN)
 
     # ── Public logging methods ───────────────────────────────────────
 
@@ -191,8 +212,25 @@ class AuditLogger:
 
         return True, count, f"Chain valid: {count} entries"
 
-    def recent(self, n: int = 20, event_type: str | None = None) -> list[dict]:
-        """Read the most recent N entries, optionally filtered by event type."""
+    def recent(
+        self,
+        n: int = 20,
+        event_type: str | None = None,
+        agent: str | None = None,
+        tool: str | None = None,
+        since: str | None = None,
+        until: str | None = None,
+    ) -> list[dict]:
+        """Read the most recent N entries with optional filters.
+
+        Args:
+            n: Maximum entries to return.
+            event_type: Filter by event type (tool_call, http_bridge, etc.).
+            agent: Filter by agent (config) name.
+            tool: Filter by tool name.
+            since: ISO timestamp — only entries at or after this time.
+            until: ISO timestamp — only entries at or before this time.
+        """
         if not self._log_file.exists():
             return []
 
@@ -204,10 +242,22 @@ class AuditLogger:
                     continue
                 try:
                     entry = json.loads(line)
-                    if event_type is None or entry.get("event") == event_type:
-                        entries.append(entry)
                 except json.JSONDecodeError:
                     continue
+
+                if event_type is not None and entry.get("event") != event_type:
+                    continue
+                if agent is not None and entry.get("agent") != agent:
+                    continue
+                if tool is not None and entry.get("tool") != tool:
+                    continue
+                ts = entry.get("timestamp", "")
+                if since is not None and ts < since:
+                    continue
+                if until is not None and ts > until:
+                    continue
+
+                entries.append(entry)
 
         return entries[-n:]
 

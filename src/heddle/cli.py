@@ -218,11 +218,17 @@ def audit():
 @audit.command("show")
 @click.option("-n", "--count", default=20, help="Number of entries")
 @click.option("--event", default=None, help="Filter by event type")
-def audit_show(count: int, event: str | None):
+@click.option("--agent", default=None, help="Filter by agent name")
+@click.option("--tool", default=None, help="Filter by tool name")
+@click.option("--since", default=None, help="Only entries after this ISO timestamp")
+@click.option("--until", "until_", default=None, help="Only entries before this ISO timestamp")
+def audit_show(count: int, event: str | None, agent: str | None,
+               tool: str | None, since: str | None, until_: str | None):
     """Show recent audit log entries."""
     from heddle.security.audit import get_audit_logger
     logger = get_audit_logger()
-    entries = logger.recent(count, event_type=event)
+    entries = logger.recent(count, event_type=event, agent=agent,
+                            tool=tool, since=since, until=until_)
     if not entries:
         console.print("[dim]No audit entries.[/]")
         return

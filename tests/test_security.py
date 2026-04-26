@@ -94,6 +94,70 @@ def test_audit_filter_by_event(audit):
     assert len(http_entries) == 1
 
 
+
+
+def test_audit_filter_by_agent(audit):
+    audit.log_tool_call("agent-a", "t1", {}, "success")
+    audit.log_tool_call("agent-b", "t2", {}, "success")
+    audit.log_tool_call("agent-a", "t3", {}, "success")
+
+    a_entries = audit.recent(10, agent="agent-a")
+    assert len(a_entries) == 2
+    assert all(e["agent"] == "agent-a" for e in a_entries)
+
+    b_entries = audit.recent(10, agent="agent-b")
+    assert len(b_entries) == 1
+
+
+def test_audit_filter_by_tool(audit):
+    audit.log_tool_call("a", "query_prometheus", {}, "success")
+    audit.log_tool_call("a", "get_alerts", {}, "success")
+    audit.log_tool_call("a", "query_prometheus", {}, "success")
+
+    entries = audit.recent(10, tool="query_prometheus")
+    assert len(entries) == 2
+    assert all(e["tool"] == "query_prometheus" for e in entries)
+
+
+def test_audit_filter_by_time_range(audit):
+    audit.log_tool_call("a", "t1", {}, "success")
+    audit.log_tool_call("a", "t2", {}, "success")
+    audit.log_tool_call("a", "t3", {}, "success")
+
+    entries = audit.recent(10)
+    assert len(entries) == 3
+
+    # Use the timestamp of the second entry as a boundary
+    mid_ts = entries[1]["timestamp"]
+    since_entries = audit.recent(10, since=mid_ts)
+    assert len(since_entries) >= 2  # second and third entry
+
+    until_entries = audit.recent(10, until=mid_ts)
+    assert len(until_entries) >= 1  # first entry at minimum
+
+
+def test_audit_filter_combined(audit):
+    audit.log_tool_call("agent-a", "t1", {}, "success")
+    audit.log_http_bridge("agent-a", "t1", "GET", "http://x", status_code=200)
+    audit.log_tool_call("agent-b", "t2", {}, "success")
+    audit.log_tool_call("agent-a", "t2", {}, "error", error="timeout")
+
+    # agent + event type
+    entries = audit.recent(10, event_type="tool_call", agent="agent-a")
+    assert len(entries) == 2
+    assert all(e["agent"] == "agent-a" and e["event"] == "tool_call" for e in entries)
+
+    # agent + tool
+    entries = audit.recent(10, agent="agent-a", tool="t1")
+    assert len(entries) == 2  # tool_call + http_bridge both have tool=t1
+
+
+def test_audit_filter_no_matches(audit):
+    audit.log_tool_call("a", "t1", {}, "success")
+    entries = audit.recent(10, agent="nonexistent")
+    assert entries == []
+
+
 # ── Trust Enforcer ───────────────────────────────────────────────────
 
 @pytest.fixture(autouse=True)
