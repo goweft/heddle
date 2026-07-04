@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="260" viewBox="0 0 900 260">
+  <style>
+    text { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+    .title { font-size: 13px; font-weight: 600; }
+    .detail { font-size: 10px; fill: #7f849c; }
+    .flow { font-size: 11px; fill: #585b70; letter-spacing: 0.3px; }
+    .arrow { stroke: #585b70; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+    .box { fill: #1e1e2e; rx: 10; ry: 10; stroke-width: 1.4; }
+    .bullet { font-size: 10px; fill: #7f849c; }
+    .version { font-size: 9px; fill: #585b70; font-style: italic; }
+  </style>
+  <defs>
+    <marker id="arrowhead" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M1 1.5L8 5L1 8.5" fill="none" stroke="#585b70" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+
+  <!-- 1. YAML Config -->
+  <rect x="16" y="55" width="120" height="130" class="box" stroke="#cba6f7"/>
+  <text x="76" y="82" text-anchor="middle" class="title" fill="#cba6f7">YAML Config</text>
+  <text x="30" y="100" class="bullet">• Tools &amp; params</text>
+  <text x="30" y="114" class="bullet">• Trust tier</text>
+  <text x="30" y="128" class="bullet">• Access modes</text>
+  <text x="30" y="142" class="bullet">• Escalation rules</text>
+  <text x="30" y="156" class="bullet">• HTTP bridge</text>
+  <text x="30" y="170" class="bullet">• Sandbox: docker</text>
+
+  <!-- Arrow 1 -->
+  <line x1="140" y1="120" x2="163" y2="120" class="arrow"/>
+
+  <!-- 2. Validation -->
+  <rect x="167" y="55" width="120" height="130" class="box" stroke="#f9e2af"/>
+  <text x="227" y="82" text-anchor="middle" class="title" fill="#f9e2af">Validation</text>
+  <text x="181" y="100" class="bullet">• Pydantic schema</text>
+  <text x="181" y="114" class="bullet">• Cross-field checks</text>
+  <text x="181" y="128" class="bullet">• Access ↔ trust</text>
+  <text x="181" y="142" class="bullet">• Bridge ref integrity</text>
+  <text x="181" y="156" class="bullet">• T4 sandbox enforced</text>
+
+  <!-- Arrow 2 -->
+  <line x1="291" y1="120" x2="314" y2="120" class="arrow"/>
+
+  <!-- 3. Security Pipeline -->
+  <rect x="318" y="55" width="120" height="130" class="box" stroke="#a6e3a1"/>
+  <text x="378" y="82" text-anchor="middle" class="title" fill="#a6e3a1">Security</text>
+  <text x="332" y="100" class="bullet">• Trust tiers (T1–T4)</text>
+  <text x="332" y="114" class="bullet">• Credential broker</text>
+  <text x="332" y="128" class="bullet">• Input validation</text>
+  <text x="332" y="142" class="bullet">• Audit &amp; signing</text>
+  <text x="332" y="156" class="bullet">• Anomaly detection</text>
+  <text x="332" y="170" class="bullet">• Escalation rules</text>
+
+  <!-- Arrow 3 -->
+  <line x1="442" y1="120" x2="465" y2="120" class="arrow"/>
+
+  <!-- 4. Container Sandbox (NEW in v0.2) -->
+  <rect x="469" y="55" width="120" height="130" class="box" stroke="#fab387" stroke-dasharray="4 2"/>
+  <text x="529" y="82" text-anchor="middle" class="title" fill="#fab387">Sandbox</text>
+  <text x="483" y="100" class="bullet">• Docker isolation</text>
+  <text x="483" y="114" class="bullet">• --cap-drop=ALL</text>
+  <text x="483" y="128" class="bullet">• Read-only root</text>
+  <text x="483" y="142" class="bullet">• Image digest pin</text>
+  <text x="483" y="156" class="bullet">• Watchdog timeout</text>
+  <text x="483" y="170" class="bullet">• Lazy spawn / reap</text>
+  <text x="529" y="198" text-anchor="middle" class="version">v0.2 · opt-in per agent</text>
+
+  <!-- Arrow 4 -->
+  <line x1="593" y1="120" x2="616" y2="120" class="arrow"/>
+
+  <!-- 5. MCP Server -->
+  <rect x="620" y="55" width="120" height="130" class="box" stroke="#89b4fa"/>
+  <text x="680" y="82" text-anchor="middle" class="title" fill="#89b4fa">MCP Server</text>
+  <text x="634" y="100" class="bullet">• Typed tool registry</text>
+  <text x="634" y="114" class="bullet">• stdio or HTTP</text>
+  <text x="634" y="128" class="bullet">• Template rendering</text>
+  <text x="634" y="142" class="bullet">• Secret resolution</text>
+  <text x="634" y="156" class="bullet">• Registry HMAC</text>
+
+  <!-- Arrow 5 -->
+  <line x1="744" y1="120" x2="767" y2="120" class="arrow"/>
+
+  <!-- 6. Backend APIs -->
+  <rect x="771" y="55" width="120" height="130" class="box" stroke="#f38ba8"/>
+  <text x="831" y="82" text-anchor="middle" class="title" fill="#f38ba8">Backend APIs</text>
+  <text x="785" y="100" class="bullet">• Prometheus</text>
+  <text x="785" y="114" class="bullet">• Grafana · Ollama</text>
+  <text x="785" y="128" class="bullet">• Gitea · RSS</text>
+  <text x="785" y="142" class="bullet">• Any REST service</text>
+
+  <!-- Claude Desktop label -->
+  <line x1="680" y1="189" x2="680" y2="218" stroke="#585b70" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="680" y="234" text-anchor="middle" class="detail">Claude Desktop / any MCP client</text>
+
+  <!-- Pipeline label -->
+  <text x="450" y="30" text-anchor="middle" class="flow">Config → Validate → Enforce → Isolate → Serve → Execute</text>
+</svg>

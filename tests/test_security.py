@@ -1,0 +1,495 @@
+"""Tests for Heddle security: audit, trust, credentials."""
+import json
+import threading
+import pytest
+from pathlib import Path
+
+from heddle.security.audit import AuditLogger, _HAS_FCNTL
+from heddle.security.trust import TrustEnforcer, TrustViolation
+from heddle.security.credentials import CredentialBroker, CredentialDenied, SecretBuffer
+
+
+# ── Audit Logger ─────────────────────────────────────────────────────
+
+@pytest.fixture
+def audit(tmp_path):
+    return AuditLogger(log_dir=tmp_path / "audit")
+
+
+def test_audit_log_tool_call(audit):
+    audit.log_tool_call("test-agent", "get_stats", {"foo": "bar"}, "success", duration_ms=42.5)
+    entries = audit.recent(10)
+    assert len(entries) == 1
+    assert entries[0]["event"] == "tool_call"
+    assert entries[0]["agent"] == "test-agent"
+    assert entries[0]["tool"] == "get_stats"
+    assert entries[0]["duration_ms"] == 42.5
+
+
+def test_audit_log_http_bridge(audit):
+    audit.log_http_bridge("agent-x", "fetch", "GET", "http://localhost/api", status_code=200, duration_ms=15.0)
+    entries = audit.recent(10)
+    assert entries[0]["event"] == "http_bridge"
+    assert entries[0]["status_code"] == 200
+
+
+def test_audit_log_trust_violation(audit):
+    audit.log_trust_violation("bad-agent", 1, "http_POST", "T1 cannot POST")
+    entries = audit.recent(10)
+    assert entries[0]["event"] == "trust_violation"
+    assert entries[0]["severity"] == "high"
+
+
+def test_audit_log_credential_access(audit):
+    audit.log_credential_access("my-agent", "api-token", granted=True)
+    audit.log_credential_access("my-agent", "admin-key", granted=False)
+    entries = audit.recent(10)
+    assert len(entries) == 2
+    assert entries[0]["granted"] is True
+    assert entries[1]["granted"] is False
+
+
+def test_audit_chain_integrity(audit):
+    audit.log_tool_call("a", "t1", {}, "success")
+    audit.log_tool_call("a", "t2", {}, "success")
+    audit.log_tool_call("a", "t3", {}, "success")
+
+    valid, count, msg = audit.verify_chain()
+    assert valid is True
+    assert count == 3
+    assert "valid" in msg.lower()
+
+
+def test_audit_chain_detects_tampering(audit):
+    audit.log_tool_call("a", "t1", {}, "success")
+    audit.log_tool_call("a", "t2", {}, "success")
+
+    # Tamper: rewrite the log with a modified entry
+    log_file = audit._log_dir / "audit.jsonl"
+    lines = log_file.read_text().strip().split("\n")
+    entry = json.loads(lines[0])
+    entry["agent"] = "TAMPERED"
+    lines[0] = json.dumps(entry, separators=(",", ":"))
+    log_file.write_text("\n".join(lines) + "\n")
+
+    valid, count, msg = audit.verify_chain()
+    assert valid is False
+    assert "broken" in msg.lower()
+
+
+@pytest.mark.skipif(not _HAS_FCNTL, reason="fcntl unavailable on this platform")
+def test_audit_chain_survives_concurrent_writers(tmp_path):
+    # Regression for the fcntl.LOCK_EX fix in _write_entry: without it,
+    # two writers compute _prev_hash from the same on-disk state and both
+    # append, leaving the second entry's chain_hash pointing at a sibling.
+    log_dir = tmp_path / "audit"
+    num_writers = 8
+    writes_per_writer = 25
+    barrier = threading.Barrier(num_writers)
+    errors: list[BaseException] = []
+
+    def worker(worker_id: int):
+        try:
+            writer = AuditLogger(log_dir=log_dir)
+            barrier.wait()
+            for i in range(writes_per_writer):
+                writer.log_tool_call(f"agent-{worker_id}", f"tool-{i}", {}, "success")
+        except BaseException as e:
+            errors.append(e)
+
+    threads = [threading.Thread(target=worker, args=(i,)) for i in range(num_writers)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+
+    assert not errors, f"writer threads raised: {errors!r}"
+
+    reader = AuditLogger(log_dir=log_dir)
+    valid, count, msg = reader.verify_chain()
+    assert valid, msg
+    assert count == num_writers * writes_per_writer
+
+
+def test_audit_secret_redaction(audit):
+    audit.log_tool_call("a", "t1", {"Authorization": "Bearer abc123xyz", "name": "safe"}, "success")
+    entries = audit.recent(1)
+    assert entries[0]["parameters"]["Authorization"] == "***REDACTED***"
+    assert entries[0]["parameters"]["name"] == "safe"
+
+
+def test_audit_filter_by_event(audit):
+    audit.log_tool_call("a", "t1", {}, "success")
+    audit.log_http_bridge("a", "t1", "GET", "http://x", status_code=200)
+    audit.log_tool_call("a", "t2", {}, "success")
+
+    tool_entries = audit.recent(10, event_type="tool_call")
+    assert len(tool_entries) == 2
+    http_entries = audit.recent(10, event_type="http_bridge")
+    assert len(http_entries) == 1
+
+
+
+
+def test_audit_filter_by_agent(audit):
+    audit.log_tool_call("agent-a", "t1", {}, "success")
+    audit.log_tool_call("agent-b", "t2", {}, "success")
+    audit.log_tool_call("agent-a", "t3", {}, "success")
+
+    a_entries = audit.recent(10, agent="agent-a")
+    assert len(a_entries) == 2
+    assert all(e["agent"] == "agent-a" for e in a_entries)
+
+    b_entries = audit.recent(10, agent="agent-b")
+    assert len(b_entries) == 1
+
+
+def test_audit_filter_by_tool(audit):
+    audit.log_tool_call("a", "query_prometheus", {}, "success")
+    audit.log_tool_call("a", "get_alerts", {}, "success")
+    audit.log_tool_call("a", "query_prometheus", {}, "success")
+
+    entries = audit.recent(10, tool="query_prometheus")
+    assert len(entries) == 2
+    assert all(e["tool"] == "query_prometheus" for e in entries)
+
+
+def test_audit_filter_by_time_range(audit):
+    audit.log_tool_call("a", "t1", {}, "success")
+    audit.log_tool_call("a", "t2", {}, "success")
+    audit.log_tool_call("a", "t3", {}, "success")
+
+    entries = audit.recent(10)
+    assert len(entries) == 3
+
+    # Use the timestamp of the second entry as a boundary
+    mid_ts = entries[1]["timestamp"]
+    since_entries = audit.recent(10, since=mid_ts)
+    assert len(since_entries) >= 2  # second and third entry
+
+    until_entries = audit.recent(10, until=mid_ts)
+    assert len(until_entries) >= 1  # first entry at minimum
+
+
+def test_audit_filter_combined(audit):
+    audit.log_tool_call("agent-a", "t1", {}, "success")
+    audit.log_http_bridge("agent-a", "t1", "GET", "http://x", status_code=200)
+    audit.log_tool_call("agent-b", "t2", {}, "success")
+    audit.log_tool_call("agent-a", "t2", {}, "error", error="timeout")
+
+    # agent + event type
+    entries = audit.recent(10, event_type="tool_call", agent="agent-a")
+    assert len(entries) == 2
+    assert all(e["agent"] == "agent-a" and e["event"] == "tool_call" for e in entries)
+
+    # agent + tool
+    entries = audit.recent(10, agent="agent-a", tool="t1")
+    assert len(entries) == 2  # tool_call + http_bridge both have tool=t1
+
+
+def test_audit_filter_no_matches(audit):
+    audit.log_tool_call("a", "t1", {}, "success")
+    entries = audit.recent(10, agent="nonexistent")
+    assert entries == []
+
+
+# ── Trust Enforcer ───────────────────────────────────────────────────
+
+@pytest.fixture(autouse=True)
+def _reset_audit_singleton():
+    """Reset the global audit logger so tests get isolated instances."""
+    import heddle.security.audit as mod
+    mod._global_audit = None
+    yield
+    mod._global_audit = None
+
+
+def test_trust_t1_allows_get():
+    t = TrustEnforcer("reader", 1)
+    t.check_http_method("GET", "http://localhost/api")  # should not raise
+
+
+def test_trust_t1_blocks_post():
+    t = TrustEnforcer("reader", 1)
+    with pytest.raises(TrustViolation, match="POST"):
+        t.check_http_method("POST", "http://localhost/api")
+
+
+def test_trust_t1_blocks_delete():
+    t = TrustEnforcer("reader", 1)
+    with pytest.raises(TrustViolation, match="DELETE"):
+        t.check_http_method("DELETE", "http://localhost/api")
+
+
+def test_trust_t2_allows_post():
+    t = TrustEnforcer("worker", 2)
+    t.check_http_method("POST", "http://localhost/api")  # should not raise
+    t.check_http_method("GET", "http://localhost/api")
+
+
+def test_trust_t2_blocks_delete():
+    t = TrustEnforcer("worker", 2)
+    with pytest.raises(TrustViolation, match="DELETE"):
+        t.check_http_method("DELETE", "http://localhost/api")
+
+
+def test_trust_t3_allows_delete():
+    t = TrustEnforcer("operator", 3)
+    t.check_http_method("DELETE", "http://localhost/api")  # should not raise
+
+
+def test_trust_t1_blocks_write_operation():
+    t = TrustEnforcer("reader", 1)
+    with pytest.raises(TrustViolation):
+        t.check_write_operation("file_write", "/tmp/data")
+
+
+def test_trust_t2_allows_write_operation():
+    t = TrustEnforcer("worker", 2)
+    t.check_write_operation("file_write", "/tmp/data")  # should not raise
+
+
+def test_trust_t2_blocks_agent_invocation():
+    t = TrustEnforcer("worker", 2)
+    with pytest.raises(TrustViolation, match="T3"):
+        t.check_agent_invocation("other-agent")
+
+
+def test_trust_t3_allows_agent_invocation():
+    t = TrustEnforcer("operator", 3)
+    t.check_agent_invocation("other-agent")  # should not raise
+
+
+def test_trust_t4_requires_human():
+    t = TrustEnforcer("admin", 4)
+    assert t.requires_human_approval() is True
+    t2 = TrustEnforcer("worker", 2)
+    assert t2.requires_human_approval() is False
+
+
+# ── Credential Broker ────────────────────────────────────────────────
+
+@pytest.fixture
+def broker(tmp_path):
+    secrets_file = tmp_path / "secrets.json"
+    policy_file = tmp_path / "policy.json"
+    secrets_file.write_text(json.dumps({
+        "intel-token": "abc123secret",
+        "gitea-token": "giteaxyz789",
+        "admin-key": "supersecretadmin",
+    }))
+    policy_file.write_text(json.dumps({
+        "intel-bridge": ["intel-token"],
+        "gitea-bridge": ["gitea-token"],
+        "super-agent": ["intel-token", "gitea-token", "admin-key"],
+    }))
+    return CredentialBroker(secrets_file=secrets_file, policy_file=policy_file)
+
+
+def test_broker_get_allowed(broker):
+    val = broker.get_credential("intel-bridge", "intel-token")
+    assert val == "abc123secret"
+
+
+def test_broker_get_denied_not_in_policy(broker):
+    with pytest.raises(CredentialDenied, match="Not in agent"):
+        broker.get_credential("intel-bridge", "admin-key")
+
+
+def test_broker_get_denied_unknown_agent(broker):
+    with pytest.raises(CredentialDenied):
+        broker.get_credential("unknown-agent", "intel-token")
+
+
+def test_broker_resolve_template(broker):
+    text = "Bearer {{secret:intel-token}}"
+    resolved = broker.resolve_template("intel-bridge", text)
+    assert resolved == "Bearer abc123secret"
+
+
+def test_broker_resolve_denied_template(broker):
+    text = "Bearer {{secret:admin-key}}"
+    resolved = broker.resolve_template("intel-bridge", text)
+    assert "CREDENTIAL_DENIED" in resolved
+
+
+def test_broker_resolve_headers(broker):
+    headers = {
+        "Authorization": "Bearer {{secret:intel-token}}",
+        "Accept": "application/json",
+    }
+    resolved = broker.resolve_headers("intel-bridge", headers)
+    assert resolved["Authorization"] == "Bearer abc123secret"
+    assert resolved["Accept"] == "application/json"
+
+
+def test_broker_grant_revoke(broker):
+    assert "admin-key" not in broker.list_agent_grants("intel-bridge")
+    broker.grant_access("intel-bridge", "admin-key")
+    assert "admin-key" in broker.list_agent_grants("intel-bridge")
+    broker.get_credential("intel-bridge", "admin-key")  # should work now
+    broker.revoke_access("intel-bridge", "admin-key")
+    with pytest.raises(CredentialDenied):
+        broker.get_credential("intel-bridge", "admin-key")
+
+
+def test_broker_set_remove_secret(broker):
+    broker.set_secret("new-key", "new-value")
+    assert "new-key" in broker.list_secrets()
+    broker.grant_access("intel-bridge", "new-key")
+    assert broker.get_credential("intel-bridge", "new-key") == "new-value"
+    broker.remove_secret("new-key")
+    assert "new-key" not in broker.list_secrets()
+
+
+
+# ── Access Mode Enforcement ──────────────────────────────────────────
+
+def test_trust_t1_blocks_write_tool():
+    trust = TrustEnforcer("t1-agent", 1)
+    with pytest.raises(TrustViolation, match="write"):
+        trust.check_access_mode("dangerous_tool", "write")
+
+
+def test_trust_t1_allows_read_tool():
+    trust = TrustEnforcer("t1-agent", 1)
+    trust.check_access_mode("safe_tool", "read")  # should not raise
+
+
+def test_trust_t2_allows_write_tool():
+    trust = TrustEnforcer("t2-agent", 2)
+    trust.check_access_mode("write_tool", "write")  # should not raise
+
+
+def test_trust_t3_allows_write_tool():
+    trust = TrustEnforcer("t3-agent", 3)
+    trust.check_access_mode("write_tool", "write")  # should not raise
+
+
+
+# ── Access Mode Config Validation ────────────────────────────────────
+
+def test_access_mode_t1_write_rejected():
+    """T1 agent config with a write tool should fail validation."""
+    import yaml
+    from heddle.config.loader import validate_config, ConfigError
+    raw = yaml.safe_load("""
+agent:
+  name: bad-agent
+  version: "1.0.0"
+  description: "T1 with write tool"
+  exposes:
+    - name: delete_stuff
+      access: write
+      description: "Deletes things"
+  runtime:
+    trust_tier: 1
+  triggers:
+    - type: on_demand
+""")
+    with pytest.raises(ConfigError, match="write.*T1"):
+        validate_config(raw, source="<test>")
+
+
+def test_access_mode_t2_write_accepted():
+    """T2 agent config with a write tool should validate fine."""
+    import yaml
+    from heddle.config.loader import validate_config
+    raw = yaml.safe_load("""
+agent:
+  name: ok-agent
+  version: "1.0.0"
+  description: "T2 with write tool"
+  exposes:
+    - name: create_stuff
+      access: write
+      description: "Creates things"
+  runtime:
+    trust_tier: 2
+  triggers:
+    - type: on_demand
+""")
+    config = validate_config(raw, source="<test>")
+    assert config.agent.exposes[0].access == "write"
+
+
+def test_access_mode_defaults_to_read():
+    """Tools without explicit access should default to read."""
+    import yaml
+    from heddle.config.loader import validate_config
+    raw = yaml.safe_load("""
+agent:
+  name: default-agent
+  version: "1.0.0"
+  exposes:
+    - name: get_stuff
+      description: "Gets things"
+  runtime:
+    trust_tier: 1
+  triggers:
+    - type: on_demand
+""")
+    config = validate_config(raw, source="<test>")
+    assert config.agent.exposes[0].access == "read"
+
+
+# -- SecretBuffer ---------------------------------------------------------
+
+def test_secret_buffer_decodes_correctly():
+    buf = SecretBuffer("my-api-key-abc123")
+    assert buf.decode() == "my-api-key-abc123"
+
+def test_secret_buffer_zero_overwrites():
+    buf = SecretBuffer("supersecret")
+    buf.zero()
+    assert all(b == 0 for b in buf._buf)
+
+def test_secret_buffer_zero_clears_lock_flag():
+    buf = SecretBuffer("supersecret")
+    buf.zero()
+    assert buf._locked is False
+
+def test_secret_buffer_repr_does_not_leak():
+    buf = SecretBuffer("do-not-expose-me")
+    r = repr(buf)
+    assert "do-not-expose-me" not in r
+    assert "SecretBuffer" in r
+
+def test_secret_buffer_len():
+    buf = SecretBuffer("hello")
+    assert len(buf) == 5
+
+
+# -- Hardened broker behaviour --------------------------------------------
+
+def test_broker_secrets_stored_as_secret_buffer(broker):
+    for key, val in broker._secrets.items():
+        assert isinstance(val, SecretBuffer), f"{key} is {type(val)}, expected SecretBuffer"
+
+def test_broker_use_credential_context_manager(broker):
+    with broker.use_credential("intel-bridge", "intel-token") as token:
+        assert token == "abc123secret"
+
+def test_broker_use_credential_denied(broker):
+    with pytest.raises(CredentialDenied):
+        with broker.use_credential("intel-bridge", "admin-key") as _:
+            pass
+
+def test_broker_remove_secret_zeroes_buffer(broker):
+    buf = broker._secrets["intel-token"]
+    broker.remove_secret("intel-token")
+    assert all(b == 0 for b in buf._buf), "Buffer was not zeroed on removal"
+    assert "intel-token" not in broker._secrets
+
+def test_broker_set_secret_zeroes_old_buffer(broker):
+    old_buf = broker._secrets["intel-token"]
+    broker.set_secret("intel-token", "new-value")
+    assert all(b == 0 for b in old_buf._buf), "Old buffer was not zeroed on replacement"
+    assert broker.get_credential("intel-bridge", "intel-token") == "new-value"
+
+def test_broker_close_zeroes_all_buffers(broker):
+    bufs = dict(broker._secrets)
+    broker.close()
+    for key, buf in bufs.items():
+        assert all(b == 0 for b in buf._buf), f"Buffer for {key!r} not zeroed after close()"
+    assert len(broker._secrets) == 0

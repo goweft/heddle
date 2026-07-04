@@ -1,0 +1,14 @@
+# Image digest pin registry for sandboxed agents.
+#
+# Each entry maps a logical image name (referenced by sandbox_policy.py)
+# to a repo:tag plus a content-addressed digest. The runtime always
+# spawns containers with image@digest, so an upstream tag-overwrite
+# cannot silently change what runs.
+#
+# Refresh procedure: `heddle images refresh` (re-pulls, updates the
+# digest, requires a human-reviewed commit). ADR-004 §3.
+
+python-3.12-slim:
+  image: python:3.12-slim
+  digest: sha256:401f6e1a67dad31a1bd78e9ad22d0ee0a3b52154e6bd30e90be696bb6a3d7461
+  refreshed: 2026-05-16

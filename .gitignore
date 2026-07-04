@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+*.egg-info/
+venv/
+.pytest_cache/
+*.log
+CLAUDE.md
+*.service
+src/heddle/evolve/
+CAS-CLAUDE.md
+docs/cas-concept.md
+src/heddle/cas/
+tests/test_contracts.py

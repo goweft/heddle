@@ -1,0 +1,104 @@
+agent:
+  name: rsshub-bridge
+  version: "1.0.0"
+  description: "Bridge to RSSHub API for fetching RSS/Atom feeds and JSON data from localhost:1200"
+
+  model:
+    provider: none
+
+  consumes: []
+
+  exposes:
+    - name: get_hacker_news
+      description: "Get Hacker News front page items in JSON format"
+      parameters:
+        page:
+          type: integer
+          description: "Page number for pagination"
+          required: false
+          default: 1
+      returns:
+        type: string
+        description: "JSON array of Hacker News items"
+
+    - name: get_github_trending
+      description: "Get GitHub trending repositories in JSON format"
+      parameters:
+        since:
+          type: string
+          description: "Timeframe for trending (daily, weekly, monthly)"
+          required: false
+          default: "daily"
+        language:
+          type: string
+          description: "Programming language filter"
+          required: false
+      returns:
+        type: string
+        description: "JSON array of GitHub repository data"
+
+    - name: search_arxiv
+      description: "Search arXiv for academic papers in JSON format"
+      parameters:
+        query:
+          type: string
+          description: "Search query for arXiv papers"
+          required: true
+        start:
+          type: integer
+          description: "Starting index for results"
+          required: false
+          default: 0
+        limit:
+          type: integer
+          description: "Maximum number of results"
+          required: false
+          default: 10
+      returns:
+        type: string
+        description: "JSON array of arXiv paper metadata"
+
+    - name: get_reuters_news
+      description: "Get Reuters world news articles in JSON format"
+      parameters:
+        page:
+          type: integer
+          description: "Page number for pagination"
+          required: false
+          default: 1
+      returns:
+        type: string
+        description: "JSON array of Reuters news articles"
+
+  http_bridge:
+    - tool_name: get_hacker_news
+      method: GET
+      url: "http://localhost:1200/hn/frontpage.json?page={{page}}"
+      headers:
+        Accept: "application/json"
+
+    - tool_name: get_github_trending
+      method: GET
+      url: "http://localhost:1200/github/trending/{{since}}/{{language}}.json?page={{page}}"
+      headers:
+        Accept: "application/json"
+
+    - tool_name: search_arxiv
+      method: GET
+      url: "http://localhost:1200/arxiv/search_query={{query}}/{{start}}/{{limit}}.json"
+      headers:
+        Accept: "application/json"
+
+    - tool_name: get_reuters_news
+      method: GET
+      url: "http://localhost:1200/reuters/world.json?page={{page}}"
+      headers:
+        Accept: "application/json"
+
+  runtime:
+    sandbox: none
+    trust_tier: 1
+    max_execution_time: 60s
+
+  triggers:
+    - type: on_demand

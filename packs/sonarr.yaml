@@ -1,0 +1,96 @@
+# Heddle Starter Pack: Sonarr
+# TV show management and monitoring via Sonarr's API.
+#
+# Usage:
+#   1. Copy to agents/
+#   2. Update the base URL if Sonarr isn't on localhost:8989
+#   3. Store your API key:
+#      heddle secrets set sonarr-api-key "your-api-key-here"
+#      heddle secrets grant sonarr sonarr-api-key
+#   4. heddle validate agents/sonarr.yaml
+#   5. heddle run agents/sonarr.yaml --port 8210
+#
+# All tools are read-only (T1). Safe to deploy without review.
+# Find your API key in Sonarr → Settings → General → API Key.
+
+agent:
+  name: sonarr
+  version: "1.0.0"
+  description: >
+    Read-only Sonarr bridge. Browse your TV library, check the download
+    queue, search for new series, and see upcoming episodes.
+
+  exposes:
+    - name: get_series
+      access: read
+      description: "List all TV series in your library with status and episode counts."
+
+    - name: get_series_detail
+      access: read
+      description: "Get details for a specific series by ID."
+      parameters:
+        id: { type: integer, required: true, description: "Sonarr series ID" }
+
+    - name: get_queue
+      access: read
+      description: "Show the current download queue — what's downloading right now."
+
+    - name: search_series
+      access: read
+      description: "Search for a TV series by name. Returns results from indexers."
+      parameters:
+        term: { type: string, required: true, description: "Search term (e.g. 'Breaking Bad')" }
+
+    - name: get_calendar
+      access: read
+      description: "Upcoming episodes in the next 7 days."
+
+    - name: get_history
+      access: read
+      description: "Recent download/import history."
+      parameters:
+        page_size: { type: integer, required: false, default: 20 }
+
+  http_bridge:
+    - tool_name: get_series
+      method: GET
+      url: "http://localhost:8989/api/v3/series"
+      headers:
+        X-Api-Key: "{{secret:sonarr-api-key}}"
+
+    - tool_name: get_series_detail
+      method: GET
+      url: "http://localhost:8989/api/v3/series/{{id}}"
+      headers:
+        X-Api-Key: "{{secret:sonarr-api-key}}"
+
+    - tool_name: get_queue
+      method: GET
+      url: "http://localhost:8989/api/v3/queue"
+      headers:
+        X-Api-Key: "{{secret:sonarr-api-key}}"
+
+    - tool_name: search_series
+      method: GET
+      url: "http://localhost:8989/api/v3/series/lookup?term={{term}}"
+      headers:
+        X-Api-Key: "{{secret:sonarr-api-key}}"
+
+    - tool_name: get_calendar
+      method: GET
+      url: "http://localhost:8989/api/v3/calendar"
+      headers:
+        X-Api-Key: "{{secret:sonarr-api-key}}"
+
+    - tool_name: get_history
+      method: GET
+      url: "http://localhost:8989/api/v3/history?pageSize={{page_size}}&sortKey=date&sortDirection=descending"
+      headers:
+        X-Api-Key: "{{secret:sonarr-api-key}}"
+
+  runtime:
+    trust_tier: 1
+    max_execution_time: 30s
+
+  triggers:
+    - type: on_demand

@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "heddle"
+version = "0.1.0"
+description = "Heddle — A secure, declarative MCP runtime"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi==0.136.0",
+    "uvicorn==0.45.0",
+    "fastmcp==3.2.4",
+    "pydantic==2.13.3",
+    "pyyaml==6.0.3",
+    "click==8.3.2",
+    "httpx==0.28.1",
+    "aiosqlite==0.22.1",
+    "structlog==25.5.0",
+    "rich==15.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "pytest-cov>=5.0",
+    "pip-audit>=2.7",
+]
+
+[project.scripts]
+heddle = "heddle.cli:cli"
+heddle-dashboard = "heddle.dashboard:main"
+heddle-mesh = "heddle.stdio_mesh:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+markers = [
+    "integration: tests that spawn real Docker containers (run with -m integration)",
+]
