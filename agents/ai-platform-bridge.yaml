@@ -17,7 +17,7 @@ agent:
   consumes: []
 
   exposes:
-    - name: nexus_health
+    - name: platform_health
       description: "Get AI Platform platform health including providers, RAG status, and version."
       returns:
         type: string
@@ -66,7 +66,7 @@ agent:
         description: "JSON evolution stats"
 
   http_bridge:
-    - tool_name: nexus_health
+    - tool_name: platform_health
       method: GET
       url: "http://localhost:8080/health"
 

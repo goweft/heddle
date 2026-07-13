@@ -54,7 +54,7 @@ agent:
   description: string (what this agent does)
 
   model:
-    provider: ollama | nexus | anthropic | openai | none
+    provider: ollama | anthropic | openai | none
     model: string (e.g. "qwen3:14b")
     temperature: float (0.0-2.0, default 0.3)
 

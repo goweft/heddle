@@ -8,7 +8,7 @@
 
 Heddle auto-generates MCP servers from YAML configs. The core question was whether the runtime should target the low-level MCP SDK (building JSON-RPC message handlers, transport plumbing, capability negotiation by hand) or FastMCP (a higher-level decorator-driven framework that wraps the SDK).
 
-The project had a prior data point. An existing weftbox-ssh MCP server was written in FastMCP, had shipped, and was running reliably in production against Claude Desktop. That was concrete evidence FastMCP handled the protocol surface Heddle would depend on (tool discovery, tool invocation, stdio transport).
+The project had a prior data point. An in-house SSH MCP server was written in FastMCP, had shipped, and was running reliably in production against Claude Desktop. That was concrete evidence FastMCP handled the protocol surface Heddle would depend on (tool discovery, tool invocation, stdio transport).
 
 Arguments for raw SDK:
 - Full control over protocol details, including capabilities and transports that FastMCP might not expose yet.
@@ -18,7 +18,7 @@ Arguments for raw SDK:
 Arguments for FastMCP:
 - Substantially less boilerplate per tool. A tool is a decorated function; parameter schemas are inferred from type hints.
 - Heddle *auto-generates* servers from config. The less code per generated server, the less surface to get wrong.
-- Proven path via the weftbox-ssh precedent.
+- Proven path via the in-house SSH server precedent.
 - The abstraction is transparent enough that if it later lags the spec, escape hatches to the raw SDK are practical rather than requiring a rewrite.
 
 ## Decision

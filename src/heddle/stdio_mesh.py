@@ -174,7 +174,7 @@ def main():
 
         @unified.tool()
         async def weft_read_file(path: str) -> str:
-            """Read a file from the weftbox filesystem. Path may use ~ for home directory."""
+            """Read a file from the server filesystem. Path may use ~ for home directory."""
             return await read_file(path)
 
         @unified.tool()

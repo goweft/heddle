@@ -1,7 +1,7 @@
 """Heddle weft-dev agent — development build and test operations.
 
 Provides tools for building, testing, and interactively testing goweft
-projects on weftbox. TUI applications are tested via tmux: spawn the binary
+projects on the dev server. TUI applications are tested via tmux: spawn the binary
 in a detached session, send keystrokes, capture the rendered terminal output.
 
 Tools:
