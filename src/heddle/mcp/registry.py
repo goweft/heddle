@@ -11,6 +11,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from heddle import __version__
+
 DEFAULT_DB_PATH = Path.home() / ".heddle" / "registry.db"
 
 _SCHEMA = """
@@ -148,7 +150,7 @@ class Registry:
     def discovery_manifest(self) -> dict[str, Any]:
         agents = self.list_agents()
         return {
-            "heddle_version": "0.1.0",
+            "heddle_version": __version__,
             "agents": [{
                 "name": a["name"], "version": a["version"],
                 "description": a["description"], "status": a["status"],

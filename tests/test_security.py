@@ -309,8 +309,22 @@ def test_broker_resolve_template(broker):
 
 def test_broker_resolve_denied_template(broker):
     text = "Bearer {{secret:admin-key}}"
-    resolved = broker.resolve_template("intel-bridge", text)
-    assert "CREDENTIAL_DENIED" in resolved
+    with pytest.raises(CredentialDenied):
+        broker.resolve_template("intel-bridge", text)
+
+
+def test_broker_resolve_mixed_template_fails_closed(broker):
+    # An allowed secret alongside a denied one must still abort --
+    # no partially resolved output may escape.
+    text = "{{secret:intel-token}} {{secret:admin-key}}"
+    with pytest.raises(CredentialDenied):
+        broker.resolve_template("intel-bridge", text)
+
+
+def test_broker_resolve_denied_headers_fail_closed(broker):
+    headers = {"Authorization": "Bearer {{secret:admin-key}}"}
+    with pytest.raises(CredentialDenied):
+        broker.resolve_headers("intel-bridge", headers)
 
 
 def test_broker_resolve_headers(broker):

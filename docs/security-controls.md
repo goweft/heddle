@@ -29,7 +29,7 @@ Violations are **blocked** (not warned) and logged to the audit trail.
 - Secrets stored in `~/.heddle/secrets.json` (chmod 600)
 - Per-config access policy in `~/.heddle/credential_policy.json`
 - Configs use `{{secret:key}}` — resolved at runtime, never stored in YAML
-- Unauthorized access: denied, logged, returns `***CREDENTIAL_DENIED***`
+- Unauthorized access: denied, logged, and the tool call is aborted before any request is constructed (fail-closed)
 - CLI: `heddle secrets list`, `set`, `grant`, `revoke`, `policy`
 
 ### Audit Logging (`security/audit.py`)
@@ -37,7 +37,7 @@ Violations are **blocked** (not warned) and logged to the audit trail.
 - Structured JSON Lines at `~/.heddle/audit/audit.jsonl`
 - SHA-256 hash-chained entries (tamper-evident)
 - Events: `tool_call`, `http_bridge`, `trust_violation`, `credential_access`, `agent_lifecycle`
-- Secret values redacted automatically
+- Secret values redacted automatically (recursive across nested parameters; URL userinfo, query, and fragment scrubbing)
 - CLI: `heddle audit show [-n N] [--event TYPE]`, `heddle audit verify`
 
 ### Input Validation (`security/validation.py`)

@@ -1,6 +1,7 @@
 """Tests for Heddle agent registry."""
 import pytest
 from heddle.mcp.registry import Registry
+from heddle import __version__
 
 @pytest.fixture
 def registry(tmp_path):
@@ -62,7 +63,7 @@ def test_search_tools(registry):
 def test_discovery_manifest(registry):
     registry.register_agent(name="demo", version="1.0.0", port=8200, tools=[{"name": "hello", "description": "Say hello"}])
     manifest = registry.discovery_manifest()
-    assert manifest["heddle_version"] == "0.1.0"
+    assert manifest["heddle_version"] == __version__
     assert len(manifest["agents"]) == 1
     assert manifest["agents"][0]["endpoint"] == "http://localhost:8200/mcp"
 

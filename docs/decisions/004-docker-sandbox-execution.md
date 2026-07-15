@@ -64,7 +64,7 @@ Image digest pinning lives in a new file `src/heddle/runtime/images.yaml`, not i
 
 The trust-tier resource matrix (memory / cpu / pids / image) lives in `src/heddle/security/sandbox_policy.py` and is the single source of truth. `SandboxConfig` reads from it rather than carrying defaults inline (the current dict literal at sandbox.py:97 is replaced).
 
-The container's writable volume moves from `/data` (in-container) + `/tmp/loom-<name>` (host) to `/var/heddle/agent` (in-container, per milestone DoD) + `~/.heddle/sandbox/<agent>/data` (host, mode 0700). The host temp path is removed: `/tmp` is world-readable on shared systems. T1 agents get **no** writable volume by default — the bug at sandbox.py:107 where it's set unconditionally is fixed; the `validate_sandbox` warning becomes load-bearing.
+The container's writable volume moves from `/data` (in-container) + a legacy `/tmp`-based path (host) to `/var/heddle/agent` (in-container, per milestone DoD) + `~/.heddle/sandbox/<agent>/data` (host, mode 0700). The host temp path is removed: `/tmp` is world-readable on shared systems. T1 agents get **no** writable volume by default — the bug at sandbox.py:107 where it's set unconditionally is fixed; the `validate_sandbox` warning becomes load-bearing.
 
 ### 4. heddle-dashboard.service implementation strategy
 

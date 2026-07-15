@@ -292,10 +292,33 @@ def secrets_list():
 
 @secrets.command("set")
 @click.argument("key")
-@click.argument("value")
-def secrets_set(key: str, value: str):
-    """Store a secret."""
+@click.argument("value", required=False, default=None)
+@click.option("--stdin", "from_stdin", is_flag=True,
+              help="Read the secret value from stdin instead of an argument "
+                   "(keeps it out of shell history and process listings).")
+def secrets_set(key: str, value: str | None, from_stdin: bool):
+    """Store a secret.
+
+    Prefer --stdin for real credentials: a VALUE passed as an argument
+    is visible in shell history and process listings.
+
+        cat token.txt | heddle secrets set my-api-key --stdin
+    """
     from heddle.security.credentials import get_credential_broker
+    if from_stdin and value is not None:
+        raise click.UsageError("Provide VALUE or --stdin, not both.")
+    if from_stdin:
+        value = click.get_text_stream("stdin").read()
+        # Strip one trailing newline (from echo or a heredoc) without
+        # touching any other whitespace the secret may contain.
+        if value.endswith("\n"):
+            value = value[:-1]
+        if value.endswith("\r"):
+            value = value[:-1]
+    if not value:
+        raise click.UsageError(
+            "Empty secret value. Provide VALUE or pipe one via --stdin."
+        )
     broker = get_credential_broker()
     broker.set_secret(key, value)
     console.print(f"[green]OK[/] Secret '{key}' stored")

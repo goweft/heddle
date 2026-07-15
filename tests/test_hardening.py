@@ -436,7 +436,7 @@ def test_sandbox_writable_volume_mounts_at_var_heddle_agent():
     )
     expected = f"-v=/host/path:{CONTAINER_WRITABLE_PATH}:rw"
     assert expected in args
-    # No leftover /data: mount from the old loom-era path.
+    # No leftover /data: mount from the legacy path layout.
     assert not any(a.endswith(":/data:rw") for a in args)
 
 
@@ -444,8 +444,8 @@ def test_sandbox_container_name_is_heddle_prefixed():
     args = SandboxManager().generate_docker_run_args(
         SandboxConfig(agent_name="prom")
     )
-    assert "--name=heddle-prom" in args
-    assert not any(a.startswith("--name=loom-") for a in args)
+    name_args = [a for a in args if a.startswith("--name=")]
+    assert name_args == ["--name=heddle-prom"]
 
 
 # ── Trust-tier policy matrix (sandbox_policy.py) ─────────────────────

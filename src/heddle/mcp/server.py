@@ -12,6 +12,7 @@ Phase 3 integrations:
 
 from __future__ import annotations
 
+import inspect
 import json
 import logging
 import re
@@ -27,15 +28,16 @@ from heddle.security.trust import TrustEnforcer, TrustViolation
 from heddle.security.credentials import get_credential_broker
 from heddle.security.validation import InputValidator, RateLimiter
 from heddle.security.escalation import EscalationEngine, EscalationHold
+from heddle.mcp.pipeline import ToolPolicy, schema_for
 
 logger = logging.getLogger(__name__)
 
-_TYPE_MAP = {
-    "string": "str", "str": "str",
-    "integer": "int", "int": "int",
-    "number": "float", "float": "float",
-    "boolean": "bool", "bool": "bool",
-    "array": "list", "object": "dict",
+_PY_TYPES = {
+    "string": str, "str": str,
+    "integer": int, "int": int,
+    "number": float, "float": float,
+    "boolean": bool, "bool": bool,
+    "array": list, "object": dict,
 }
 
 
@@ -194,63 +196,31 @@ def _build_typed_handler(
     validator: InputValidator | None = None, rate_limiter: RateLimiter | None = None,
     escalation: EscalationEngine | None = None,
 ) -> Any:
-    """Dynamically create an async function with a typed signature."""
-    sig_parts: list[str] = []
-    for pname, pdef in tool.parameters.items():
-        py_type = _TYPE_MAP.get(pdef.type, "str")
-        if not pdef.required or pdef.default is not None:
-            default = repr(pdef.default) if pdef.default is not None else "None"
-            sig_parts.append(f"{pname}: {py_type} | None = {default}")
-        else:
-            sig_parts.append(f"{pname}: {py_type}")
+    """Create an async handler carrying an explicit typed signature.
 
-    sig = ", ".join(sig_parts)
-    fn_name = tool.name
-    docstring = (tool.description.strip() if tool.description else f"Heddle tool: {tool.name}").replace("'", "\\'")
-
-    collect_lines = []
-    for pname in tool.parameters:
-        collect_lines.append(f"    _params['{pname}'] = {pname}")
-    collect_block = "\n".join(collect_lines) if collect_lines else "    pass"
-
-    func_code = f"""\
-async def {fn_name}({sig}) -> str:
-    '''{docstring}'''
-    _params = {{}}
-{collect_block}
-    return await _dispatch(_params)
-"""
-
+    The handler is a plain closure given an ``inspect.Signature`` and
+    matching ``__annotations__``, so FastMCP derives the same tool schema
+    the previous ``exec()``-generated source produced. No config-controlled
+    strings (tool names, parameter names, defaults, descriptions) are
+    interpolated into Python source anymore: config signing gates what
+    loads, and this removes the codegen surface entirely.
+    """
     if endpoint:
         _ep, _an, _tn = endpoint, agent_name, tool.name
         _trust, _audit, _broker = trust, audit, broker
-        _validator, _rate_limiter = validator, rate_limiter
-        _access = getattr(tool, 'access', 'read')
-        _escalation = escalation
-        _tool_schema = {pn: {"type": pd.type, "required": pd.required, "default": pd.default}
-                        for pn, pd in tool.parameters.items()}
+        _policy = ToolPolicy(
+            agent_name=agent_name, tool_name=tool.name,
+            access=getattr(tool, 'access', 'read'),
+            trust=trust, audit=audit, validator=validator,
+            rate_limiter=rate_limiter, escalation=escalation,
+            tool_schema=schema_for(tool),
+        )
+
+        async def _executor(params: dict[str, Any]) -> str:
+            return await _execute_http_bridge(_ep, _an, _tn, params, _trust, _audit, _broker)
 
         async def _dispatch(params: dict[str, Any]) -> str:
-            start = time.monotonic()
-            try:
-                if _rate_limiter:
-                    _rate_limiter.check(_an, _tn)
-                if _trust and _access:
-                    _trust.check_access_mode(_tn, _access)
-                if _escalation:
-                    _escalation.check(_tn, params, _access)
-                if _validator and _tool_schema:
-                    params = _validator.validate_params(_tn, params, _tool_schema)
-                result = await _execute_http_bridge(_ep, _an, _tn, params, _trust, _audit, _broker)
-                duration = (time.monotonic() - start) * 1000
-                if _audit:
-                    _audit.log_tool_call(_an, _tn, params, "success", duration_ms=duration)
-                return result
-            except Exception as exc:
-                duration = (time.monotonic() - start) * 1000
-                if _audit:
-                    _audit.log_tool_call(_an, _tn, params, "error", error=str(exc), duration_ms=duration)
-                raise
+            return await _policy.dispatch(params, _executor)
     else:
         _an2, _tn2, _audit2 = agent_name, tool.name, audit
 
@@ -263,34 +233,69 @@ async def {fn_name}({sig}) -> str:
                 "received_params": params,
             }, indent=2)
 
-    namespace: dict[str, Any] = {"_dispatch": _dispatch, "json": json, "time": time}
-    exec(func_code, namespace)
-    return namespace[fn_name]
+    sig_params: list[inspect.Parameter] = []
+    annotations: dict[str, Any] = {}
+    for pname, pdef in tool.parameters.items():
+        py_type = _PY_TYPES.get(pdef.type, str)
+        if not pdef.required or pdef.default is not None:
+            anno: Any = py_type | None
+            sig_params.append(inspect.Parameter(
+                pname, inspect.Parameter.KEYWORD_ONLY,
+                default=pdef.default, annotation=anno,
+            ))
+        else:
+            anno = py_type
+            sig_params.append(inspect.Parameter(
+                pname, inspect.Parameter.KEYWORD_ONLY, annotation=anno,
+            ))
+        annotations[pname] = anno
+    annotations["return"] = str
+
+    _sig = inspect.Signature(sig_params, return_annotation=str)
+
+    async def handler(**kwargs: Any) -> str:
+        bound = _sig.bind(**kwargs)
+        bound.apply_defaults()
+        return await _dispatch(dict(bound.arguments))
+
+    handler.__name__ = tool.name
+    handler.__qualname__ = tool.name
+    handler.__doc__ = (
+        tool.description.strip() if tool.description else f"Heddle tool: {tool.name}"
+    )
+    handler.__signature__ = _sig
+    handler.__annotations__ = annotations
+    return handler
 
 
 def _build_no_params_handler(
     tool: ExposedTool, endpoint: HttpEndpoint | None, agent_name: str,
     trust: TrustEnforcer | None = None, audit=None, broker=None,
     validator: InputValidator | None = None, rate_limiter: RateLimiter | None = None,
+    escalation: EscalationEngine | None = None,
 ) -> Any:
-    """Build a handler for tools with zero parameters."""
+    """Build a handler for tools with zero parameters.
+
+    Zero-parameter tools go through the same ToolPolicy pipeline as typed
+    tools (rate limit, access mode, escalation). Input validation is
+    vacuous with no parameters, but the remaining layers are not.
+    """
     if endpoint:
         _ep, _an, _tn = endpoint, agent_name, tool.name
         _trust, _audit, _broker = trust, audit, broker
+        _policy = ToolPolicy(
+            agent_name=agent_name, tool_name=tool.name,
+            access=getattr(tool, 'access', 'read'),
+            trust=trust, audit=audit, validator=validator,
+            rate_limiter=rate_limiter, escalation=escalation,
+            tool_schema=None,
+        )
+
+        async def _executor(params: dict[str, Any]) -> str:
+            return await _execute_http_bridge(_ep, _an, _tn, {}, _trust, _audit, _broker)
 
         async def handler() -> str:
-            start = time.monotonic()
-            try:
-                result = await _execute_http_bridge(_ep, _an, _tn, {}, _trust, _audit, _broker)
-                duration = (time.monotonic() - start) * 1000
-                if _audit:
-                    _audit.log_tool_call(_an, _tn, {}, "success", duration_ms=duration)
-                return result
-            except Exception as exc:
-                duration = (time.monotonic() - start) * 1000
-                if _audit:
-                    _audit.log_tool_call(_an, _tn, {}, "error", error=str(exc), duration_ms=duration)
-                raise
+            return await _policy.dispatch({}, _executor)
     else:
         _an2, _tn2, _audit2 = agent_name, tool.name, audit
 
@@ -309,9 +314,9 @@ def _build_no_params_handler(
 
 def _register_http_tool(mcp, tool, endpoint, agent_name, trust, audit, broker, validator=None, rate_limiter=None, escalation=None):
     if tool.parameters:
-        handler = _build_typed_handler(tool, endpoint, agent_name, trust, audit, broker, validator, rate_limiter)
+        handler = _build_typed_handler(tool, endpoint, agent_name, trust, audit, broker, validator, rate_limiter, escalation)
     else:
-        handler = _build_no_params_handler(tool, endpoint, agent_name, trust, audit, broker, validator, rate_limiter)
+        handler = _build_no_params_handler(tool, endpoint, agent_name, trust, audit, broker, validator, rate_limiter, escalation)
     mcp.add_tool(handler)
     logger.info(f"Registered HTTP-bridged tool: {tool.name} -> {endpoint.method} {endpoint.url}")
 

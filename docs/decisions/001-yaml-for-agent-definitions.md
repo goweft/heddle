@@ -6,7 +6,7 @@
 
 ## Context
 
-Heddle (then named LOOM) needed a way to define MCP tool servers — what tools they expose, what they consume, what trust tier they run at, what HTTP APIs they bridge to. Two shapes were viable:
+Heddle needed a way to define MCP tool servers — what tools they expose, what they consume, what trust tier they run at, what HTTP APIs they bridge to. Two shapes were viable:
 
 1. **Python-first:** Each agent is a Python module with decorated functions, subclassing a base runtime class. The tool schema is inferred from type hints. The runtime imports and instantiates it.
 2. **Config-first:** Each agent is a declarative YAML file. The runtime interprets the file and spins up an MCP server from it. Custom logic, when genuinely needed, lives in separate Python modules referenced by the config.

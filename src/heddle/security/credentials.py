@@ -273,14 +273,16 @@ class CredentialBroker:
 
         Used by the HTTP bridge to inject credentials into headers and URLs
         at runtime instead of storing them in the YAML config.
+
+        Fail-closed: if the agent is denied any referenced secret,
+        CredentialDenied propagates and the caller must abort the
+        operation. No placeholder is substituted -- a placeholder would
+        let the request proceed unauthenticated against upstreams that
+        treat auth as optional.
         """
         def replacer(match: re.Match) -> str:
             key = match.group(1).strip()
-            try:
-                return self.get_credential(agent_name, key)
-            except CredentialDenied:
-                logger.warning("Credential %s denied for agent %s", key, agent_name)
-                return "***CREDENTIAL_DENIED***"
+            return self.get_credential(agent_name, key)
 
         return re.sub(r"\{\{secret:(\S+?)\}\}", replacer, text)
 

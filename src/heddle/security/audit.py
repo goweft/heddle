@@ -13,10 +13,12 @@ import hashlib
 import json
 import logging
 import os
+import re
 import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+from urllib.parse import parse_qsl, quote, urlencode, urlsplit, urlunsplit
 
 try:
     import fcntl
@@ -302,30 +304,99 @@ class AuditLogger:
 
 # ── Helpers ──────────────────────────────────────────────────────────
 
-_SECRET_PATTERNS = {"token", "password", "secret", "key", "authorization", "bearer"}
+_SECRET_PATTERNS = {
+    "token", "password", "passwd", "secret", "key",
+    "authorization", "bearer", "signature",
+}
+
+_MAX_REDACT_DEPTH = 8
+
+# Long opaque strings (hex, base64, base64url, JWT-shaped) that may be
+# secrets even under innocuous key names. Values with whitespace never
+# match; path- and URL-like values are screened out in _looks_opaque.
+_OPAQUE_RE = re.compile(r"^[A-Za-z0-9._+/=-]{40,}$")
+
+
+def _is_sensitive_key(key: str) -> bool:
+    k = key.lower()
+    return any(p in k for p in _SECRET_PATTERNS)
+
+
+def _looks_opaque(value: str) -> bool:
+    if value.startswith(("/", "./", "~/")) or "://" in value:
+        return False  # path- or URL-like; URLs are handled by _redact_url
+    return bool(_OPAQUE_RE.match(value))
 
 
 def _redact_secrets(params: dict[str, Any]) -> dict[str, Any]:
-    """Redact values that look like secrets."""
-    redacted = {}
-    for k, v in params.items():
-        if any(p in k.lower() for p in _SECRET_PATTERNS):
-            redacted[k] = "***REDACTED***"
-        elif isinstance(v, str) and len(v) > 40 and v.isalnum():
-            redacted[k] = f"{v[:4]}...{v[-4:]}"
-        else:
-            redacted[k] = v
-    return redacted
+    """Recursively redact values that look like secrets.
+
+    Sensitive key names are matched case-insensitively at every nesting
+    level (dicts within dicts, dicts within lists). Long opaque string
+    values (hex/base64/JWT-shaped) are partially masked even under
+    non-sensitive key names.
+    """
+    return {k: _redact_value(k, v) for k, v in params.items()}
+
+
+def _redact_value(key: str, value: Any, _depth: int = 0) -> Any:
+    if _is_sensitive_key(key):
+        return "***REDACTED***"
+    if _depth >= _MAX_REDACT_DEPTH:
+        return "***REDACTED_DEPTH***"
+    if isinstance(value, dict):
+        return {k: _redact_value(k, v, _depth + 1) for k, v in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_redact_value(key, item, _depth + 1) for item in value]
+    if isinstance(value, str):
+        if value.lower().startswith("bearer "):
+            return "***REDACTED***"
+        if len(value) > 40 and _looks_opaque(value):
+            return f"{value[:4]}...{value[-4:]}"
+    return value
 
 
 def _redact_url(url: str) -> str:
-    """Redact tokens from URLs."""
-    import re
-    return re.sub(
-        r"(token=|Bearer%20|key=)[A-Za-z0-9]+",
-        r"\1***REDACTED***",
-        url,
+    """Redact secrets from URLs: userinfo, query params, and fragments.
+
+    Query and fragment pairs are parsed properly, so tokens containing
+    punctuation (JWT dots, base64 padding, PAT underscores) are redacted
+    in full rather than only up to the first non-alphanumeric character.
+    """
+    try:
+        parts = urlsplit(url)
+    except ValueError:
+        return "***REDACTED_URL***"
+
+    netloc = parts.netloc
+    if "@" in netloc:
+        netloc = "***REDACTED***@" + netloc.rsplit("@", 1)[1]
+
+    query = _redact_pairs(parts.query) if parts.query else parts.query
+    fragment = (
+        _redact_pairs(parts.fragment)
+        if parts.fragment and "=" in parts.fragment
+        else parts.fragment
     )
+    return urlunsplit((parts.scheme, netloc, parts.path, query, fragment))
+
+
+def _redact_pairs(qs: str) -> str:
+    """Redact sensitive keys in a query-string-shaped set of pairs."""
+    pairs = parse_qsl(qs, keep_blank_values=True)
+    if not pairs:
+        return qs
+    out = []
+    for k, v in pairs:
+        if _is_sensitive_key(k) or v.lower().startswith("bearer "):
+            v = "***REDACTED***"
+        out.append((k, v))
+    return urlencode(out, quote_via=_quote_keep_marker)
+
+
+def _quote_keep_marker(value: str, safe: str = "", encoding=None, errors=None) -> str:
+    """urlencode quote hook that leaves the *** redaction marker readable."""
+    return quote(value, safe="*", encoding=encoding, errors=errors)
 
 
 # ── Singleton for global access ──────────────────────────────────────

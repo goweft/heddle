@@ -4,7 +4,7 @@
 >
 > **Last updated:** March 2026  
 
-> **System:** Heddle v0.1.0 — 11 agent configs, 51 tools defined, 46 in active mesh
+> **System:** Heddle v0.2.1 — 11 agent configs, 51 tools defined, 46 in active mesh
 
 ---
 
@@ -120,8 +120,8 @@ Claude Desktop / MCP Client
 **Heddle controls (implemented):**
 - **Credential broker with per-agent access policy.** Secrets are stored in `~/.heddle/secrets.json` (chmod 600, owner-only read). Each agent has an explicit allow-list in `credential_policy.json` defining which secrets it can access.
 - **Runtime-only resolution.** Agent configs use `{{secret:key}}` placeholders. The broker resolves these at HTTP execution time — raw secrets never appear in YAML files, the registry, or MCP tool schemas.
-- **Denied access is logged and blocked.** If an agent requests a secret it's not authorized for, the broker raises `CredentialDenied`, logs the attempt, and returns `***CREDENTIAL_DENIED***` (not the secret).
-- **Secret redaction in audit logs.** The audit logger scans parameters for keys matching patterns like "token", "password", "secret", "authorization" and replaces their values with `***REDACTED***`.
+- **Denied access is logged and aborts the call.** If an agent requests a secret it's not authorized for, the broker logs the attempt and raises `CredentialDenied`; the tool call fails closed before any request is constructed. No placeholder is substituted -- a placeholder value would let the request proceed unauthenticated against upstreams where auth is optional.
+- **Secret redaction in audit logs.** The audit logger recursively scans parameters at every nesting level for keys matching patterns like "token", "password", "secret", "authorization" and replaces their values with `***REDACTED***`. Logged URLs are parsed structurally: userinfo, secret-bearing query parameters, and fragment pairs are redacted in full, including punctuated tokens (JWT, base64, PAT-style).
 
 **Current production state:**
 ```
@@ -272,7 +272,7 @@ Credential Policy:
 | 1 | Trust tier enforcement | **Implemented** | `security/trust.py` | Real T1/POST violation caught and blocked |
 | 2 | Credential broker | **Implemented** | `security/credentials.py` | 2 secrets, per-agent policy for 8 agents |
 | 3 | Hash-chained audit log | **Implemented** | `security/audit.py` | Hash chain active and verified |
-| 4 | Secret redaction | **Implemented** | `security/audit.py` | Tokens replaced with `***REDACTED***` in logs |
+| 4 | Secret redaction | **Implemented** | `security/audit.py` | Recursive over nested params; URLs parsed, punctuated tokens fully redacted |
 | 5 | Schema validation | **Implemented** | `config/schema.py`, `config/loader.py` | Pydantic v2, cross-field checks |
 | 6 | Dry-run validation | **Implemented** | `cli.py`, `generator/agent_gen.py` | `heddle validate`, `heddle generate --dry-run` |
 | 7 | Self-correcting generation | **Implemented** | `generator/agent_gen.py` | Retry with error feedback |
