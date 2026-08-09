@@ -7,6 +7,12 @@
   with trust enforcement, credential brokering, and tamper-evident audit logging built in.
 </p>
 <p align="center">
+  <a href="https://github.com/goweft/heddle/actions/workflows/ci.yml"><img src="https://github.com/goweft/heddle/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/goweft/heddle/releases/latest"><img src="https://img.shields.io/github/v/release/goweft/heddle" alt="Latest release"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/goweft/heddle" alt="License"></a>
+  <img src="https://img.shields.io/badge/python-3.11%2B-blue" alt="Python 3.11+">
+</p>
+<p align="center">
   <a href="#see-it-work">See It Work</a> ·
   <a href="#why-heddle">Why Heddle</a> ·
   <a href="#current-status">Current Status</a> ·
@@ -66,7 +72,7 @@ ai-platform      (T1): health, ai_status, routing_stats, routing_costs, list_app
 ollama-bridge    (T2): list_models, list_running, generate, show_model
 prometheus-bridge(T1): query_prometheus, query_range, get_targets, get_alerts, get_metric_names
 rsshub-bridge    (T1): get_hacker_news, get_github_trending, search_arxiv, get_reuters_news
-vram-orchestrator(T3): vram_status, smart_load, smart_generate, optimize_vram, unload_model, model_library
+vram-orchestrator(T3): vram_status, smart_load, smart_generate, optimize_vram, unload_model, model_library, ...
 intel-rag-bridge (T2): ask_intel, get_dossier, get_trending, get_patterns, get_communities, get_stats, ...
 ```
 
@@ -113,6 +119,8 @@ Heddle is for exposing APIs as MCP tools with real runtime controls — not just
 </p>
 
 <h2 id="current-status">Current Status</h2>
+
+**Latest release:** [v0.2.1 — assurance release](https://github.com/goweft/heddle/releases/tag/v0.2.1). After v0.2.0, the codebase went through two independent AI-assisted security reviews plus a manual pass; every finding is closed, with regression tests pinning each one down — 273 tests total.
 
 What Heddle can do today, what is partially implemented, and what is still planned:
 
