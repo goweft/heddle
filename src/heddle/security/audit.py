@@ -4,7 +4,7 @@ Every tool call, HTTP bridge request, credential access, and trust
 violation is recorded as a JSON Lines entry with a chain hash linking
 each entry to its predecessor. This makes tampering detectable.
 
-Frameworks: OWASP Agentic #9, NIST AI RMF MS-2.6, MAESTRO observability
+Frameworks: OWASP Agentic ASI10, NIST AI RMF MS-2.6, MAESTRO observability
 """
 
 from __future__ import annotations

@@ -9,7 +9,7 @@ Tier 2 (Worker):    Scoped write. Can POST/PUT to declared endpoints.
 Tier 3 (Operator):  Full scope within declared services. Can invoke other agents.
 Tier 4 (Privileged): Same as T3 but requires human-in-the-loop approval.
 
-Frameworks: OWASP Agentic #3 (Excessive Agency), NIST AI RMF GV-1.3, Zero Trust
+Frameworks: OWASP Agentic ASI03 (Identity and Privilege Abuse), NIST AI RMF GV-1.3, Zero Trust
 """
 
 from __future__ import annotations

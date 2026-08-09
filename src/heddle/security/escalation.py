@@ -8,7 +8,7 @@ to the audit trail with the rule that triggered it.
 This extends T4's binary human-in-the-loop flag into conditional,
 per-tool, parameter-aware escalation.
 
-Frameworks: OWASP Agentic #3 (Excessive Agency), NIST AI RMF GV-1.3
+Frameworks: OWASP Agentic ASI02 (Tool Misuse and Exploitation), NIST AI RMF GV-1.3
 (risk tolerance), MAESTRO Authorization layer
 """
 

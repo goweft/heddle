@@ -9,7 +9,7 @@ Agent quarantine: AI-generated configs land in a staging directory
 can be registered or run. This prevents auto-generated agents from
 going live without review.
 
-Frameworks: OWASP Agentic #8 (Supply Chain), NIST AI RMF GV-6.1,
+Frameworks: OWASP Agentic ASI04 (Agentic Supply Chain Vulnerabilities), NIST AI RMF GV-6.1,
 MAESTRO Integrity layer / Staging gate
 """
 

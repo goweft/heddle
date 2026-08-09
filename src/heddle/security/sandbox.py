@@ -6,7 +6,7 @@ Each agent can run in its own Docker container with:
 - Network limited to declared services
 - CPU, memory, and execution time limits
 
-Frameworks: OWASP Agentic #6 (Inadequate Sandboxing), NIST AI RMF
+Frameworks: OWASP Agentic ASI05 (Unexpected Code Execution), NIST AI RMF
 MS-2.3, MAESTRO Isolation layer
 """
 

@@ -150,21 +150,21 @@ $ heddle generate "agent that wraps the Gitea API" --model qwen3:14b
 
 <h3 id="security-architecture">Security Architecture</h3>
 
-Heddle's security controls map to OWASP Agentic Top 10, NIST AI RMF, and MAESTRO. See the full [threat model](docs/threat-model.md) and [security controls reference](docs/security-controls.md).
+Heddle's security controls map to the OWASP Top 10 for Agentic Applications (2026), NIST AI RMF, and MAESTRO. See the full [threat model](docs/threat-model.md) and [security controls reference](docs/security-controls.md).
 
 | Control | What It Does | Framework |
 |:-------:|:-------------|:---------:|
-| **Trust tiers** | 4 levels (observer → privileged), runtime-enforced, violations blocked and logged | OWASP&nbsp;Agentic&nbsp;#3 |
-| **Credential broker** | Per-config secret access policy, `{{secret:key}}` resolved at runtime, never stored in YAML | OWASP&nbsp;Agentic&nbsp;#7 |
-| **Audit log** | Hash-chained JSON Lines, tamper-evident, 5 event types, secret redaction | OWASP&nbsp;Agentic&nbsp;#9 |
-| **Input validation** | Type checking, length limits, injection pattern detection (shell, SQL, LLM prompt) | OWASP&nbsp;Agentic&nbsp;#1 |
-| **Config signing** | HMAC-SHA256 on all agent configs, tamper detection | OWASP&nbsp;Agentic&nbsp;#8 |
-| **Config quarantine** | AI-generated configs staged for review before promotion | OWASP&nbsp;Agentic&nbsp;#8 |
-| **Rate limiting** | Sliding window per-config per-tool | OWASP&nbsp;Agentic&nbsp;#4 |
-| **Container sandboxing** | Docker isolation: `--cap-drop=ALL`, `--no-new-privileges`, `--read-only`, pids limit, image digest pinning, watchdog timeout | OWASP&nbsp;Agentic&nbsp;#6 |
-| **Anomaly detection** | Flags novel tool calls, rate-limit breaches, repeated credential denials via audit observer | OWASP&nbsp;Agentic&nbsp;#9 |
-| **Registry integrity** | Per-row HMAC-SHA256 on agent registry, `heddle reg verify` detects tampering | OWASP&nbsp;Agentic&nbsp;#8 |
-| **Escalation rules** | Conditional hold-for-review when parameters match thresholds or patterns | OWASP&nbsp;Agentic&nbsp;#3 |
+| **Trust tiers** | 4 levels (observer → privileged), runtime-enforced, violations blocked and logged | OWASP&nbsp;ASI03 |
+| **Credential broker** | Per-config secret access policy, `{{secret:key}}` resolved at runtime, never stored in YAML | OWASP&nbsp;ASI03 |
+| **Audit log** | Hash-chained JSON Lines, tamper-evident, 5 event types, secret redaction | OWASP&nbsp;ASI10 |
+| **Input validation** | Type checking, length limits, injection pattern detection (shell, SQL, LLM prompt) | OWASP&nbsp;ASI01 |
+| **Config signing** | HMAC-SHA256 on all agent configs, tamper detection | OWASP&nbsp;ASI04 |
+| **Config quarantine** | AI-generated configs staged for review before promotion | OWASP&nbsp;ASI04 |
+| **Rate limiting** | Sliding window per-config per-tool | OWASP&nbsp;ASI08 |
+| **Container sandboxing** | Docker isolation: `--cap-drop=ALL`, `--no-new-privileges`, `--read-only`, pids limit, image digest pinning, watchdog timeout | OWASP&nbsp;ASI05 |
+| **Anomaly detection** | Flags novel tool calls, rate-limit breaches, repeated credential denials via audit observer | OWASP&nbsp;ASI10 |
+| **Registry integrity** | Per-row HMAC-SHA256 on agent registry, `heddle reg verify` detects tampering | OWASP&nbsp;ASI04 |
+| **Escalation rules** | Conditional hold-for-review when parameters match thresholds or patterns | OWASP&nbsp;ASI02 |
 
 ---
 

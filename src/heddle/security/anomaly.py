@@ -7,7 +7,7 @@ Monitors the audit stream for:
 
 Anomalies are written to the audit log as event_type='anomaly' entries.
 
-Frameworks: OWASP Agentic #9, NIST AI RMF MS-2.6
+Frameworks: OWASP Agentic ASI10, NIST AI RMF MS-2.6
 """
 
 from __future__ import annotations

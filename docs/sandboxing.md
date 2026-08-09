@@ -306,5 +306,5 @@ explicit about it so the docs don't over-promise:
 - [`src/heddle/runtime/sandboxed_runner.py`](../src/heddle/runtime/sandboxed_runner.py) — runtime
 - [`src/heddle/runtime/container_agent.py`](../src/heddle/runtime/container_agent.py) — container-side stdio handler
 - [`src/heddle/runtime/images.yaml`](../src/heddle/runtime/images.yaml) — pinned image digests
-- OWASP Agentic AI Top 10 #6 — Inadequate Sandboxing
+- OWASP Top 10 for Agentic Applications ASI05 — Unexpected Code Execution (sandbox containment)
 - NIST AI RMF — MS-2.3 (Risk Treatment)

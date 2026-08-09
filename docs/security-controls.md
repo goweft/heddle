@@ -102,7 +102,7 @@ Violations are **blocked** (not warned) and logged to the audit trail.
 
 Every control maps to at least one industry framework:
 
-- **OWASP Agentic Security Top 10** — agentic-specific threats
+- **OWASP Top 10 for Agentic Applications (2026)** — agentic-specific threats
 - **NIST AI Risk Management Framework (AI RMF 1.0)** — governance and risk
 - **MAESTRO** — multi-agent security layers
 

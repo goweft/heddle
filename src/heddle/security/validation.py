@@ -4,8 +4,8 @@ Validates tool parameters against their declared types, enforces
 length limits, and checks for injection patterns. Every validation
 failure is logged to the audit trail.
 
-Frameworks: OWASP Agentic #1 (Prompt Injection), #2 (Unsafe Tool
-Orchestration), OWASP LLM #2 (Insecure Output), NIST AI RMF MS-2.5,
+Frameworks: OWASP Agentic ASI01 (Agent Goal Hijack), ASI02 (Tool Misuse
+and Exploitation), OWASP LLM #2 (Insecure Output), NIST AI RMF MS-2.5,
 MAESTRO Validation layer
 """
 

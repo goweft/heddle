@@ -4,7 +4,7 @@
 **Date:** 2026-05-06 (proposed); accepted 2026-05-16
 **Deciders:** Steve Gonzalez
 **Supersedes:** none
-**Related:** MILESTONE-v0.2.md Pillar 1; OWASP Agentic #6 (Inadequate Sandboxing); NIST AI RMF MS-2.3
+**Related:** MILESTONE-v0.2.md Pillar 1; OWASP Agentic ASI05 (Unexpected Code Execution); NIST AI RMF MS-2.3
 
 ## Context
 

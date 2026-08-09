@@ -1,12 +1,12 @@
 """Heddle security — complete security architecture for agentic AI.
 
 Phase 3 controls mapped to industry frameworks:
-- 3a Sandboxing:  OWASP Agentic #6, NIST MS-2.3, MAESTRO Isolation
-- 3b Trust:       OWASP Agentic #3, NIST GV-1.3, MAESTRO Authorization
-- 3c Credentials: OWASP Agentic #7, NIST MAP-3.4, MAESTRO Secrets
-- 3d Audit:       OWASP Agentic #9, NIST MS-2.6, MAESTRO Observability
-- 3e Validation:  OWASP Agentic #1/#2, NIST MS-2.5, MAESTRO Validation
-- 3f Signing:     OWASP Agentic #8, NIST GV-6.1, MAESTRO Integrity
+- 3a Sandboxing:  OWASP Agentic ASI05, NIST MS-2.3, MAESTRO Isolation
+- 3b Trust:       OWASP Agentic ASI03, NIST GV-1.3, MAESTRO Authorization
+- 3c Credentials: OWASP Agentic ASI03, NIST MAP-3.4, MAESTRO Secrets
+- 3d Audit:       OWASP Agentic ASI10, NIST MS-2.6, MAESTRO Observability
+- 3e Validation:  OWASP Agentic ASI01/ASI02, NIST MS-2.5, MAESTRO Validation
+- 3f Signing:     OWASP Agentic ASI04, NIST GV-6.1, MAESTRO Integrity
 """
 
 from heddle.security.audit import AuditLogger, get_audit_logger

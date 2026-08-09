@@ -8,7 +8,7 @@ Secrets are stored in a JSON file (encrypted at rest in Phase 3+) at
 ~/.heddle/secrets.json. Agents can only access secrets that are explicitly
 granted to them in the broker's access policy.
 
-Memory hardening (OWASP Agentic #7, NIST AI RMF MAP-3.4):
+Memory hardening (OWASP Agentic ASI03, NIST AI RMF MAP-3.4):
   - Secrets are stored as mlock'd bytearrays (SecretBuffer), not plain str.
     mlock pins the pages in RAM so the kernel cannot swap them to disk.
   - Buffers are explicitly zeroed when a secret is removed or the broker
@@ -18,7 +18,7 @@ Memory hardening (OWASP Agentic #7, NIST AI RMF MAP-3.4):
   - mlock failure is non-fatal: logged as a warning, broker continues without
     swap protection. This handles unprivileged environments gracefully.
 
-Frameworks: OWASP Agentic #7 (Unsafe Credential Management), NIST AI RMF MAP-3.4
+Frameworks: OWASP Agentic ASI03 (Identity and Privilege Abuse), NIST AI RMF MAP-3.4
 """
 
 from __future__ import annotations

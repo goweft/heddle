@@ -290,20 +290,24 @@ Credential Policy:
 
 ## 4. Framework Cross-Reference
 
-### OWASP Agentic Security Top 10 (2025)
+### OWASP Top 10 for Agentic Applications (2026)
 
-| OWASP # | Threat | Heddle Control | Status |
-|---------|--------|------|--------|
-| 1 | Prompt Injection | String-only templating, structured orchestrator prompts | Implemented |
-| 2 | Unsafe Tool Orchestration | Tier-gated cross-agent calls, audit trail | Implemented |
-| 3 | Excessive Agency | Trust tier enforcement with 4 levels | Implemented |
-| 4 | Denial of Wallet | Execution timeouts, local LLM preference | Partial |
-| 5 | Insecure Output Handling | (Delegated to MCP client) | N/A |
-| 6 | Inadequate Sandboxing | Docker sandbox framework + trust tiers | Partial |
-| 7 | Unsafe Credential Management | Credential broker, per-agent policy, redaction | Implemented |
-| 8 | Supply Chain Vulnerabilities | Schema validation, config signing, quarantine | Implemented |
-| 9 | Insufficient Logging | Hash-chained audit log, 5 event types | Implemented |
-| 10 | Uncontrolled Autonomy | T4 human-in-the-loop flag | Partial |
+Identifiers follow the OWASP GenAI Security Project release of
+2025-12-09 (v2.01, 2026-06-01), which supersedes the 2025 draft
+numbering previously referenced here.
+
+| ID | Threat | Heddle Control | Status |
+|-------|--------|------|--------|
+| ASI01 | Agent Goal Hijack | String-only templating, injection pattern detection, structured orchestrator prompts | Implemented |
+| ASI02 | Tool Misuse and Exploitation | Access-mode annotations, escalation rules, tier-gated cross-agent calls | Implemented |
+| ASI03 | Identity and Privilege Abuse | Trust tier enforcement, per-agent credential policy, fail-closed denial | Implemented |
+| ASI04 | Agentic Supply Chain Vulnerabilities | Schema validation, config signing, quarantine, registry HMAC, pinned dependencies | Implemented |
+| ASI05 | Unexpected Code Execution | No exec() codegen (typed callables), Docker sandbox framework | Partial |
+| ASI06 | Memory and Context Poisoning | Quarantine gates AI-generated persisted configs; no session memory surface | Partial |
+| ASI07 | Insecure Inter-Agent Communication | Tier-gated invocation; no inter-agent authentication yet | Partial |
+| ASI08 | Cascading Failures | Rate limiting, execution timeouts, fail-closed dispatch pipeline | Partial |
+| ASI09 | Human-Agent Trust Exploitation | T4 human-in-the-loop, escalation holds surface reason for approval | Partial |
+| ASI10 | Rogue Agents | Hash-chained audit log, anomaly detection (novel calls, credential denials) | Partial |
 
 ### NIST AI Risk Management Framework (AI RMF 1.0)
 
