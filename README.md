@@ -267,7 +267,7 @@ Heddle's audit log at `~/.heddle/audit/audit.jsonl` is a hash-chained JSONL file
 
 **When you'd rotate:**
 
-- `heddle audit verify` reports a break (most commonly from concurrent writers without file locking — fixed for new entries by commit `a50e203`, but historical breaks pre-dating that fix remain).
+- `heddle audit verify` reports a break (most commonly from concurrent writers without file locking — fixed for new entries in v0.2.0 via an exclusive file lock in `_write_entry`, but historical breaks pre-dating that release remain).
 - The active log has grown unwieldy (hundreds of MB) and you want an archive cut at a known-good boundary.
 - You're cutting a release and want a clean baseline chain for the next development cycle.
 
