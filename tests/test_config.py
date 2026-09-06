@@ -88,3 +88,50 @@ def test_http_bridge_query_params():
     cfg = AgentConfig.model_validate(FULL_CONFIG)
     bridge = cfg.agent.http_bridge[1]
     assert bridge.query_params == {"hours": "hours"}
+
+
+# -- Unknown keys are errors, not silent no-ops -----------------------------
+
+from pydantic import ValidationError
+
+
+def _spec(**overrides):
+    base = {"name": "strict-agent", "version": "1.0.0", "description": "x"}
+    base.update(overrides)
+    return {"agent": base}
+
+
+def test_unknown_top_level_agent_key_rejected():
+    with pytest.raises(ValidationError, match="Extra inputs are not permitted"):
+        AgentConfig(**_spec(identity={"role": "worker"}))
+
+
+def test_misspelled_escalation_rules_rejected():
+    # Historically this would validate and the agent would run with NO
+    # escalation rules -- the exact "claimed control not wired" gap.
+    with pytest.raises(ValidationError, match="Extra inputs are not permitted"):
+        AgentConfig(**_spec(escalation_rule=[{"name": "r", "reason": "x", "tool": "t"}]))
+
+
+def test_misspelled_trust_tier_rejected():
+    with pytest.raises(ValidationError, match="Extra inputs are not permitted"):
+        AgentConfig(**_spec(runtime={"trust_teir": 1}))
+
+
+def test_unknown_key_in_exposed_tool_rejected():
+    with pytest.raises(ValidationError, match="Extra inputs are not permitted"):
+        AgentConfig(**_spec(exposes=[{"name": "t", "description": "d", "acess": "read"}]))
+
+
+def test_unknown_key_in_http_bridge_rejected():
+    with pytest.raises(ValidationError, match="Extra inputs are not permitted"):
+        AgentConfig(**_spec(
+            exposes=[{"name": "t", "description": "d"}],
+            http_bridge=[{"tool_name": "t", "method": "GET", "url": "http://x", "headerz": {}}],
+        ))
+
+
+def test_unknown_key_in_escalation_rule_rejected():
+    with pytest.raises(ValidationError, match="Extra inputs are not permitted"):
+        AgentConfig(**_spec(escalation_rules=[
+            {"name": "r", "reason": "x", "tool": "t", "param_contain": {"m": "27b"}}]))

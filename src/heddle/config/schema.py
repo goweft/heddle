@@ -41,7 +41,18 @@ class TriggerType(str, Enum):
     webhook = "webhook"
 
 
-class ModelConfig(BaseModel):
+class _StrictBase(BaseModel):
+    """Shared base: unknown keys are a validation error, not a silent no-op.
+
+    A misspelled key such as ``escalation_rule:`` or ``trust_teir:`` must fail
+    at load time. Otherwise the config author believes a control is configured
+    when the runtime has quietly discarded it.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+
+class ModelConfig(_StrictBase):
     provider: ModelProvider = ModelProvider.none
     model: str = ""
     temperature: float = Field(default=0.3, ge=0.0, le=2.0)
@@ -50,7 +61,7 @@ class ModelConfig(BaseModel):
     model_config = ConfigDict(use_enum_values=True)
 
 
-class ParameterDef(BaseModel):
+class ParameterDef(_StrictBase):
     type: str = "string"
     description: str = ""
     required: bool = True
@@ -58,18 +69,18 @@ class ParameterDef(BaseModel):
     enum: list[str] | None = None
 
 
-class ReturnDef(BaseModel):
+class ReturnDef(_StrictBase):
     type: str = "string"
     description: str = ""
     items: dict[str, str] | None = None
 
 
-class ConsumedTool(BaseModel):
+class ConsumedTool(_StrictBase):
     uri: str = Field(..., description="MCP server URI")
     tools: list[str] = Field(default_factory=list)
 
 
-class ExposedTool(BaseModel):
+class ExposedTool(_StrictBase):
     name: str = Field(..., min_length=1, max_length=64)
     description: str = ""
     access: AccessMode = Field(default=AccessMode.read, description="read = safe to call anytime, write = modifies state")
@@ -85,7 +96,7 @@ class ExposedTool(BaseModel):
         return v
 
 
-class HttpEndpoint(BaseModel):
+class HttpEndpoint(_StrictBase):
     tool_name: str = Field(..., description="Which exposed tool this endpoint backs")
     method: Literal["GET", "POST", "PUT", "DELETE", "PATCH"] = "GET"
     url: str = Field(..., description="Full URL template")
@@ -95,7 +106,7 @@ class HttpEndpoint(BaseModel):
     response_path: str | None = None
 
 
-class TriggerConfig(BaseModel):
+class TriggerConfig(_StrictBase):
     type: TriggerType
     schedule: str | None = None
     webhook_path: str | None = None
@@ -103,7 +114,7 @@ class TriggerConfig(BaseModel):
 
 
 
-class EscalationRuleConfig(BaseModel):
+class EscalationRuleConfig(_StrictBase):
     """Declarative escalation rule — holds tool calls for review when conditions match."""
     name: str = Field(..., description="Rule identifier")
     reason: str = Field(default="", description="Why this rule exists")
@@ -114,7 +125,7 @@ class EscalationRuleConfig(BaseModel):
     access: str | None = Field(default=None, description="Match tools with this access mode ('write')")
 
 
-class RuntimeConfig(BaseModel):
+class RuntimeConfig(_StrictBase):
     sandbox: SandboxType = SandboxType.none
     trust_tier: TrustTier = TrustTier.worker
     max_execution_time: str = "30s"
@@ -122,7 +133,7 @@ class RuntimeConfig(BaseModel):
     model_config = ConfigDict(use_enum_values=True)
 
 
-class AgentSpec(BaseModel):
+class AgentSpec(_StrictBase):
     name: str = Field(..., min_length=1, max_length=64)
     version: str = "1.0.0"
     description: str = ""
@@ -142,5 +153,5 @@ class AgentSpec(BaseModel):
         return v
 
 
-class AgentConfig(BaseModel):
+class AgentConfig(_StrictBase):
     agent: AgentSpec
