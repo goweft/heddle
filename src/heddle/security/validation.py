@@ -20,6 +20,9 @@ from heddle.security.audit import get_audit_logger
 logger = logging.getLogger(__name__)
 
 # Maximum parameter lengths by type
+# Absolute ceiling for any string parameter, regardless of declared max_length.
+HARD_MAX_LENGTH = 50_000
+
 MAX_LENGTHS = {
     "string": 10_000,
     "integer": 20,
@@ -106,9 +109,15 @@ class InputValidator:
             # Type validation and coercion
             value = self._validate_type(tool_name, pname, value, ptype)
 
-            # Length check for strings
+            # Length check for strings. A declared max_length may raise the
+            # default cap for legitimately large payloads (document bodies)
+            # but never above HARD_MAX_LENGTH, so a config cannot opt out of
+            # the resource-exhaustion guard.
             if isinstance(value, str):
                 max_len = MAX_LENGTHS.get(ptype, MAX_LENGTHS["string"])
+                declared = pdef.get("max_length")
+                if declared is not None:
+                    max_len = min(int(declared), HARD_MAX_LENGTH)
                 if len(value) > max_len:
                     self._fail(tool_name, pname,
                                f"String too long: {len(value)} > {max_len} chars")

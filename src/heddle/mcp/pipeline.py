@@ -94,7 +94,8 @@ class ToolPolicy:
 def schema_for(tool: Any) -> dict[str, dict[str, Any]]:
     """Build the validator schema dict from an ExposedTool's parameters."""
     return {
-        pname: {"type": pdef.type, "required": pdef.required, "default": pdef.default}
+        pname: {"type": pdef.type, "required": pdef.required, "default": pdef.default,
+                "max_length": getattr(pdef, "max_length", None)}
         for pname, pdef in tool.parameters.items()
     }
 

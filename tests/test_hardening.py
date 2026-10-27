@@ -621,3 +621,41 @@ agent:
 """)
     config = _validate_config(raw, source="<test>")
     assert config.agent.runtime.sandbox == "none"
+
+
+# -- Per-parameter max_length (bounded by HARD_MAX_LENGTH) --------------------
+
+def test_validate_declared_max_length_raises_cap():
+    v = InputValidator("test-agent")
+    schema = {"body": {"type": "string", "required": True, "max_length": 40_000}}
+    out = v.validate_params("my_tool", {"body": "x" * 20_000}, schema)
+    assert len(out["body"]) == 20_000
+
+
+def test_validate_declared_max_length_still_enforced():
+    v = InputValidator("test-agent")
+    schema = {"body": {"type": "string", "required": True, "max_length": 15_000}}
+    with pytest.raises(ValidationError, match="too long"):
+        v.validate_params("my_tool", {"body": "x" * 15_001}, schema)
+
+
+def test_validate_max_length_cannot_exceed_hard_ceiling():
+    v = InputValidator("test-agent")
+    schema = {"body": {"type": "string", "required": True, "max_length": 50_000}}
+    with pytest.raises(ValidationError, match="too long"):
+        v.validate_params("my_tool", {"body": "x" * 50_001}, schema)
+
+
+def test_schema_rejects_max_length_above_ceiling():
+    from pydantic import ValidationError as PydanticError
+    from heddle.config.schema import ParameterDef
+    with pytest.raises(PydanticError):
+        ParameterDef(type="string", max_length=50_001)
+
+
+def test_schema_for_carries_max_length():
+    from heddle.config.schema import ExposedTool, ParameterDef
+    from heddle.mcp.pipeline import schema_for
+    tool = ExposedTool(name="t", description="d",
+                       parameters={"body": ParameterDef(type="string", max_length=40_000)})
+    assert schema_for(tool)["body"]["max_length"] == 40_000

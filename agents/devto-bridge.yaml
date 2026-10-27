@@ -1,0 +1,91 @@
+agent:
+  name: devto-bridge
+  version: "1.0.0"
+  description: "Bridge to the dev.to (Forem) API for reading and updating the author's own articles"
+
+  model:
+    provider: none
+
+  consumes: []
+
+  exposes:
+    - name: list_my_articles
+      access: read
+      description: "List the authenticated user's articles (published and drafts) with id, title, slug, state"
+      parameters:
+        per_page:
+          type: integer
+          description: "Maximum articles to return"
+          required: false
+          default: 30
+      returns:
+        type: string
+        description: "JSON array of article objects"
+
+    - name: get_article
+      access: read
+      description: "Fetch one article by numeric id, including body_markdown"
+      parameters:
+        id:
+          type: integer
+          description: "dev.to article id"
+          required: true
+      returns:
+        type: string
+        description: "JSON article object"
+
+    - name: update_article_body
+      access: write
+      description: "Replace the body_markdown of an article the author owns. Does not change published state, title, or tags."
+      parameters:
+        id:
+          type: integer
+          description: "dev.to article id"
+          required: true
+        body_markdown:
+          type: string
+          description: "Full replacement markdown body (front matter optional)"
+          required: true
+          max_length: 40000
+      returns:
+        type: string
+        description: "JSON article object as saved"
+
+  http_bridge:
+    - tool_name: list_my_articles
+      method: GET
+      url: "https://dev.to/api/articles/me/all"
+      query_params:
+        per_page: per_page
+      headers:
+        api-key: "{{secret:devto-api-key}}"
+        Accept: "application/vnd.forem.api-v1+json"
+        User-Agent: "Mozilla/5.0 (X11; Linux x86_64) heddle-devto-bridge/1.0"
+
+    - tool_name: get_article
+      method: GET
+      url: "https://dev.to/api/articles/{{id}}"
+      headers:
+        api-key: "{{secret:devto-api-key}}"
+        Accept: "application/vnd.forem.api-v1+json"
+        User-Agent: "Mozilla/5.0 (X11; Linux x86_64) heddle-devto-bridge/1.0"
+
+    - tool_name: update_article_body
+      method: PUT
+      url: "https://dev.to/api/articles/{{id}}"
+      headers:
+        api-key: "{{secret:devto-api-key}}"
+        Accept: "application/vnd.forem.api-v1+json"
+        Content-Type: "application/json"
+        User-Agent: "Mozilla/5.0 (X11; Linux x86_64) heddle-devto-bridge/1.0"
+      body_template:
+        article:
+          body_markdown: "{{body_markdown}}"
+
+  runtime:
+    sandbox: none
+    trust_tier: 2
+    max_execution_time: 60s
+
+  triggers:
+    - type: on_demand

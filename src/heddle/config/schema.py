@@ -67,6 +67,10 @@ class ParameterDef(_StrictBase):
     required: bool = True
     default: Any = None
     enum: list[str] | None = None
+    max_length: int | None = Field(
+        default=None, ge=1, le=50_000,
+        description="Per-parameter string length cap; overrides the 10,000 default, hard ceiling 50,000",
+    )
 
 
 class ReturnDef(_StrictBase):
