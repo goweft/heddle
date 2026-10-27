@@ -210,6 +210,44 @@ async def _generate_async(description, model, discover_url, output_dir, dry_run,
 
 # ── Phase 3: Security commands ───────────────────────────────────────
 
+
+@cli.command()
+@click.option("--agents-dir", default="agents", type=click.Path(file_okay=False),
+              help="Directory of agent YAML configs")
+@click.option("--stale-days", default=30, show_default=True,
+              help="Pending quarantine entries older than this are reported")
+@click.option("--json", "as_json", is_flag=True, help="Emit the report as JSON")
+@click.option("--no-audit", is_flag=True,
+              help="Do not write exception_orphaned events to the audit log")
+def doctor(agents_dir: str, stale_days: int, as_json: bool, no_audit: bool):
+    """Reconcile policy exceptions against what they were granted for.
+
+    Read-only. Reports orphaned credential grants, grants to deleted
+    secrets, registry rows without source YAML, escalation rules that
+    match no exposed tool, secrets no config references, and quarantine
+    entries left pending past --stale-days. Exit 1 if anything is found.
+    """
+    from heddle.doctor import run_doctor
+    report = run_doctor(agents_dir, stale_days=stale_days, emit_audit=not no_audit)
+
+    if as_json:
+        click.echo(json.dumps(report.as_dict(), indent=2))
+    elif report.clean:
+        console.print(f"[bold green]CLEAN[/] {report.configs_loaded} configs, no orphaned exceptions")
+    else:
+        table = Table(title=f"heddle doctor -- {len(report.findings)} finding(s)")
+        table.add_column("Kind", style="yellow")
+        table.add_column("Subject", style="cyan")
+        table.add_column("Detail")
+        for kind, items in report.by_kind().items():
+            for f in items:
+                table.add_row(kind, f.subject, f.detail)
+        console.print(table)
+        console.print(f"[dim]{report.configs_loaded} configs loaded from {report.agents_dir}[/]")
+
+    if not report.clean:
+        sys.exit(1)
+
 @cli.group()
 def audit():
     """Audit log management."""

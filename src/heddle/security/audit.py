@@ -153,6 +153,20 @@ class AuditLogger:
             "error": error,
         })
 
+    def log_exception_orphaned(self, kind: str, subject: str, detail: str) -> None:
+        """Log a reconciliation finding from ``heddle doctor`` (ADR 005).
+
+        An exception with no live collector is reported here so the report
+        itself is part of the hash chain. Advisory: nothing is mutated.
+        """
+        self._write_entry({
+            "event": "exception_orphaned",
+            "kind": kind,
+            "subject": subject,
+            "detail": detail,
+            "severity": "medium",
+        })
+
     def log_trust_violation(
         self,
         agent_name: str,
